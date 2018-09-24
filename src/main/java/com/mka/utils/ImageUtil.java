@@ -26,7 +26,7 @@ public class ImageUtil {
     public boolean processAndStoreImage(MultipartFile img, String filePath) {
         boolean processed = false;
         try {
-            if (!img.isEmpty()) {
+            if (img != null && !img.isEmpty()) {
                 InputStream in = new ByteArrayInputStream(img.getBytes());
                 BufferedImage image = ImageIO.read(in);
                 processed = writeImage(filePath, image);

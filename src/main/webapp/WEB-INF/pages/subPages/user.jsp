@@ -1,20 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <jsp:directive.page session="true" />
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Home</title>
-        <!-- Icons-->
-        <link href="<c:url value="/resources/vendors/@coreui/coreui-icons.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/flag-icon-css/flag-icon.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/font-awesome/font-awesome.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/simple-line-icons/simple-line-icons.css"/>" rel="stylesheet">
-        <!-- Main styles for this application-->
-        <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/pace-progress/css/pace.min.css"/>" rel="stylesheet">
+        <title>Profile</title>
+
+        <c:import url="../fragments/global-css.jsp" />
 
         <style>
             .col-md-3.col-form-label{
@@ -136,21 +130,12 @@
         <!-- footer -->
         <c:import url="../fragments/fragment-footer.jsp" />
 
-        <!-- CoreUI and necessary plugins-->
-        <script src="<c:url value="/resources/vendors/jquery/jquery.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/popper.js/popper.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/bootstrap/bootstrap.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/pace-progress/pace.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/perfect-scrollbar/perfect-scrollbar.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/@coreui/coreui.min.js"/>"></script>
-        <!-- Plugins and scripts required by this view-->
-        <script src="<c:url value="/resources/vendors/@coreui/custom-tooltips.min.js"/>"></script>
-        <script src="http://malsup.github.com/jquery.form.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.3.7/packaged/jquery.noty.packaged.min.js"></script>
-        <script src="<c:url value="/resources/js/noty.js"/>"></script>
-        <script src="<c:url value="/resources/js/user.js"/>"></script>
-
-
     </body>
+
+    <!-- global js -->
+    <c:import url="../fragments/global-js.jsp" />
+    <!-- Plugins and scripts required by this view-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
+    <script src="<c:url value="/resources/js/user.js"/>"></script>
 </html>
 

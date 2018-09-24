@@ -8,14 +8,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
         <title>Error</title>
-        <!-- Icons-->
-        <link href="<c:url value="/resources/vendors/@coreui/coreui-icons.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/flag-icon-css/flag-icon.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/font-awesome/font-awesome.min.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/simple-line-icons/simple-line-icons.css"/>" rel="stylesheet">
-        <!-- Main styles for this application-->
-        <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet">
-        <link href="<c:url value="/resources/vendors/pace-progress/css/pace.min.css"/>" rel="stylesheet">
+
+        <c:import url="fragments/global-css.jsp" />
+
 
     </head>
     <body class="app flex-row align-items-center">
@@ -41,12 +36,7 @@
                 </div>
             </div>
         </div>
-        <!-- CoreUI and necessary plugins-->
-        <script src="<c:url value="/resources/vendors/jquery/jquery.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/popper.js/popper.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/bootstrap/bootstrap.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/pace-progress/pace.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/perfect-scrollbar/perfect-scrollbar.min.js"/>"></script>
-        <script src="<c:url value="/resources/vendors/@coreui/coreui.min.js"/>"></script>
     </body>
+    <!-- global js -->
+    <c:import url="fragments/global-js.jsp" />
 </html>

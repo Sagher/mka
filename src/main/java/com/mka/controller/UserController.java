@@ -94,10 +94,9 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated()
                 && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
-            model.addObject("username", auth.getName());
-            User u = userService.getUser(userId);
-            if (u != null
-                    && (u.getRole().equals(Constants.ROLE_ADMIN))) {
+            User u = userService.getUser(auth.getName());
+            User inquiredUser = userService.getUser(userId);
+            if (inquiredUser != null && u.getRole().equals(Constants.ROLE_ADMIN)) {
                 model.addObject("user", u);
                 model.setViewName("subPages/usersActivity");
             } else {
@@ -271,7 +270,7 @@ public class UserController {
         List<UserActivity> data = activityService.getUserActivity(user, start, length, sortBy);
         int totalActivityListSize = activityService.getUserActivityCount(user);
 
-        resp.setData(data);
+        resp.setData(data != null ? data : "");
         resp.setRecordsFiltered(totalActivityListSize);
         resp.setRecordsTotal(totalActivityListSize);
         resp.setDraw(draw);

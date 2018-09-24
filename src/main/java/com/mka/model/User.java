@@ -53,7 +53,7 @@ public class User implements Serializable {
     @NotNull
     @Size(min = 1, max = 45)
     private String password;
-    @Size(max = 45)
+    @Size(max = 255)
     private String picture;
     @Basic(optional = false)
     @NotNull
