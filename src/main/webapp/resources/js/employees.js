@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var albumId;
 var table;
 var clickedRow = [];
 //-------------------------------
 $(document).ready(function () {
     table = $("#viewDatatable").DataTable({
         "dom": 'T<"clear">Blfrtip',
-//        "dom": '<"bottom"i>rt<"bottom"flp><"clear">',
         "oLanguage": {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
@@ -42,6 +40,7 @@ $(document).ready(function () {
         "ordering": true,
         "info": true,
         "stateSave": true,
+        "responsive": true,
         "pagingType": "full_numbers"
 
     });

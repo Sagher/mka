@@ -13,7 +13,7 @@
     </head>
 
     <body class="app flex-row align-items-center">
-        <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_READONLY')">
+        <sec:authorize access="hasAnyRole('ADMIN', 'MANAGER', 'READONLY')">
             <c:redirect url="index"/>
         </sec:authorize>
         <div class="container">
@@ -76,7 +76,7 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
+<!--                        <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
                             <div class="card-body text-center">
                                 <div>
                                     <h2>Sign up</h2>
@@ -87,7 +87,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>

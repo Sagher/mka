@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var albumId;
 var table;
 
 //-------------------------------
 $(document).ready(function () {
     table = $("#userActivityTable").DataTable({
         "dom": 'T<"clear">Blfrtip',
-//        "dom": '<"bottom"i>rt<"bottom"flp><"clear">',
         "oLanguage": {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
@@ -31,6 +29,7 @@ $(document).ready(function () {
         "ordering": false,
         "info": true,
         "stateSave": true,
+        "responsive": true,
         "pagingType": "full_numbers"
     });
 //    $('.dataTables_filter input').attr("placeholder", "search by title");

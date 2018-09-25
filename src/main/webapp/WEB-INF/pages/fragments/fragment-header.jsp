@@ -13,9 +13,9 @@
     <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="<c:url value="/" />">
         <img class="navbar-brand-full" src="<c:url value="/resources/img/brand/logo.svg"/>" width="89" height="25" alt="CoreUI Logo">
-        <!--<img class="navbar-brand-minimized" src="<c:url value="/resources/img/brand/sygnet.svg"/>" width="30" height="30" alt="CoreUI Logo">-->
+        <img class="navbar-brand-minimized" src="<c:url value="/resources/img/brand/sygnet.svg"/>" width="30" height="30" alt="CoreUI Logo">
     </a>
     <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
         <span class="navbar-toggler-icon"></span>
@@ -40,13 +40,7 @@
         </li>
     </ul>
     <ul class="nav navbar-nav ml-auto">
-        <li class="nav-item d-md-down-none">
-            <a class="nav-link" href="#">
-                <i class="icon-bell"></i>
-                <span class="badge badge-pill badge-danger">5</span>
-            </a>
-        </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" style="margin-right: 5px">
             <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                 <img class="img-avatar" src="<c:url value="${user.picture}"/>">
             </a>
@@ -56,8 +50,8 @@
                 </div>
                 <a class="dropdown-item" href="<c:url value="/user/profile" />">
                     <i class="fa fa-user"></i> Profile</a>
-                <a class="dropdown-item" href="#">
-                    <i class="fa fa-wrench"></i> Settings</a>
+<!--                <a class="dropdown-item" href="#">
+                    <i class="fa fa-wrench"></i> Settings</a>-->
                 <button class="dropdown-item" onclick="formSubmit()"><i class="fa fa-lock"></i> Logout</button>
                 <c:url value="/logout" var="logoutUrl" />
                 <form action="${logoutUrl}" method="get" id="logoutForm">
@@ -72,10 +66,11 @@
             </div>
         </li>
     </ul>
-    <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show">
+                <!-- right sidebar -->
+<!--    <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show">
         <span class="navbar-toggler-icon"></span>
     </button>
     <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
         <span class="navbar-toggler-icon"></span>
-    </button>
+    </button>-->
 </header>
