@@ -36,12 +36,12 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "UserActivity.findAll", query = "SELECT u FROM UserActivity u")})
 public class UserActivity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @JsonIgnore
+    @Column(name = "id")
     private Integer id;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 20)

@@ -4,8 +4,12 @@ package com.mka.controller;
  *
  * @author Sagher Mehmood
  */
+import static com.mka.controller.EmployeesController.log;
 import com.mka.model.User;
 import com.mka.service.UserService;
+import com.mka.utils.AsyncUtil;
+import com.mka.utils.Constants;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -29,21 +33,23 @@ public class LoginController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ModelAndView loginPOST(
-            @RequestParam(value = "username") String username,
-            @RequestParam(value = "password") String password,
-            HttpSession session) {
-        ModelAndView model = new ModelAndView();
-        User user = userService.loginUser(username.trim(), password.trim());
-        if (user != null && user.getEnabled() == 1) {
-            model.setViewName("redirect:/index");
-        } else {
-            model.setViewName("/login?error=1");
-        }
-        return model;
-    }
+    @Autowired
+    AsyncUtil asyncUtil;
 
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public ModelAndView loginPOST(
+//            @RequestParam(value = "username") String username,
+//            @RequestParam(value = "password") String password,
+//            HttpSession session) {
+//        ModelAndView model = new ModelAndView();
+//        User user = userService.loginUser(username.trim(), password.trim());
+//        if (user != null && user.getEnabled() == 1) {
+//            model.setViewName("redirect:/index");
+//        } else {
+//            model.setViewName("/login?error=1");
+//        }
+//        return model;
+//    }
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView login(
             @RequestParam(value = "error", required = false) String error,
@@ -71,9 +77,14 @@ public class LoginController {
     public ModelAndView logout(HttpServletRequest request, HttpSession session, HttpServletResponse response) {
         ModelAndView model = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
+        if (auth.isAuthenticated() && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+            User u = userService.getUser(auth.getName());
+            if (u != null) {
+                u.setLastLoginDate(new Date());
+                asyncUtil.updateUser(u);
+            }
         }
+        new SecurityContextLogoutHandler().logout(request, response, auth);
         log.info("User logged out ...");
         model.setViewName("redirect:/login?logout");
         return model;

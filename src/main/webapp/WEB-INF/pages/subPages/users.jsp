@@ -59,6 +59,7 @@
                                                             <td>Full Name</td>
                                                             <td align="center">Status</td>
                                                             <td>Created At</td>
+                                                            <td>last Login</td>
                                                             <td align="center">Edit</td>
                                                             <td align="center">Activity</td>
                                                         </tr>
@@ -88,6 +89,7 @@
                                                                     </c:if>
                                                                 </td>
                                                                 <td>${user.createdDate}</td>
+                                                                <td>${user.lastLoginDate}</td>
                                                                 <td align="center">
                                                                     <button class="btn btn-warning" onclick="editUser(${user.id})">
                                                                         <i class="fa fa-edit"></i>

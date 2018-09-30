@@ -44,7 +44,14 @@ public class AsyncUtil {
         } else {
             log.warn("Invalid User in logActivty: " + userName);
         }
+    }
 
+    @Async
+    public void updateUser(User u) {
+        boolean resp = userService.updateUser(u);
+        if (!resp) {
+            log.warn("Failed to update user Asynchronously" + u);
+        }
     }
 
 }

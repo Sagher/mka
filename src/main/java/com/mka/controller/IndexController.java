@@ -39,6 +39,7 @@ public class IndexController {
                 && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
             User u = userService.getUser(auth.getName());
             model.addObject("user", u);
+            model.addObject("users", userService.getAllUsers());
             model.setViewName("index");
         } else {
             log.warn("Invalid username and password!");

@@ -7,6 +7,8 @@ package com.mka.service.impl;
 import com.mka.dao.UserDao;
 import com.mka.model.User;
 import com.mka.service.UserService;
+import com.mka.utils.AsyncUtil;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
@@ -17,6 +19,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private static final Logger log = Logger.getLogger(UserServiceImpl.class);
+
+    @Autowired
+    AsyncUtil asyncUtil;
 
     @Autowired
     UserDao userDao;

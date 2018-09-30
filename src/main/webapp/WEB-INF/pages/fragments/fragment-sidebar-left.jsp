@@ -17,7 +17,7 @@
             </li>
             <li class="nav-title">Entry & Reporting</li>
             <li class="nav-item">
-                <a class="nav-link" href="<c:url value="/logEntry" />">
+                <a class="nav-link" href="<c:url value="/entry" />">
                     <i class="nav-icon icon-pencil"></i>Log Entry
                 </a>
             </li>
@@ -50,5 +50,4 @@
             </li>
         </ul>
     </nav>
-    <button class="sidebar-minimizer brand-minimizer" type="button"></button>
 </div>

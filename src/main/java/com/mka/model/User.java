@@ -36,36 +36,46 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u")})
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
+    @Column(name = "username")
     private String username;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
+    @Column(name = "fullname")
     private String fullname;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
+    @Column(name = "password")
     private String password;
     @Size(max = 255)
+    @Column(name = "picture")
     private String picture;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "enabled")
     private short enabled;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 8)
+    @Column(name = "role")
     private String role;
+    @Column(name = "last_login_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastLoginDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd@HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
     @Column(name = "updated_date")
@@ -196,6 +206,23 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User[" + "id=" + id + ", username=" + username + ", password=" + password + ", picture=" + picture + ", enabled=" + enabled + ", role=" + role + ']';
+    }
+
+    public User(Integer id, String username, String fullname, String password, short enabled, String role) {
+        this.id = id;
+        this.username = username;
+        this.fullname = fullname;
+        this.password = password;
+        this.enabled = enabled;
+        this.role = role;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
     }
 
 }

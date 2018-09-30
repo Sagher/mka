@@ -15,18 +15,20 @@ import java.util.List;
  */
 public class Constants {
 
-    public static SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static final List<String> ALL_ROLES = Arrays.asList(new String[]{"ADMIN", "READONLY", "MANAGER"});
-
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_READONLY = "READONLY";
 
-    public static String BASE_PATH = "/var/www/html/mka";
-    public static String IMAGES_BASE_PATH = "/resources/img/avatars/";
+    public static final List<String> ENTRY_TYPE = Arrays.asList(new String[]{"SALE", "PURCHASE", "PRODUCE", "CONSUME", "EXPENSE"});
+
 //    public static String BASE_PATH = "E:\\";
 //    public static String IMAGES_BASE_PATH = "resources\\img\\avatars\\";
+    public static final String BASE_PATH = "/var/www/html/mka";
+    public static final String IMAGES_BASE_PATH = "/resources/img/avatars/";
     public static final String DEFAULT_IMG = "/resources/img/avatars/default-image.jpg";
 
 }

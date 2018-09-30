@@ -32,27 +32,32 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Employees.findAll", query = "SELECT e FROM Employees e")})
 public class Employees implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
+    @Column(name = "name")
     private String name;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 100)
+    @Column(name = "email")
     private String email;
     // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
     @Size(max = 15)
+    @Column(name = "phone")
     private String phone;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "salary")
     private int salary;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
+    @Column(name = "role")
     private String role;
     @Basic(optional = false)
     @NotNull
@@ -195,6 +200,13 @@ public class Employees implements Serializable {
     @Override
     public String toString() {
         return "Employees[" + "id=" + id + ", name=" + name + ", phone=" + phone + ", salary=" + salary + ", role=" + role + ", joiningDate=" + joiningDate + ", isActive=" + isActive + ']';
+    }
+
+    public Employees(Integer id, String name, int salary, String role) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+        this.role = role;
     }
 
 }
