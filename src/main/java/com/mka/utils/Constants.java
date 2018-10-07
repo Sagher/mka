@@ -23,7 +23,8 @@ public class Constants {
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_READONLY = "READONLY";
 
-    public static final List<String> ENTRY_TYPE = Arrays.asList(new String[]{"SALE", "PURCHASE", "PRODUCE", "CONSUME", "EXPENSE"});
+    public static final String DIRECT = "DIRECT", INDIRECT = "INDIRECT";
+    public static final String SALE = "SALE", PURCHASE = "PURCHASE", PRODUCE = "PRODUCE";
 
 //    public static String BASE_PATH = "E:\\";
 //    public static String IMAGES_BASE_PATH = "resources\\img\\avatars\\";

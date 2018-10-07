@@ -11,7 +11,7 @@
         <c:import url="../fragments/global-css.jsp" />
 
     </head>
-    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed">
         <!-- top navigation bar -->
         <c:import url="../fragments/fragment-header.jsp" />
 
@@ -38,7 +38,7 @@
                                         <div class="card">
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
-                                                <span>Entries</span>
+                                                <span>In-Direct Entries</span>
                                             </div>
                                             <div class="card-body">
                                                 <div id="filtersDiv">
@@ -75,16 +75,15 @@
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th>ID</th>
+                                                            <th class="id">ID</th>
                                                             <th>Entry Date</th>
                                                             <th>Item</th>
                                                             <th>Type</th>
-                                                            <th>Supplier</th>
-                                                            <th>Quantity</th>
-                                                            <th>Rate</th>
+                                                            <th>Name</th>
+                                                            <th>Description</th>
                                                             <th>Amount</th>
-                                                            <th>Action</th>
-
+                                                            <th>Advance</th>
+                                                            <th style="min-width: 80px">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -114,43 +113,37 @@
                                 </button>
                             </div>
                             <form id="editForm" method="post"
-                                  action="<c:url value='/updateEntry'/>" enctype="multipart/form-data"> 
+                                  action="<c:url value='/updateIndirectEntry'/>" enctype="multipart/form-data"> 
                                 <input id="eid" name="eid" hidden="true">
 
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label for="edoe">Date of Entry</label>
-                                                <input class="form-control" id="edoe" name="edoe" required type="date">
+                                                <label for="ename">Name</label>
+                                                <input class="form-control" id="ename" name="ename" required type="text">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="form-group">
-                                                <label for="esupplier">Supplier</label>
-                                                <input class="form-control" id="esupplier" name="esupplier" required type="text">
+                                                <label for="edesc">Description</label>
+                                                <input class="form-control" id="edesc" name="edesc" required type="text">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-4">
-                                            <div class="form-group">
-                                                <label for="equantity">Quantity</label>
-                                                <input class="form-control" id="equantity" name="equantity" required type="number">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="form-group">
-                                                <label for="erate">Rate</label>
-                                                <input class="form-control" id="erate" name="erate" required type="number">
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label for="eamount">Amount</label>
-                                                <input class="form-control" id="eamount" name="eamount" required type="text">
+                                                <input class="form-control" id="eamount" name="eamount" required type="number">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="eadvance">Advance</label>
+                                                <input class="form-control" id="eadvance" name="eadvance" required type="number">
                                             </div>
                                         </div>
                                     </div>
@@ -170,7 +163,7 @@
                     <div class="modal-dialog modal-danger" role="document">
                         <div class="modal-content">
                             <form id="delForm" method="post"
-                                  action="<c:url value='/deleteEntry'/>" enctype="multipart/form-data"> 
+                                  action="<c:url value='/deleteIndirectEntry'/>" enctype="multipart/form-data"> 
                                 <div class="modal-header">
                                     <h4 class="modal-title">Confirm Deletion</h4>
                                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
@@ -209,7 +202,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
-    <script src="<c:url value="/resources/js/entries.js"/>"></script>
+    <script src="<c:url value="/resources/js/indirectEntries.js"/>"></script>
 
 </html>
 

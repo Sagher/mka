@@ -5,8 +5,11 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -47,6 +51,17 @@ public class EntryItems implements Serializable {
     @Size(min = 1, max = 8)
     @Column(name = "entry_type")
     private String entryType;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "sub_entry_type")
+    private String subEntryType;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+    @JsonIgnore
+    private List<EntriesDirect> entriesDirectList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+    @JsonIgnore
+    private List<EntriesIndirect> entriesIndirectList;
 
     public EntryItems() {
     }
@@ -55,10 +70,11 @@ public class EntryItems implements Serializable {
         this.id = id;
     }
 
-    public EntryItems(Integer id, String itemName, String entryType) {
+    public EntryItems(Integer id, String itemName, String entryType, String subEntryType) {
         this.id = id;
         this.itemName = itemName;
         this.entryType = entryType;
+        this.subEntryType = subEntryType;
     }
 
     public Integer getId() {
@@ -93,6 +109,30 @@ public class EntryItems implements Serializable {
         this.entryType = entryType;
     }
 
+    public String getSubEntryType() {
+        return subEntryType;
+    }
+
+    public void setSubEntryType(String subEntryType) {
+        this.subEntryType = subEntryType;
+    }
+
+    public List<EntriesDirect> getEntriesDirectList() {
+        return entriesDirectList;
+    }
+
+    public void setEntriesDirectList(List<EntriesDirect> entriesDirectList) {
+        this.entriesDirectList = entriesDirectList;
+    }
+
+    public List<EntriesIndirect> getEntriesIndirectList() {
+        return entriesIndirectList;
+    }
+
+    public void setEntriesIndirectList(List<EntriesIndirect> entriesIndirectList) {
+        this.entriesIndirectList = entriesIndirectList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -115,7 +155,7 @@ public class EntryItems implements Serializable {
 
     @Override
     public String toString() {
-        return "EntryItems[" + "id=" + id + ", itemName=" + itemName + ", itemType=" + itemType + ", entryType=" + entryType + ']';
+        return "com.mka.configuration.EntryItems[ id=" + id + " ]";
     }
 
 }

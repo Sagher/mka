@@ -17,22 +17,33 @@ $(document).ready(function () {
         },
         "columns": [
             /*
-             * <th>entryDate</th>
-             <th>item</th>
-             <th>entryType</th>
-             <th>supplier</th>
-             <th>quantity</th>
-             <th>rate</th>
-             <th>amount</th>
+             <th>ID</th>
+             <th>Entry Date</th>
+             <th>Item</th>
+             <th>Type</th>
+             <th>Buyer</th>
+             <th>Supplier</th>
+             <th>Quantity</th>
+             <th>Rate</th>
+             <th>Amount</th>
+             <th>Advance</th>
+             <th>Action</th>
              */
-            {"data": "id"},
+            {"data": "id", "render": function (data, type, full, meta) {
+                    var html = "<div class='id'>" + data + "</div>";
+                    return html;
+                }
+            },
             {"data": "entryDate"},
-            {"data": "item"},
-            {"data": "entryType"},
+            {"data": "itemName"},
+            {"data": "subEntryType"},
+            {"data": "buyer"},
             {"data": "supplier"},
+            {"data": "project"},
             {"data": "quantity"},
             {"data": "rate"},
-            {"data": "amount"},
+            {"data": "totalPrice"},
+            {"data": "advance"},
             {"data": "", "render": function (data, type, full, meta) {
                     var html = "";
                     html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
@@ -87,11 +98,13 @@ function edit(id) {
 
     if (clickedRow[0] == id) {
         $("#eid").val(clickedRow[0]);
-        $("#edoe").val(clickedRow[1]);
-        $("#esupplier").val(clickedRow[4]);
-        $("#equantity").val(clickedRow[5]);
-        $("#erate").val(clickedRow[6]);
-        $("#eamount").val(clickedRow[7]);
+        $("#ebuyer").val(clickedRow[4]);
+        $("#esupplier").val(clickedRow[5]);
+        $("#eproject").val(clickedRow[6]);
+        $("#equantity").val(clickedRow[7]);
+        $("#erate").val(clickedRow[8]);
+        $("#eamount").val(clickedRow[9]);
+        $("#eadvance").val(clickedRow[10]);
 
         $("#editModal").modal('show');
     } else {

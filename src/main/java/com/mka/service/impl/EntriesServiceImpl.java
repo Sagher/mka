@@ -5,11 +5,13 @@ package com.mka.service.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.EntriesDao;
-import com.mka.model.Entries;
+import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.service.EntriesService;
 import com.mka.utils.AsyncUtil;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,29 +37,64 @@ public class EntriesServiceImpl implements EntriesService {
         return entryItems;
     }
 
-    @Override
-    public boolean logEntry(Entries entry) {
-        return entriesDao.logEntry(entry);
+    public EntryItems getEntryItemById(int id) {
+        EntryItems item = null;
+        try {
+            item = entryItems.parallelStream().filter(e -> e.getId() == id).collect(Collectors.toList()).get(0);
+        } catch (Exception e) {
+            log.error("Exception in getEntryItemById(" + id + "): ", e);
+        }
+        return item;
     }
 
     @Override
-    public List<Entries> getEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
-        return entriesDao.getEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate);
+    public boolean logDirectEntry(EntriesDirect entry) {
+        return entriesDao.logDirectEntry(entry);
     }
 
     @Override
-    public int getEntriesCount(String startDate, String endDate) {
-        return entriesDao.getEntriesCount(startDate, endDate);
+    public List<EntriesDirect> getDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
+        return entriesDao.getDirectEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate);
     }
 
     @Override
-    public Entries getEntry(int id) {
-        return entriesDao.getEntry(id);
+    public int getDirectEntriesCount(String startDate, String endDate) {
+        return entriesDao.getDirectEntriesCount(startDate, endDate);
     }
 
     @Override
-    public boolean updateEntry(Entries entry) {
-        return entriesDao.updateEntry(entry);
+    public EntriesDirect getDirectEntry(int id) {
+        return entriesDao.getDirectEntry(id);
+    }
+
+    @Override
+    public boolean updateDirectEntry(EntriesDirect entry) {
+        return entriesDao.updateDirectEntry(entry);
+    }
+
+    @Override
+    public boolean logInDirectEntry(EntriesIndirect entry) {
+        return entriesDao.logInDirectEntry(entry);
+    }
+
+    @Override
+    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
+        return entriesDao.getInDirectEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate);
+    }
+
+    @Override
+    public int getInDirectEntriesCount(String startDate, String endDate) {
+        return entriesDao.getInDirectEntriesCount(startDate, endDate);
+    }
+
+    @Override
+    public EntriesIndirect getInDirectEntry(int id) {
+        return entriesDao.getInDirectEntry(id);
+    }
+
+    @Override
+    public boolean updateInDirectEntry(EntriesIndirect entry) {
+        return entriesDao.updateInDirectEntry(entry);
     }
 
 }

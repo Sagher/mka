@@ -5,7 +5,7 @@
  */
 package com.mka.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -27,19 +29,10 @@ import javax.validation.constraints.Size;
  * @author Sagher Mehmood
  */
 @Entity
-@Table(name = "entries")
+@Table(name = "entries_indirect")
 @NamedQueries({
-    @NamedQuery(name = "Entries.findAll", query = "SELECT e FROM Entries e")})
-public class Entries implements Serializable {
-
-    @Size(max = 20)
-    @Column(name = "item_type")
-    private String itemType;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "entry_type")
-    private String entryType;
+    @NamedQuery(name = "EntriesIndirect.findAll", query = "SELECT e FROM EntriesIndirect e")})
+public class EntriesIndirect implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,48 +40,62 @@ public class Entries implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 20)
+    @Column(name = "item_type")
+    private String itemType;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
-    @Column(name = "item")
-    private String item;
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
-    @Column(name = "supplier")
-    private String supplier;
-    @Column(name = "quantity")
-    private Integer quantity;
-    @Column(name = "rate")
-    private Integer rate;
+    @Column(name = "description")
+    private String description;
     @Basic(optional = false)
     @NotNull
     @Column(name = "amount")
     private int amount;
+    @Column(name = "advance")
+    private Integer advance;
+    @Column(name = "entry_date")
+    @Temporal(TemporalType.DATE)
+    private Date entryDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_active")
     private boolean isActive;
-    @Column(name = "entry_date")
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date entryDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdDate;
     @Column(name = "update_date")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
+    @JoinColumn(name = "item", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    @JsonIgnore
+    private EntryItems item;
 
-    public Entries() {
+    public String getItemName() {
+        return item.getItemName();
     }
 
-    public Entries(Integer id) {
+    public EntriesIndirect() {
+    }
+
+    public EntriesIndirect(Integer id) {
         this.id = id;
+    }
+
+    public EntriesIndirect(Integer id, String name, String description, int amount, Date createdDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.amount = amount;
+        this.createdDate = createdDate;
     }
 
     public Integer getId() {
@@ -99,36 +106,28 @@ public class Entries implements Serializable {
         this.id = id;
     }
 
-    public String getItem() {
-        return item;
+    public String getItemType() {
+        return itemType;
     }
 
-    public void setItem(String item) {
-        this.item = item;
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
     }
 
-    public String getSupplier() {
-        return supplier;
+    public String getName() {
+        return name;
     }
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public String getDescription() {
+        return description;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public Integer getRate() {
-        return rate;
-    }
-
-    public void setRate(Integer rate) {
-        this.rate = rate;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getAmount() {
@@ -139,12 +138,12 @@ public class Entries implements Serializable {
         this.amount = amount;
     }
 
-    public boolean getIsActive() {
-        return isActive;
+    public Integer getAdvance() {
+        return advance;
     }
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setAdvance(Integer advance) {
+        this.advance = advance;
     }
 
     public Date getEntryDate() {
@@ -159,6 +158,14 @@ public class Entries implements Serializable {
         return createdDate;
     }
 
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
@@ -171,6 +178,14 @@ public class Entries implements Serializable {
         this.updateDate = updateDate;
     }
 
+    public EntryItems getItem() {
+        return item;
+    }
+
+    public void setItem(EntryItems item) {
+        this.item = item;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -181,35 +196,19 @@ public class Entries implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Entries)) {
+        if (!(object instanceof EntriesIndirect)) {
             return false;
         }
-        Entries other = (Entries) object;
+        EntriesIndirect other = (EntriesIndirect) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
     }
 
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
-
-    public String getEntryType() {
-        return entryType;
-    }
-
-    public void setEntryType(String entryType) {
-        this.entryType = entryType;
-    }
-
     @Override
     public String toString() {
-        return "[" + "item=" + item + ", itemType=" + itemType + ", entryType=" + entryType + ", id=" + id + ", supplier=" + supplier + ", quantity=" + quantity + ", rate=" + rate + ", amount=" + amount + ", entryDate=" + entryDate + ']';
+        return "com.mka.configuration.EntriesIndirect[ id=" + id + " ]";
     }
 
 }

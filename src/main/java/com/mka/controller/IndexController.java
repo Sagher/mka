@@ -1,6 +1,7 @@
 package com.mka.controller;
 
 import com.mka.model.User;
+import com.mka.service.StatsService;
 import com.mka.service.UserService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -26,6 +27,8 @@ public class IndexController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    StatsService ss;
 
     /* 
      * 
@@ -41,6 +44,7 @@ public class IndexController {
             model.addObject("user", u);
             model.addObject("users", userService.getAllUsers());
             model.setViewName("index");
+            ss.getStats();
         } else {
             log.warn("Invalid username and password!");
             model.setViewName("login");

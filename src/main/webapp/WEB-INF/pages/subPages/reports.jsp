@@ -34,9 +34,13 @@
                     <div class="animated fadeIn">
                         <div class="card">
                             <div class="card-header">
-                                <a class="btn btn-sm btn-primary pull-right" 
-                                   type="button" href="<c:url value="/entries" />">
-                                    View All Entries
+                                <a class="btn btn-sm btn-primary" 
+                                   type="button" href="<c:url value="/entries?type=direct" />">
+                                    View Direct Entries
+                                </a>
+                                <a class="btn btn-sm btn-primary" 
+                                   type="button" href="<c:url value="/entries?type=indirect" />">
+                                    View In-Direct Entries
                                 </a>
                             </div>
 
