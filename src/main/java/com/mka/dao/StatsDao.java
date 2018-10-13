@@ -5,8 +5,7 @@
  */
 package com.mka.dao;
 
-import com.mka.model.response.StatItem;
-import com.mka.model.response.Stats;
+import com.mka.model.StockTrace;
 import java.util.List;
 
 /**
@@ -15,5 +14,9 @@ import java.util.List;
  */
 public interface StatsDao {
 
-    public List<StatItem> getStats();
+    public List<StockTrace> getStats();
+
+    public boolean updateStockTrace(StockTrace st);
+
+    public int getAveragePricePerUnit(int itemId);
 }

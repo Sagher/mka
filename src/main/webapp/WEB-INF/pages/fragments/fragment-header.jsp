@@ -14,31 +14,31 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="<c:url value="/" />">
-        <img class="navbar-brand-full" src="<c:url value="/resources/img/brand/logo.svg"/>" width="89" height="25" alt="CoreUI Logo">
-        <img class="navbar-brand-minimized" src="<c:url value="/resources/img/brand/sygnet.svg"/>" width="30" height="30" alt="CoreUI Logo">
+        <img style="margin-left:50px" class="navbar-brand-full" src="<c:url value="/resources/img/brand/logo.png"/>" width="" height="50" alt="">
+        <img class="navbar-brand-full" src="<c:url value="/resources/img/brand/logo-text.svg"/>" width="130" height="50" alt="">
     </a>
-    <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
+    <button style="margin-left:40px" class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
         <span class="navbar-toggler-icon"></span>
     </button>
-<!--    <ul class="nav navbar-nav d-md-down-none">
+    <!--    <ul class="nav navbar-nav d-md-down-none">
+            <li class="nav-item px-3">
+                <a class="nav-link" href="<c:url value="/" />">Dashboard</a>
+            </li>
+    <sec:authorize access="hasAnyRole('ADMIN')">
         <li class="nav-item px-3">
-            <a class="nav-link" href="<c:url value="/" />">Dashboard</a>
+            <a class="nav-link" href="<c:url value="/users" />">Users</a>
         </li>
-        <sec:authorize access="hasAnyRole('ADMIN')">
-            <li class="nav-item px-3">
-                <a class="nav-link" href="<c:url value="/users" />">Users</a>
-            </li>
-        </sec:authorize>
-        <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
-            <li class="nav-item px-3">
-                <a class="nav-link" href="<c:url value="/employees" />">Employees</a>
-            </li>
-        </sec:authorize>
+    </sec:authorize>
+    <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+        <li class="nav-item px-3">
+            <a class="nav-link" href="<c:url value="/employees" />">Employees</a>
+        </li>
+    </sec:authorize>
 
-        <li class="nav-item px-3">
-            <a class="nav-link" href="<c:url value="/user/profile" />">Profile</a>
-        </li>
-    </ul>-->
+    <li class="nav-item px-3">
+        <a class="nav-link" href="<c:url value="/user/profile" />">Profile</a>
+    </li>
+</ul>-->
     <ul class="nav navbar-nav ml-auto">
         <li class="nav-item dropdown" style="margin-right: 5px">
             <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -50,8 +50,8 @@
                 </div>
                 <a class="dropdown-item" href="<c:url value="/user/profile" />">
                     <i class="fa fa-user"></i> Profile</a>
-<!--                <a class="dropdown-item" href="#">
-                    <i class="fa fa-wrench"></i> Settings</a>-->
+                <!--                <a class="dropdown-item" href="#">
+                                    <i class="fa fa-wrench"></i> Settings</a>-->
                 <button class="dropdown-item" onclick="formSubmit()"><i class="fa fa-lock"></i> Logout</button>
                 <c:url value="/logout" var="logoutUrl" />
                 <form action="${logoutUrl}" method="get" id="logoutForm">
@@ -66,11 +66,11 @@
             </div>
         </li>
     </ul>
-                <!-- right sidebar -->
-<!--    <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
-        <span class="navbar-toggler-icon"></span>
-    </button>-->
+    <!-- right sidebar -->
+    <!--    <button class="navbar-toggler aside-menu-toggler d-md-down-none" type="button" data-toggle="aside-menu-lg-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button" data-toggle="aside-menu-show">
+            <span class="navbar-toggler-icon"></span>
+        </button>-->
 </header>

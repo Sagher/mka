@@ -5,7 +5,8 @@
  */
 package com.mka.service;
 
-import com.mka.model.response.Stats;
+import com.mka.model.StockTrace;
+import java.util.List;
 
 /**
  *
@@ -13,5 +14,11 @@ import com.mka.model.response.Stats;
  */
 public interface StatsService {
 
-    public Stats getStats();
+    public List<StockTrace> getStats();
+
+    public StockTrace getStockTrace(int typeId);
+
+    public boolean updateStockTrace(StockTrace st);
+    
+    public int getAveragePricePerUnit(int itemId);
 }

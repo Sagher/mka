@@ -137,6 +137,7 @@ public class UserDaoImpl implements UserDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("User Added: " + user);
         } catch (Exception e) {
             log.error("Exception in addUser() " + user.toString(), e);
             if (tx != null) {
@@ -167,6 +168,7 @@ public class UserDaoImpl implements UserDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("User Updated: " + user);
         } catch (Exception e) {
             log.error("Exception in updateUser() " + user.toString(), e);
             if (tx != null) {

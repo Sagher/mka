@@ -1,8 +1,11 @@
 package com.mka.controller;
 
+import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.service.StatsService;
 import com.mka.service.UserService;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -30,6 +33,8 @@ public class IndexController {
     @Autowired
     StatsService ss;
 
+    private int totalPurchase = 0, purchaseUnits = 0, totalSale = 0, saleUnits = 0, totalStock = 0, stockUnits = 0;
+
     /* 
      * 
      * Model And View Controller for the /index page
@@ -43,8 +48,36 @@ public class IndexController {
             User u = userService.getUser(auth.getName());
             model.addObject("user", u);
             model.addObject("users", userService.getAllUsers());
+            totalPurchase = 0;
+            totalSale = 0;
+            purchaseUnits = 0;
+            saleUnits = 0;
+            totalStock = 0;
+            List<StockTrace> stockTrace = ss.getStats();
+            stockTrace.parallelStream().filter((StockTrace e) -> {
+                totalSale += e.getSalesAmount();
+                totalPurchase += e.getPurchaseAmount();
+                totalStock += e.getStockAmount();
+
+                saleUnits += e.getSalesUnit();
+                purchaseUnits += e.getPurchaseUnit();
+                stockUnits += e.getStockUnits();
+
+//                log.info(e.toString());
+                return true;
+            }).collect(Collectors.toList());
+
+            model.addObject("totalSaleUnits", saleUnits + " Units");
+            model.addObject("totalPurchaseUnits", purchaseUnits + " Units");
+            model.addObject("totalStockUnits", stockUnits + " Units");
+            model.addObject("totalSale", totalSale + " PKR");
+            model.addObject("totalPurchase", totalPurchase + " PKR");
+            model.addObject("totalStock", totalStock + " PKR");
+            model.addObject("totalUsers", userService.getUsersCount());
+
+            model.addObject("stockTrace", stockTrace);
+
             model.setViewName("index");
-            ss.getStats();
         } else {
             log.warn("Invalid username and password!");
             model.setViewName("login");

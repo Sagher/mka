@@ -36,6 +36,13 @@ public class UserServiceImpl implements UserService {
         return usersList;
     }
 
+    public Integer getUsersCount() {
+        if (usersList == null || usersList.isEmpty()) {
+            usersList = userDao.getAllUsers();
+        }
+        return usersList.size();
+    }
+
     @Override
     public User loginUser(String userName, String password) {
         return userDao.loginUser(userName, password);

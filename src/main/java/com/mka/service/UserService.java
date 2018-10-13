@@ -11,6 +11,8 @@ public interface UserService {
 
     public List<User> getAllUsers();
 
+    public Integer getUsersCount();
+
     public User loginUser(String userName, String password);
 
     public User getUser(int id);

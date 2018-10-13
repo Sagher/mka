@@ -208,7 +208,7 @@ public class EntriesIndirect implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mka.configuration.EntriesIndirect[ id=" + id + " ]";
+        return "id=" + id + ", itemType=" + itemType + ", name=" + name + ", description=" + description + ", amount=" + amount + ", advance=" + advance + ", entryDate=" + entryDate + ", isActive=" + isActive + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
 }

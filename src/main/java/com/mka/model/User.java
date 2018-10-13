@@ -205,7 +205,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User[" + "id=" + id + ", username=" + username + ", password=" + password + ", picture=" + picture + ", enabled=" + enabled + ", role=" + role + ']';
+        return "id=" + id + ", username=" + username + ", password=" + password + ", picture=" + picture + ", enabled=" + enabled + ", role=" + role;
     }
 
     public User(Integer id, String username, String fullname, String password, short enabled, String role) {

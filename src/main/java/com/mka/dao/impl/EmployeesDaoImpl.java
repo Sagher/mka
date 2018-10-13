@@ -99,6 +99,7 @@ public class EmployeesDaoImpl implements EmployeesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("Employee Added: " + emp);
         } catch (Exception e) {
             log.error("Exception in addEmployee() " + emp.toString(), e);
             if (tx != null) {
@@ -129,6 +130,7 @@ public class EmployeesDaoImpl implements EmployeesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("Employee Edited: " + emp);
         } catch (Exception e) {
             log.error("Exception in updateEmployee() " + emp.toString(), e);
             if (tx != null) {

@@ -32,6 +32,10 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntryItems.findAll", query = "SELECT e FROM EntryItems e")})
 public class EntryItems implements Serializable {
 
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "type")
+    private List<StockTrace> stockTraceList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -153,9 +157,17 @@ public class EntryItems implements Serializable {
         return true;
     }
 
+    public List<StockTrace> getStockTraceList() {
+        return stockTraceList;
+    }
+
+    public void setStockTraceList(List<StockTrace> stockTraceList) {
+        this.stockTraceList = stockTraceList;
+    }
+
     @Override
     public String toString() {
-        return "com.mka.configuration.EntryItems[ id=" + id + " ]";
+        return "id=" + id + ", itemName=" + itemName + ", itemType=" + itemType + ", entryType=" + entryType + ", subEntryType=" + subEntryType;
     }
 
 }

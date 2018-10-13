@@ -8,15 +8,16 @@ package com.mka.controller;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
 import com.mka.service.EntriesService;
+import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
-import com.sun.javafx.image.impl.IntArgb;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -55,6 +56,9 @@ public class EntriesController {
 
     @Autowired
     EntriesService entriesService;
+
+    @Autowired
+    StatsService ss;
 
     /* 
      * 
@@ -164,6 +168,8 @@ public class EntriesController {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
+                    // async update stock trace
+                    asyncUtil.updateStockTrace(entry);
                     return "00:Entry Logged Successfully";
                 }
             } else {
@@ -378,6 +384,15 @@ public class EntriesController {
             log.error("Exception while deleting Entry:", e);
             return ("01:Invalid Values");
         }
+    }
+
+    @RequestMapping(value = "/entries/stockTrace", method = RequestMethod.GET)
+    public @ResponseBody
+    StockTrace getStockTrace(
+            HttpServletRequest request,
+            @RequestParam(value = "entryTypeId", required = false, defaultValue = "0") int id) {
+
+        return ss.getStockTrace(id);
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

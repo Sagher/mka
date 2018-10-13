@@ -199,7 +199,7 @@ public class Employees implements Serializable {
 
     @Override
     public String toString() {
-        return "Employees[" + "id=" + id + ", name=" + name + ", phone=" + phone + ", salary=" + salary + ", role=" + role + ", joiningDate=" + joiningDate + ", isActive=" + isActive + ']';
+        return "id=" + id + ", name=" + name + ", phone=" + phone + ", salary=" + salary + ", role=" + role + ", joiningDate=" + joiningDate + ", isActive=" + isActive;
     }
 
     public Employees(Integer id, String name, int salary, String role) {

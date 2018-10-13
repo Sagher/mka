@@ -14,7 +14,7 @@
             select, input{
                 background-color: #f3f3f3 !important;
             }
-            .form-control {
+            .form-control, .btn {
                 -webkit-border-radius: 50px;
                 -moz-border-radius: 50px;
                 border-radius: 50px;
@@ -44,7 +44,9 @@
                                 <div class="card">
                                     <div class="card-header bg-info">
                                         <i class="fa fa-file-text"></i>
-                                        <span><strong>LOG ENTRY</strong> Log a Sale/Purchase/Expense</span>
+                                        <span><strong>LOG ENTRY</strong> 
+                                            <!--Log a Sale/Purchase/Expense-->
+                                        </span>
                                         <div class="pull-right">
                                             <i class="fa fa-eye"></i>
                                             <a style="text-decoration: none; color:white" href="<c:url value="/reports" />">
@@ -69,76 +71,86 @@
                                                 <form id="dentryForm" class="form-horizontal" action="<c:url value="/logDirectEntry"/>"
                                                       method="post" enctype="multipart/form-data">
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dItemType">Item</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <select class="form-control" id="dItemType" required="true" name="dItemType">
                                                                 <option selected value="">SELECT ITEM</option>
                                                             </select>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
+
                                                     <div class="animated fadeIn form-group row" id="subItemTypeDiv" hidden="true">
-                                                        <label class="col-md-3 col-form-label" for="dItemSubType">Item Type</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <select class="form-control" id="dItemSubType" name="dItemSubType">
                                                                 <option selected value="">-- Please select --</option>
                                                             </select>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dEntryType">Entry Type</label>
-                                                        <div class="col-md-9">
+                                                    
+                                                    <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="brand-card item-summary" id="stockDetail">
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row" id="entryTypeDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <select class="form-control" id="dEntryType" required="true" name="dEntryType">
+                                                                <option selected value="">ENTRY TYPE</option>
                                                             </select>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dcusbuy">Customer/Buyer</label>
-                                                        <div class="col-md-9">
-                                                            <input class="form-control" id="dcusbuy" type="text" required="true" name="dcusbuy" placeholder="ABC Corporation">
+                                                    <div class="form-group row" id="supBuyDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8" id="cusDiv">
+                                                            <input class="form-control" id="dcusbuy" type="text" name="dcusbuy" placeholder="ABC Corporation">
                                                             <span class="help-block">Name of the Customer/Buyer</span>
                                                         </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dsupplier">Supplier</label>
-                                                        <div class="col-md-9">
-                                                            <input class="form-control" id="dsupplier" type="text" required="true" name="dsupplier" placeholder="ABC Corporation">
+                                                        <div class="col-md-8" id="supDiv" hidden="true">
+                                                            <input class="form-control" id="dsupplier" type="text" name="dsupplier" placeholder="ABC Corporation">
                                                             <span class="help-block">Name of the Supplier</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dproject">Project</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-4">
                                                             <input class="form-control" id="dproject" type="text" name="dproject">
                                                             <span class="help-block">Name of the Project</span>
                                                         </div>
-                                                    </div>
-                                                    <div class="form-group row" id="quantityDiv">
-                                                        <label class="col-md-3 col-form-label" for="dquantity">Quantity</label>
-                                                        <div class="col-md-9">
+                                                        <div class="col-md-4">
                                                             <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
                                                             <span class="help-block">Quantity of the material</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
-                                                        <label class="col-md-3 col-form-label" for="drate">Rate</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-4">
                                                             <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate">
                                                             <span class="help-block">Per Unit Price</span>
                                                         </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="damount">Amount</label>
-                                                        <div class="col-md-9">
-                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Amount" required="true">
-                                                            <span class="help-block">Amount Received/Paid</span>
+                                                        <div class="col-md-4">
+                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
+                                                            <span class="help-block">Total Price</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="dadvance">Advance</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" required="true">
                                                             <span class="help-block">Advance Received/Paid</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" style="display: none">
                                                         <label class="col-md-3 col-form-label" for="doe">Date of Entry</label>
@@ -147,14 +159,21 @@
                                                         </div>
                                                     </div>
                                                     <br>
-                                                    <hr>
-                                                    <div>
-                                                        <button id="logdEntryBtn" class="btn btn-primary"
-                                                                onclick="logdEntry()" type="submit">
-                                                            <i class="fa fa-dot-circle-o"></i> Submit</button>
-                                                        <button class="btn btn-danger" onclick="resetdForm()" type="reset">
-                                                            <i class="fa fa-ban"></i> Reset</button>
-                                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                    <!--<hr>-->
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-lg btn-danger" onclick="resetdForm()" type="reset">
+                                                                    <i class="fa fa-ban"></i> Reset</button>
+                                                                <button id="logdEntryBtn" class="btn btn-lg btn-primary"
+                                                                        onclick="logdEntry()" type="submit">
+                                                                    <i class="fa fa-floppy-o"></i> Save Entry</button>
+                                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                 </form>
                                             </div>
@@ -169,64 +188,77 @@
                                                 <form id="ientryForm" class="form-horizontal" action="<c:url value="/logInDirectEntry"/>"
                                                       method="post" enctype="multipart/form-data">
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="iItemType">Item</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <select class="form-control" id="iItemType" required="true" name="iItemType">
                                                                 <option selected value="">-- Please select --</option>
                                                             </select>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="animated fadeIn form-group row" id="isubItemTypeDiv" hidden="true">
-                                                        <label class="col-md-3 col-form-label" for="iItemSubType">Item Type</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <select class="form-control" id="iItemSubType" name="iItemSubType">
                                                                 <option value="">-- Please select --</option>
                                                             </select>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="iname">Name</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="iname" type="text" required="true" name="iname" placeholder="ABC Corporation">
                                                             <span class="help-block">Name</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
-                                                        <label class="col-md-3 col-form-label" for="idesc">Description</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="idesc" type="text" name="idesc">
                                                             <span class="help-block">Description</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
-                                                        <label class="col-md-3 col-form-label" for="icost">Cost</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost">
                                                             <span class="help-block">Amount of Expenditure</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
-                                                        <label class="col-md-3 col-form-label" for="iadvance">Advance</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost">
                                                             <span class="help-block">Advance paid</span>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" style="display: none">
-                                                        <label class="col-md-3 col-form-label" for="idoe">Date of Entry</label>
-                                                        <div class="col-md-9">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <input class="form-control" id="idoe" type="date" name="idoe" required="true">
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <br>
-                                                    <hr>
-                                                    <div>
-                                                        <button id="logiEntryBtn" class="btn btn-primary"
-                                                                onclick="logiEntry()" type="submit">
-                                                            <i class="fa fa-dot-circle-o"></i> Submit</button>
-                                                        <button class="btn btn-danger" onclick="resetiForm()" type="reset">
-                                                            <i class="fa fa-ban"></i> Reset</button>
-                                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                    <!--<hr>-->
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-lg btn-danger" onclick="resetiForm()" type="reset">
+                                                                    <i class="fa fa-ban"></i> Reset</button>
+                                                                <button id="logiEntryBtn" class="btn btn-lg btn-primary"
+                                                                        onclick="logiEntry()" type="submit">
+                                                                    <i class="fa fa-dot-circle-o"></i> Save Entry</button>
+                                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                 </form>
                                             </div>

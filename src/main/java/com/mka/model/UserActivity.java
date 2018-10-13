@@ -177,7 +177,7 @@ public class UserActivity implements Serializable {
 
     @Override
     public String toString() {
-        return "UserActivity[" + "actionType=" + actionType + ", actionDescription=" + actionDescription + ", remoteAddr=" + remoteAddr + ", actionTimestamp=" + actionTimestamp + ']';
+        return "actionType=" + actionType + ", actionDescription=" + actionDescription + ", remoteAddr=" + remoteAddr + ", actionTimestamp=" + actionTimestamp;
     }
 
 }

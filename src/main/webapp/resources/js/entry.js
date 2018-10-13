@@ -51,13 +51,14 @@ $(document).ready(function () {
 
 // attach change event listener to 'itemType' select box
 ditemTypeSelection.change(function () {
-    console.log(ditemTypeSelection.val());
+    var selectItemId = ditemTypeSelection.val();
+    console.log(selectItemId);
     subItemTypeDiv.attr("hidden", "true");
     dItemSubTypeSelection.html("");
     entryTypeSelection.html("");
-    if (ditemTypeSelection.val() !== "" || ditemTypeSelection.val().length > 0) {
+    if (selectItemId !== "" || selectItemId.length > 0) {
         for (var i in entryItemsList) {
-            if (entryItemsList[i].id === parseInt(ditemTypeSelection.val(), 10)) {
+            if (entryItemsList[i].id === parseInt(selectItemId, 10)) {
 
                 // show subItemTypeDiv if there is further type
                 if (entryItemsList[i].itemType !== null) {
@@ -66,7 +67,6 @@ ditemTypeSelection.change(function () {
                         // there multiple entry type, user must chose one
                         var itemType = entryItemsList[i].itemType.split(";");
                         for (var j in itemType) {
-//                        console.log(entryTypes[j])
                             dItemSubTypeSelection.append($("<option />").val(itemType[j]).text(itemType[j]));
                         }
                         subItemTypeDiv.removeAttr("hidden");
@@ -77,21 +77,69 @@ ditemTypeSelection.change(function () {
                 if (entryItemsList[i].subEntryType.includes(";")) {
                     var entryTypes = entryItemsList[i].subEntryType.split(";");
                     for (var j in entryTypes) {
-//                        console.log(entryTypes[j])
                         entryTypeSelection.append($("<option />").val(entryTypes[j]).text(entryTypes[j]));
                     }
-//                    entryTypeSelection.attr("size", entryTypes.length)
                 } else {
                     // there is only one entry type
                     entryTypeSelection.append($("<option />").val(entryItemsList[i].entryType).text(entryItemsList[i].entryType));
-
                 }
+                $("#supBuyDiv").removeAttr("hidden");
+                $("#entryTypeDiv").removeAttr("hidden");
+
             }
         }
+
+        // populate stock div
+        $.get("entries/stockTrace?entryTypeId=" + selectItemId, function (data) {
+            if (data !== undefined) {
+                $("#stockDetailDiv").removeAttr("hidden");
+                $("#stockDetail").html('<div class="brand-card-header text-white bg-info">\n\
+                    <div class="card-body">\n\
+                    <div class="item-name">\n\
+                    <strong>' + data.itemName + '</strong></div>\n\
+                    <div>Total Sales: ' + data.salesUnit + ' Units</div>\n\
+                    <div>Total Sales Amount: ' + data.salesAmount + ' PKR</div>\n\
+                    </div></div>\n\
+                    <div class="brand-card-body"><div>\n\
+                    <div class="text-value">' + data.stockUnits + ' Units</div>\n\
+                    <div class="text-uppercase text-muted small">In Stock</div>\n\
+                    </div>\n\
+                    <div>\n\
+                    <div class="text-value">' + data.stockAmount + ' PKR</div>\n\
+                    <div class="text-uppercase text-muted small">Total Stock Price</div>\n\
+                    </div>\n\
+                    <div>\n\
+                    <div class="text-value">' + data.averageUnitPrice + ' PKR</div>\n\
+                    <div class="text-uppercase text-muted small">Average Per Unit Price</div>\n\
+                    </div>\n\
+                    </div>');
+            }
+            console.log(data)
+        });
     } else {
-        entryTypeSelection.removeAttr("size");
+        $("#stockDetailDiv").attr("hidden", "true");
+        entryTypeSelection.attr("hidden", "true");
+        $("#supBuyDiv").attr("hidden", "true");
+        $("#supDiv").attr("hidden", "true");
+        $("#cusDiv").attr("hidden", "true");
 
     }
+});
+
+
+// attach change event listener to 'dEntryType' select box
+entryTypeSelection.change(function () {
+    var selectEntryType = entryTypeSelection.val();
+    console.log(selectEntryType);
+    $("#supBuyDiv").removeAttr("hidden");
+    if (selectEntryType === 'SALE') {
+        $("#cusDiv").removeAttr("hidden");
+        $("#supDiv").attr("hidden", "true");
+    } else {
+        $("#supDiv").removeAttr("hidden");
+        $("#cusDiv").attr("hidden", "true");
+    }
+
 });
 
 // attach change event listener to rate and quantity to calculate amount select box

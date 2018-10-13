@@ -46,7 +46,7 @@
 
                         </div>
 
-                        <div class="col-6 col-lg-3">
+<!--                        <div class="col-6 col-lg-3">
                             <div class="card">
                                 <div class="card-body p-3 d-flex align-items-center">
                                     <i class="fa fa-cogs bg-primary p-3 font-2xl mr-3"></i>
@@ -62,7 +62,7 @@
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </main>

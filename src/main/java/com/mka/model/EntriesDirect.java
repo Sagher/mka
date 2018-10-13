@@ -49,13 +49,9 @@ public class EntriesDirect implements Serializable {
     @Column(name = "sub_entry_type")
     private String subEntryType;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
-    @Column(name = "customer_buyer")
+    @Column(name = "buyer")
     private String buyer;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
     @Column(name = "supplier")
     private String supplier;
     @Column(name = "project")
@@ -93,7 +89,6 @@ public class EntriesDirect implements Serializable {
     @ManyToOne(optional = false)
     @JsonIgnore
     private EntryItems item;
-
 
     public String getItemName() {
         return item.getItemName();
@@ -261,7 +256,7 @@ public class EntriesDirect implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mka.configuration.EntriesDirect[ id=" + id + " ]";
+        return "id=" + id + ", itemType=" + itemType + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
 }

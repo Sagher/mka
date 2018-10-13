@@ -71,6 +71,7 @@ public class EntriesDaoImpl implements EntriesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("Direct Entry Logged: " + entry);
         } catch (Exception e) {
             log.error("Exception in logDirectEntry() " + entry.toString(), e);
             if (tx != null) {
@@ -189,6 +190,7 @@ public class EntriesDaoImpl implements EntriesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("Direct Entry Updated: " + entry);
         } catch (Exception e) {
             log.error("Exception in updateDirectEntry() " + entry.toString(), e);
             if (tx != null) {
@@ -220,6 +222,7 @@ public class EntriesDaoImpl implements EntriesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("In-Direct Entry Logged: " + entry);
         } catch (Exception e) {
             log.error("Exception in logInDirectEntry() " + entry.toString(), e);
             if (tx != null) {
@@ -338,6 +341,7 @@ public class EntriesDaoImpl implements EntriesDao {
             tx.commit();
             session.flush();
             response = true;
+            log.info("In-Direct Entry Updated: " + entry);
         } catch (Exception e) {
             log.error("Exception in updateInDirectEntry() " + entry.toString(), e);
             if (tx != null) {
