@@ -34,6 +34,11 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "advance")
+    private int advance;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,8 +69,6 @@ public class EntriesDirect implements Serializable {
     @NotNull
     @Column(name = "rate")
     private int rate;
-    @Column(name = "advance")
-    private Integer advance;
     @Basic(optional = false)
     @NotNull
     @Column(name = "total_price")
@@ -178,13 +181,6 @@ public class EntriesDirect implements Serializable {
         this.rate = rate;
     }
 
-    public Integer getAdvance() {
-        return advance;
-    }
-
-    public void setAdvance(Integer advance) {
-        this.advance = advance;
-    }
 
     public int getTotalPrice() {
         return totalPrice;
@@ -257,6 +253,14 @@ public class EntriesDirect implements Serializable {
     @Override
     public String toString() {
         return "id=" + id + ", itemType=" + itemType + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
+    }
+
+    public int getAdvance() {
+        return advance;
+    }
+
+    public void setAdvance(int advance) {
+        this.advance = advance;
     }
 
 }
