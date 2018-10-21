@@ -100,27 +100,28 @@
                                         <div>Stock Value</div>
                                         <div class="info-box-bottom-div"></div>
                                     </div>
-                                    <!--                                    <div class="chart-wrapper mt-3" style="height:35px;">
-                                                                            <canvas class="chart" id="card-chart3" height="35"></canvas>
-                                                                        </div>-->
                                 </div>
                             </div>
                             <!-- /.col-->
                             <div class="col-sm-6 col-lg-3">
                                 <div class="card text-white bg-danger">
                                     <div class="card-body pb-0">
-                                        <div class="btn-group float-right">
+<!--                                        <div class="btn-group float-right">
                                             <button class="btn btn-transparent dropdown-toggle p-0" type="button">
                                                 More
                                             </button>
-                                        </div>
-                                        <div class="text-value">${totalUsers}</div>
-                                        <div>Total Users</div>
+                                        </div>-->
+<!--                                        <div class="text-value">${totalUsers}</div>
+                                        <div>Total Users</div>-->
+                                        <div class="text-value">${masterAccount.cashInHand} PKR</div>
+                                        <div>Cash In Hand</div>
+                                        <div class="text-value">${masterAccount.totalCash} PKR</div>
+                                        <div>Total Cash </div>
+                                        <div class="info-box-bottom-div"></div>
 
                                     </div>
-                                    <div class="chart-wrapper mt-3 mx-3" style="height:35px;">
-                                        <!--<canvas class="chart" id="card-chart4" height="35"></canvas>-->
-                                    </div>
+<!--                                    <div class="chart-wrapper mt-3 mx-3" style="height:35px;">-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                             <!-- /.col-->
@@ -167,13 +168,13 @@
                                                     </button>
                                                 </div>
                                                 <div class="item-name">${item.itemName}</div>
-                                                <div>Total Sales: ${item.salesUnit} Units</div>
+                                                <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
                                                 <div>Total Sales Amount: ${item.salesAmount} PKR</div>
                                             </div>
                                         </div>
                                         <div class="brand-card-body">
                                             <div>
-                                                <div class="text-value">${item.stockUnits} Units</div>
+                                                <div class="text-value">${item.stockUnits} ${item.itemUnit}</div>
                                                 <div class="text-uppercase text-muted small">In Stock</div>
                                             </div>
                                             <div>

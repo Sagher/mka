@@ -46,8 +46,6 @@ public class IndexController {
         if (auth.isAuthenticated()
                 && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
             User u = userService.getUser(auth.getName());
-            model.addObject("user", u);
-            model.addObject("users", userService.getAllUsers());
             totalPurchase = 0;
             totalSale = 0;
             purchaseUnits = 0;
@@ -67,6 +65,8 @@ public class IndexController {
                 return true;
             }).collect(Collectors.toList());
 
+            model.addObject("user", u);
+            model.addObject("users", userService.getAllUsers());
             model.addObject("totalSaleUnits", saleUnits + " Units");
             model.addObject("totalPurchaseUnits", purchaseUnits + " Units");
             model.addObject("totalStockUnits", stockUnits + " Units");
@@ -74,7 +74,7 @@ public class IndexController {
             model.addObject("totalPurchase", totalPurchase + " PKR");
             model.addObject("totalStock", totalStock + " PKR");
             model.addObject("totalUsers", userService.getUsersCount());
-
+            model.addObject("masterAccount", ss.getMasterAccount());
             model.addObject("stockTrace", stockTrace);
 
             model.setViewName("index");

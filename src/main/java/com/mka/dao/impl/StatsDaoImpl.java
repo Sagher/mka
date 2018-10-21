@@ -6,6 +6,7 @@
 package com.mka.dao.impl;
 
 import com.mka.dao.StatsDao;
+import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -115,4 +116,26 @@ public class StatsDaoImpl implements StatsDao {
         return avgPricePerUnit;
     }
 
+    @Override
+    public MasterAccount getMasterAccount() {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(MasterAccount.class);
+            List<MasterAccount> users = criteria.list();
+            if (users.size() > 0) {
+                return users.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getMasterAccount() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
 }

@@ -35,7 +35,14 @@ $(document).ready(function () {
                 }
             },
             {"data": "entryDate"},
-            {"data": "itemName"},
+            {"data": "itemName", "render": function (data, type, full, meta) {
+                    if (full.itemType != null) {
+//                        console.log(data + " (" + full.itemType + ")")
+                        return data + " (" + full.itemType + ")";
+                    }
+                    return data;
+                }
+            },
             {"data": "subEntryType"},
             {"data": "buyer"},
             {"data": "supplier"},

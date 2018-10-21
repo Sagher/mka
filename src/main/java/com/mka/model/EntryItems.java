@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -19,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -31,6 +34,18 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "EntryItems.findAll", query = "SELECT e FROM EntryItems e")})
 public class EntryItems implements Serializable {
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "created_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date createdDate;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_active")
+    @JsonIgnore
+    private boolean isActive;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "type")
@@ -60,6 +75,9 @@ public class EntryItems implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "sub_entry_type")
     private String subEntryType;
+    @Size(max = 20)
+    @Column(name = "item_unit")
+    private String itemUnit;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     @JsonIgnore
     private List<EntriesDirect> entriesDirectList;
@@ -168,6 +186,30 @@ public class EntryItems implements Serializable {
     @Override
     public String toString() {
         return "id=" + id + ", itemName=" + itemName + ", itemType=" + itemType + ", entryType=" + entryType + ", subEntryType=" + subEntryType;
+    }
+
+    public String getItemUnit() {
+        return itemUnit;
+    }
+
+    public void setItemUnit(String itemUnit) {
+        this.itemUnit = itemUnit;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
 }

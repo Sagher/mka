@@ -21,9 +21,9 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <!--    <ul class="nav navbar-nav d-md-down-none">
-            <li class="nav-item px-3">
-                <a class="nav-link" href="<c:url value="/" />">Dashboard</a>
-            </li>
+                  <li class="nav-item px-3">
+                         <a class="nav-link" href="<c:url value="/" />">Dashboard</a>
+                     </li>
     <sec:authorize access="hasAnyRole('ADMIN')">
         <li class="nav-item px-3">
             <a class="nav-link" href="<c:url value="/users" />">Users</a>
@@ -50,8 +50,6 @@
                 </div>
                 <a class="dropdown-item" href="<c:url value="/user/profile" />">
                     <i class="fa fa-user"></i> Profile</a>
-                <!--                <a class="dropdown-item" href="#">
-                                    <i class="fa fa-wrench"></i> Settings</a>-->
                 <button class="dropdown-item" onclick="formSubmit()"><i class="fa fa-lock"></i> Logout</button>
                 <c:url value="/logout" var="logoutUrl" />
                 <form action="${logoutUrl}" method="get" id="logoutForm">

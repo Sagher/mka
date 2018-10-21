@@ -62,6 +62,9 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" id="indirect-tab" data-toggle="tab" href="#indirecttab" role="tab" aria-controls="indirecttab" aria-selected="false">IN DIRECT</a>
                                             </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="cashtran-tab" data-toggle="tab" href="#cashtrantab" role="tab" aria-controls="cashtrantab" aria-selected="false">Cash Transaction</a>
+                                            </li>
                                         </ul>
 
                                         <div class="tab-content" id="">
@@ -89,7 +92,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    
+
                                                     <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -110,43 +113,48 @@
                                                     </div>
                                                     <div class="form-group row" id="supBuyDiv" hidden="true">
                                                         <label class="col-md-2"></label>
-                                                        <div class="col-md-8" id="cusDiv">
-                                                            <input class="form-control" id="dcusbuy" type="text" name="dcusbuy" placeholder="ABC Corporation">
-                                                            <span class="help-block">Name of the Customer/Buyer</span>
-                                                        </div>
-                                                        <div class="col-md-8" id="supDiv" hidden="true">
-                                                            <input class="form-control" id="dsupplier" type="text" name="dsupplier" placeholder="ABC Corporation">
-                                                            <span class="help-block">Name of the Supplier</span>
+                                                        <div class="col-md-8" id="buysupDiv">
+                                                            <select class="form-control buysup" id="dbuysupSelect" name="dbuysup">
+                                                                <option selected value="">-- Please select A Buyer/Supplier --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control buysup" id="dbuysupInput" type="text" 
+                                                                   name="dbuysupInput" placeholder="Custom Buyer/Supplier">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="dproject" type="text" name="dproject">
-                                                            <span class="help-block">Name of the Project</span>
+                                                            <input class="form-control" id="dproject" type="text" name="dproject" placeholder="Name of Project">
+                                                            <span class="help-block">Project</span>
                                                         </div>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
-                                                            <span class="help-block">Quantity of the material</span>
+                                                            <input class="form-control" id="ddescription" type="text" name="ddescription" 
+                                                                   placeholder="Description If Any">
+                                                            <span class="help-block">Description</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate">
-                                                            <span class="help-block">Per Unit Price</span>
+                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
+                                                            <span class="help-block">Quantity of the material</span>
                                                         </div>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
-                                                            <span class="help-block">Total Price</span>
+                                                            <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate">
+                                                            <span class="help-block">Per Unit Price</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
-                                                        <div class="col-md-8">
+                                                        <div class="col-md-4">
+                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
+                                                            <span class="help-block">Total Price</span>
+                                                        </div>
+                                                        <div class="col-md-4">
                                                             <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" required="true">
                                                             <span class="help-block">Advance Received/Paid</span>
                                                         </div>
@@ -189,10 +197,13 @@
                                                       method="post" enctype="multipart/form-data">
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
-                                                        <div class="col-md-8">
-                                                            <select class="form-control" id="iItemType" required="true" name="iItemType">
-                                                                <option selected value="">-- Please select --</option>
+                                                        <div class="col-md-8" id="iItemTypeDiv">
+                                                            <select class="form-control" id="iItemType" name="iItemType">
+                                                                <option selected value="">Select Item</option>
                                                             </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control animated fadeIn" id="iItemTypeInput" type="text" 
+                                                                   name="iItemTypeInput" placeholder="Custom Indirect Entry Type">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -254,7 +265,8 @@
                                                                     <i class="fa fa-ban"></i> Reset</button>
                                                                 <button id="logiEntryBtn" class="btn btn-lg btn-primary"
                                                                         onclick="logiEntry()" type="submit">
-                                                                    <i class="fa fa-dot-circle-o"></i> Save Entry</button>
+                                                                    <i class="fa fa-floppy-o"></i> Save Entry</button>
+
                                                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                                             </div>
                                                         </div>
@@ -262,6 +274,70 @@
                                                     </div>
                                                 </form>
                                             </div>
+
+                                            <!--
+                                                
+                                                
+                                                   CASH TRANSACTION                                                 
+                                                
+                                                
+                                            -->
+                                            <div class="tab-pane fade" id="cashtrantab" role="tabpanel" aria-labelledby="cashtran-tab">
+                                                <form id="cashTranForm" class="form-horizontal" action="<c:url value="/logCashTransaction"/>"
+                                                      method="post" enctype="multipart/form-data">
+
+                                                    <div id="masterAccountDetailDiv" class="animated fadeIn form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="brand-card item-summary">
+                                                                <div class="brand-card-header text-white bg-primary">
+                                                                    <div class="card-body">
+                                                                        <div class="item-name">
+                                                                            <strong>Master Account</strong></div>
+                                                                        <div>Total Cash: ${masterAccount.totalCash} PKR</div>
+                                                                        <div>Cash In Hand: ${masterAccount.cashInHand} PKR</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <input class="form-control" type="number" disabled="true">
+                                                            <span class="help-block">To HQ ACCOUNT</span>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <input class="form-control" type="number" disabled="true">
+                                                            <span class="help-block">From HQ ACCOUNT</span>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-lg btn-danger" onclick="resetCtForm()" type="reset">
+                                                                    <i class="fa fa-ban"></i> Reset</button>
+                                                                <button id="cashTranBtn" class="btn btn-lg btn-primary"
+                                                                        onclick="logCashTransaction()" type="submit" disabled="true">
+                                                                    <i class="fa fa-floppy-o"></i> Log Transaction</button>
+
+                                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                </form>
+                                            </div>                    
+
                                         </div>
 
                                     </div>

@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,6 +34,11 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
+
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "description")
+    private String description;
 
     @Basic(optional = false)
     @NotNull
@@ -261,6 +267,14 @@ public class EntriesDirect implements Serializable {
 
     public void setAdvance(int advance) {
         this.advance = advance;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

@@ -5,6 +5,7 @@ package com.mka.dao.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.UserDao;
+import com.mka.model.CustomersBuyers;
 import com.mka.model.User;
 import java.util.Date;
 import java.util.List;
@@ -171,6 +172,61 @@ public class UserDaoImpl implements UserDao {
             log.info("User Updated: " + user);
         } catch (Exception e) {
             log.error("Exception in updateUser() " + user.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public List<CustomersBuyers> getCustomersAndBuyers() {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(CustomersBuyers.class);
+            criteria.add(Restrictions.eq("isActive", true));
+            List<CustomersBuyers> users = criteria.list();
+            if (users.size() > 0) {
+                return users;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getCustomersAndBuyers() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean addCustomerAndBuyer(CustomersBuyers cusBuy) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(cusBuy);
+            cusBuy.setIsActive(true);
+            session.save(cusBuy);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("CustomerAndBuyer Added: " + cusBuy);
+        } catch (Exception e) {
+            log.error("Exception in addCustomerAndBuyer() " + cusBuy.toString(), e);
             if (tx != null) {
                 tx.rollback();
             }

@@ -5,6 +5,7 @@
  */
 package com.mka.controller;
 
+import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
@@ -138,9 +139,14 @@ public class EntriesController {
             String dItemType = request.getParameter("dItemType");
             String subItemType = request.getParameter("dItemSubType");
             String entryType = request.getParameter("dEntryType");
-            String customerBuyer = request.getParameter("dcusbuy");
-            String supplier = request.getParameter("dsupplier");
+            String customerBuyerSupplier = request.getParameter("dbuysup");
+            if (customerBuyerSupplier.equalsIgnoreCase("other")) {
+                customerBuyerSupplier = request.getParameter("dbuysupInput");
+                asyncUtil.addToCustomersAndBuyersList(customerBuyerSupplier);
+            }
             String project = request.getParameter("dproject");
+            String description = request.getParameter("ddescription") != null
+                    ? request.getParameter("ddescription") : null;
             String quantity = request.getParameter("dquantity");
             String rate = request.getParameter("drate");
             String amount = request.getParameter("damount");
@@ -153,9 +159,15 @@ public class EntriesController {
                 entry.setItem(item);
                 entry.setItemType(subItemType);
                 entry.setSubEntryType(entryType);
-                entry.setSupplier(supplier);
+                if (entryType.equalsIgnoreCase(Constants.SALE)) {
+                    entry.setBuyer(customerBuyerSupplier);
+                    entry.setSupplier(null);
+                } else {
+                    entry.setSupplier(customerBuyerSupplier);
+                    entry.setBuyer(null);
+                }
                 entry.setProject(project);
-                entry.setBuyer(customerBuyer);
+                entry.setDescription(description);
                 entry.setQuantity(Integer.parseInt(quantity));
                 entry.setRate(Integer.parseInt(rate));
                 entry.setTotalPrice(Integer.parseInt(amount));
@@ -186,7 +198,14 @@ public class EntriesController {
     String logInDirectEntry(HttpServletRequest request, HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
+            EntryItems item;
+
             String iItemType = request.getParameter("iItemType");
+            if (iItemType.equalsIgnoreCase("other")) {
+                item = entriesService.createNewEntryItem(request.getParameter("iItemTypeInput"));
+            } else {
+                item = entriesService.getEntryItemById(Integer.parseInt(iItemType));
+            }
             String iItemSubType = request.getParameter("iItemSubType");
             String iname = request.getParameter("iname");
             String idesc = request.getParameter("idesc");
@@ -194,7 +213,6 @@ public class EntriesController {
             String iAdvance = request.getParameter("iadvance");
             String dateOfEntry = request.getParameter("idoe");
 
-            EntryItems item = entriesService.getEntryItemById(Integer.parseInt(iItemType));
             if (item != null) {
                 EntriesIndirect entry = new EntriesIndirect();
                 entry.setItem(item);
@@ -393,6 +411,13 @@ public class EntriesController {
             @RequestParam(value = "entryTypeId", required = false, defaultValue = "0") int id) {
 
         return ss.getStockTrace(id);
+    }
+
+    @RequestMapping(value = "/customersAndBuyers", method = RequestMethod.GET)
+    public @ResponseBody
+    List<CustomersBuyers> getCustomersAndBuyers(
+            HttpServletRequest request) {
+        return userService.getCustomersAndBuyers();
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

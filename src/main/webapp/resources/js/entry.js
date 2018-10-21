@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var entryItemsList;
+var entryItemsList, customersBuyersList;
 
 /*
  * DIRECT ENTRIES JS 
@@ -16,8 +16,8 @@ var ditemTypeSelection = $("#dItemType");
 var dItemSubTypeSelection = $("#dItemSubType");
 var entryTypeSelection = $("#dEntryType");
 
-var customerBuyer = $("#dcusbuy");
-var supplier = $("#dsupplier");
+var customerBuyerSelect = $("#dbuysupSelect");
+var customerBuyerInput = $("#dbuysupInput");
 var quantity = $("#dquantity");
 var rate = $("#drate");
 var amount = $("#damount");
@@ -40,6 +40,24 @@ $(document).ready(function () {
                     iItemTypeSelection.append($("<option />").val(entryItemsList[i].id).text(entryItemsList[i].itemName));
                 }
             }
+            //enable custom/new type from indirect entries tab
+            iItemTypeSelection.append($("<option />").val('Other').text('Other'));
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus);
+        }
+    });
+    $.ajax({
+        url: "customersAndBuyers",
+        dataType: "json",
+        success: function (data) {
+            customersBuyersList = data;
+            for (var i in customersBuyersList) {
+                console.log(customersBuyersList[i])
+                customerBuyerSelect.append($("<option />").val(customersBuyersList[i].id).text(customersBuyersList[i].name));
+            }
+            customerBuyerSelect.append($("<option />").val('Other').text('Other'));
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(textStatus);
@@ -57,13 +75,15 @@ ditemTypeSelection.change(function () {
     dItemSubTypeSelection.html("");
     entryTypeSelection.html("");
     if (selectItemId !== "" || selectItemId.length > 0) {
+        entryTypeSelection.removeAttr("hidden");
+        $("#buysupDiv").removeAttr("hidden");
         for (var i in entryItemsList) {
             if (entryItemsList[i].id === parseInt(selectItemId, 10)) {
 
                 // show subItemTypeDiv if there is further type
                 if (entryItemsList[i].itemType !== null) {
                     console.log(entryItemsList[i].itemType);
-                    if (entryItemsList[i].itemType.includes(";")) {
+                    if (entryItemsList[i].itemType != null && entryItemsList[i].itemType.includes(";")) {
                         // there multiple entry type, user must chose one
                         var itemType = entryItemsList[i].itemType.split(";");
                         for (var j in itemType) {
@@ -97,11 +117,11 @@ ditemTypeSelection.change(function () {
                     <div class="card-body">\n\
                     <div class="item-name">\n\
                     <strong>' + data.itemName + '</strong></div>\n\
-                    <div>Total Sales: ' + data.salesUnit + ' Units</div>\n\
+                    <div>Total Sales: ' + data.salesUnit + ' ' + data.itemUnit + '</div>\n\
                     <div>Total Sales Amount: ' + data.salesAmount + ' PKR</div>\n\
                     </div></div>\n\
                     <div class="brand-card-body"><div>\n\
-                    <div class="text-value">' + data.stockUnits + ' Units</div>\n\
+                    <div class="text-value">' + data.stockUnits + ' ' + data.itemUnit + '</div>\n\
                     <div class="text-uppercase text-muted small">In Stock</div>\n\
                     </div>\n\
                     <div>\n\
@@ -110,7 +130,7 @@ ditemTypeSelection.change(function () {
                     </div>\n\
                     <div>\n\
                     <div class="text-value">' + data.averageUnitPrice + ' PKR</div>\n\
-                    <div class="text-uppercase text-muted small">Average Per Unit Price</div>\n\
+                    <div class="text-uppercase text-muted small">Average Per ' + ' ' + data.itemUnit + ' Price</div>\n\
                     </div>\n\
                     </div>');
             }
@@ -119,28 +139,25 @@ ditemTypeSelection.change(function () {
     } else {
         $("#stockDetailDiv").attr("hidden", "true");
         entryTypeSelection.attr("hidden", "true");
-        $("#supBuyDiv").attr("hidden", "true");
-        $("#supDiv").attr("hidden", "true");
-        $("#cusDiv").attr("hidden", "true");
+        $("#buysupDiv").attr("hidden", "true");
 
     }
 });
 
 
 // attach change event listener to 'dEntryType' select box
-entryTypeSelection.change(function () {
-    var selectEntryType = entryTypeSelection.val();
-    console.log(selectEntryType);
-    $("#supBuyDiv").removeAttr("hidden");
-    if (selectEntryType === 'SALE') {
-        $("#cusDiv").removeAttr("hidden");
-        $("#supDiv").attr("hidden", "true");
-    } else {
-        $("#supDiv").removeAttr("hidden");
-        $("#cusDiv").attr("hidden", "true");
-    }
-
-});
+//entryTypeSelection.change(function () {
+//    var selectEntryType = entryTypeSelection.val();
+//    console.log(selectEntryType);
+//    $("#supBuyDiv").removeAttr("hidden");
+//    if (selectEntryType === 'SALE') {
+////        $(".buysup-label").html("Name Of Buyer");
+//    } else {
+////        $(".buysup-label").html("Name Of Supplier");
+//
+//    }
+//
+//});
 
 // attach change event listener to rate and quantity to calculate amount select box
 $("#drate, #dquantity").change(function () {
@@ -152,6 +169,16 @@ $("#drate, #dquantity").change(function () {
 
     }
 });
+
+//attach change event to customer/buyer and supplier select
+customerBuyerSelect.change(function () {
+    if ($('#dbuysupSelect option:selected').text() == "Other") {
+        customerBuyerInput.removeAttr("hidden");
+    } else {
+        customerBuyerInput.attr("hidden", "true");
+    }
+});
+
 // current date
 Date.prototype.toDateInputValue = (function () {
     var local = new Date(this);
@@ -250,6 +277,17 @@ iItemTypeSelection.change(function () {
         }
     } else {
         entryTypeSelection.removeAttr("size");
+
+    }
+});
+var iItemTypeInput = $("#iItemTypeInput");
+iItemTypeSelection.change(function () {
+    if ($('#iItemType option:selected').text() == "Other") {
+        iItemTypeInput.removeAttr("hidden");
+        iItemTypeInput.attr("required", "true");
+    } else {
+        iItemTypeInput.attr("hidden", "true");
+        iItemTypeInput.removeAttr("required");
 
     }
 });

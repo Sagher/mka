@@ -6,6 +6,7 @@
 package com.mka.service.impl;
 
 import com.mka.dao.StatsDao;
+import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.service.StatsService;
 import java.util.List;
@@ -27,6 +28,8 @@ public class StatsServiceImpl implements StatsService {
     StatsDao statsDao;
 
     private List<StockTrace> statItems = null;
+
+    private MasterAccount masterAccount = null;
 
     @Override
     public List<StockTrace> getStats() {
@@ -57,6 +60,14 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public int getAveragePricePerUnit(int itemId) {
         return statsDao.getAveragePricePerUnit(itemId);
+    }
+
+    @Override
+    public MasterAccount getMasterAccount() {
+        if (masterAccount == null) {
+            masterAccount = statsDao.getMasterAccount();
+        }
+        return masterAccount;
     }
 
 }

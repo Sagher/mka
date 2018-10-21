@@ -87,4 +87,9 @@ public class AsyncUtil {
         }
     }
 
+    @Async
+    public void addToCustomersAndBuyersList(String customerBuyerSupplier) {
+        userService.addCustomerAndBuyer(customerBuyerSupplier);
+    }
+
 }

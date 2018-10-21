@@ -20,7 +20,7 @@
                     <i class="icon-graph"></i>  View Reports</a>
             </div>
         </li>-->
-   
+
     <li class="breadcrumb-menu" >
         <div class="btn-group" role="group" aria-label="Button group">
             <a class="btn" href="<c:url value="/" />">
@@ -29,8 +29,10 @@
                 <i class="icon-user"></i>  Profile</a>
             <a class="btn" href="<c:url value="/reports" />">
                 <i class="icon-graph"></i>  View Reports</a>
-            <a class="btn" href="<c:url value="/entry" />">
-                <i class="icon-pencil"></i>  Log Entry</a>
+                <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+                <a class="btn" href="<c:url value="/entry" />">
+                    <i class="icon-pencil"></i>  Log Entry</a>
+                </sec:authorize>
         </div>
     </li>
 

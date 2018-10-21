@@ -16,11 +16,13 @@
                 </a>
             </li>
             <li class="nav-title">Entry & Reporting</li>
-            <li class="nav-item">
-                <a class="nav-link" href="<c:url value="/entry" />">
-                    <i class="nav-icon icon-pencil"></i>Log Entry
-                </a>
-            </li>
+                <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+                <li class="nav-item">
+                    <a class="nav-link" href="<c:url value="/entry" />">
+                        <i class="nav-icon icon-pencil"></i>Log Entry
+                    </a>
+                </li>
+            </sec:authorize>
             <li class="nav-item">
                 <a class="nav-link" href="<c:url value="/reports" />">
                     <i class="nav-icon icon-graph"></i>View Reports

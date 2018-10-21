@@ -38,13 +38,13 @@ public class EmployeesController {
 
     //logger for logging
     public static Logger log = Logger.getLogger(EmployeesController.class);
-    
+
     @Autowired
     UserService userService;
-    
+
     @Autowired
     AsyncUtil asyncUtil;
-    
+
     @Autowired
     EmployeesService employeesService;
     
@@ -57,7 +57,7 @@ public class EmployeesController {
      */
     @RequestMapping(value = "/employees", method = RequestMethod.GET)
     public ModelAndView usersPage(HttpServletRequest request, HttpSession session) {
-        
+
         ModelAndView model = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated() && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
@@ -77,11 +77,11 @@ public class EmployeesController {
             log.info("Invalid username and password!");
             model.setViewName("login");
         }
-        
+
         return model;
-        
+
     }
-    
+
     @RequestMapping(value = "/updateEmployee", method = RequestMethod.POST)
     public @ResponseBody
     String updateEmployee(HttpServletRequest request, HttpSession httpSession) {
@@ -94,7 +94,7 @@ public class EmployeesController {
             String salary = request.getParameter("esalary");
             String role = request.getParameter("erole");
             String doj = request.getParameter("edoj");
-            
+
             Employees emp = employeesService.getEmployee(id);
             Employees oldEmp = new Employees();
             BeanUtils.copyProperties(emp, oldEmp);
@@ -105,7 +105,7 @@ public class EmployeesController {
                 emp.setSalary(Integer.parseInt(salary));
                 emp.setRole(role);
                 emp.setJoiningDate(doj);
-                
+
                 boolean updated = employeesService.updateEmployee(emp);
                 if (!updated) {
                     return ("01:FAILED TO UPDATE.");
@@ -120,7 +120,7 @@ public class EmployeesController {
         }
         return "01:FAILED TO UPDATE.";
     }
-    
+
     @RequestMapping(value = "/createEmployee", method = RequestMethod.POST)
     public @ResponseBody
     String createEmployee(HttpServletRequest request, HttpSession httpSession) {
@@ -132,7 +132,7 @@ public class EmployeesController {
             String salary = request.getParameter("salary");
             String role = request.getParameter("role");
             String doj = request.getParameter("doj");
-            
+
             Employees emp = new Employees();
             emp.setName(name);
             emp.setEmail(email);
@@ -142,7 +142,7 @@ public class EmployeesController {
             emp.setJoiningDate(doj);
             emp.setCreatedDate(new Date());
             emp.setIsActive(true);
-            
+
             boolean empCreated = employeesService.addEmployee(emp);
             if (!empCreated) {
                 return ("01:Failed To Create Employee.");
@@ -155,14 +155,14 @@ public class EmployeesController {
             return ("01:Invalid Values");
         }
     }
-    
+
     @RequestMapping(value = "/deleteEmployee", method = RequestMethod.POST)
     public @ResponseBody
     String deleteEmployee(HttpServletRequest request, HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
             int id = Integer.parseInt(request.getParameter("eid"));
-            
+
             Employees emp = employeesService.getEmployee(id);
             if (emp != null) {
                 emp.setIsActive(false);
@@ -180,7 +180,7 @@ public class EmployeesController {
         }
         return "01:FAILED TO DELETE.";
     }
-    
+
     @RequestMapping(value = "/employees/data", method = RequestMethod.GET)
     public @ResponseBody
     DataTableResp getUsersData(
@@ -189,24 +189,24 @@ public class EmployeesController {
             @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
             @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
             @RequestParam(value = "search[value]", required = false) String search) {
-        
+
         DataTableResp resp = new DataTableResp();
-        
+
         int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
         String orderBy = request.getParameter("order[0][dir]");
         String sortby = request.getParameter("columns[" + order0Col + "][data]");
-        
+
         List<Employees> data = employeesService.getEmployees(startIndex, fetchSize, orderBy, sortby, search);
         int totalSize = employeesService.getEmployeesCount(search);
-        
+
         resp.setData(data);
         resp.setRecordsFiltered(totalSize);
         resp.setRecordsTotal(totalSize);
         resp.setDraw(draw);
-        
+
         return resp;
     }
-    
+
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {
         String remoteAddr = request.getHeader("x-forwarded-for") != null ? request.getHeader("x-forwarded-for") : request.getRemoteAddr();
         String ua = request.getHeader("user-agent");

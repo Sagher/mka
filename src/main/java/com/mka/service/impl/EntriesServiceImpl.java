@@ -10,6 +10,7 @@ import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.service.EntriesService;
 import com.mka.utils.AsyncUtil;
+import com.mka.utils.Constants;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
@@ -95,6 +96,21 @@ public class EntriesServiceImpl implements EntriesService {
     @Override
     public boolean updateInDirectEntry(EntriesIndirect entry) {
         return entriesDao.updateInDirectEntry(entry);
+    }
+
+    @Override
+    public EntryItems createNewEntryItem(String parameter) {
+        EntryItems item = new EntryItems();
+        item.setItemName(parameter);
+        item.setItemType(null);
+        item.setItemUnit(null);
+        item.setEntryType(Constants.INDIRECT);
+        item.setSubEntryType(Constants.EXPENSE);
+        item = entriesDao.createNewEntryItem(item);
+        if (item != null) {
+            entryItems.add(item);
+        }
+        return item;
     }
 
 }

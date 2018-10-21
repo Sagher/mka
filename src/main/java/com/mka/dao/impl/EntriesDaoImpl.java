@@ -356,4 +356,37 @@ public class EntriesDaoImpl implements EntriesDao {
         return response;
     }
 
+    @Override
+    public EntryItems createNewEntryItem(EntryItems item) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(item);
+            item.setCreatedDate(new Date());
+            item.setIsActive(true);
+            session.save(item);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("New Entry Item Created: " + item);
+        } catch (Exception e) {
+            log.error("Exception in logDirectEntry() " + item.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return item;
+    }
+
 }

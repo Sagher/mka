@@ -7,6 +7,7 @@ package com.mka.controller;
 
 import static com.mka.controller.UserController.log;
 import com.mka.model.User;
+import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
@@ -41,6 +42,9 @@ public class ReportsController {
 
     @Autowired
     UserActivityService activityService;
+
+    @Autowired
+    StatsService ss;
 
     @Autowired
     ImageUtil imageUtil;

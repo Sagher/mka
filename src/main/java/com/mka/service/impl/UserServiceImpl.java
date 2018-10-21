@@ -5,6 +5,7 @@ package com.mka.service.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.UserDao;
+import com.mka.model.CustomersBuyers;
 import com.mka.model.User;
 import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     private List<User> usersList = null;
+    private List<CustomersBuyers> customersAndBuyers = null;
 
     @Override
     public List<User> getAllUsers() {
@@ -88,6 +90,27 @@ public class UserServiceImpl implements UserService {
             usersList = userDao.getAllUsers();
         }
         return response;
+    }
+
+    @Override
+    public List<CustomersBuyers> getCustomersAndBuyers() {
+        if (customersAndBuyers == null || customersAndBuyers.isEmpty()) {
+            customersAndBuyers = userDao.getCustomersAndBuyers();
+        }
+        return customersAndBuyers;
+    }
+
+    @Override
+    public boolean addCustomerAndBuyer(String name) {
+        CustomersBuyers cusBuy = new CustomersBuyers();
+        cusBuy.setName(name);
+        if (!customersAndBuyers.contains(cusBuy)) {
+            if (userDao.addCustomerAndBuyer(cusBuy)) {
+                customersAndBuyers.add(cusBuy);
+            }
+            return true;
+        }
+        return false;
     }
 
 }

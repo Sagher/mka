@@ -32,4 +32,6 @@ public interface EntriesDao {
     public EntriesIndirect getInDirectEntry(int id);
 
     public boolean updateInDirectEntry(EntriesIndirect entry);
+
+    public EntryItems createNewEntryItem(EntryItems item);
 }

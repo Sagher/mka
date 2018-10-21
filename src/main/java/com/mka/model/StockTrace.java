@@ -26,7 +26,7 @@ import javax.validation.constraints.Size;
  * @author Sagher Mehmood
  */
 @Entity
-@Table(name = "stock_trace")
+@Table(name = "stock_trace_direct_entries")
 @NamedQueries({
     @NamedQuery(name = "StockTrace.findAll", query = "SELECT s FROM StockTrace s")})
 public class StockTrace implements Serializable {
@@ -82,6 +82,10 @@ public class StockTrace implements Serializable {
 
     public String getItemName() {
         return type.getItemName();
+    }
+
+    public String getItemUnit() {
+        return type.getItemUnit();
     }
 
     public StockTrace() {
@@ -162,7 +166,6 @@ public class StockTrace implements Serializable {
     public void setAverageUnitPrice(int averageUnitPrice) {
         this.averageUnitPrice = averageUnitPrice;
     }
-
 
     public String getDivBgThemeClass() {
         return divBgThemeClass;

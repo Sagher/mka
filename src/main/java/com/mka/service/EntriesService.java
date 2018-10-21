@@ -34,4 +34,6 @@ public interface EntriesService {
     public EntriesIndirect getInDirectEntry(int id);
 
     public boolean updateInDirectEntry(EntriesIndirect entry);
+
+    public EntryItems createNewEntryItem(String parameter);
 }
