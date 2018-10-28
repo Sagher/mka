@@ -7,6 +7,7 @@ package com.mka.dao.impl;
 
 import com.mka.dao.StatsDao;
 import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -137,5 +138,62 @@ public class StatsDaoImpl implements StatsDao {
                 session.close();
             }
         }
+    }
+
+    @Override
+    public boolean logCashTransaction(MasterAccountHistory mah) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.save(mah);
+
+            tx.commit();
+            session.flush();
+            response = true;
+        } catch (Exception e) {
+            log.error("Exception in logCashTransaction() " + mah.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public boolean updateMasterAccount(MasterAccount ma) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(ma);
+            session.saveOrUpdate(ma);
+
+            tx.commit();
+            session.flush();
+            response = true;
+        } catch (Exception e) {
+            log.error("Exception in updateStockTrace() " + ma.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
     }
 }

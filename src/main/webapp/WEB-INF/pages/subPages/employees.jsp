@@ -11,7 +11,7 @@
         <c:import url="../fragments/global-css.jsp" />
 
     </head>
-    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed">
         <!-- top navigation bar -->
         <c:import url="../fragments/fragment-header.jsp" />
 
@@ -38,10 +38,15 @@
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
                                                 <span>Employees</span>
-                                                <button class="btn btn-sm btn-primary pull-right" 
-                                                        type="button" data-toggle="modal" data-target="#newUserModal">
-                                                    Add New Employee
-                                                </button>
+                                                <div class="pull-right">
+                                                    <button class="btn btn-sm btn-default" onclick="payAllEmployees()">
+                                                        Pay All
+                                                    </button>
+                                                    <button class="btn btn-sm btn-primary" 
+                                                            type="button" data-toggle="modal" data-target="#newUserModal">
+                                                        Add New Employee
+                                                    </button>
+                                                </div>
                                             </div>
                                             <div class="card-body">
                                                 <table id="viewDatatable"
@@ -51,12 +56,14 @@
                                                             <th>ID</th>
                                                             <th>Name</th>
                                                             <th>Phone</th>
-                                                            <th>Salary</th>
+                                                            <th>CNIC</th>
                                                             <th>Email</th>
+                                                            <th>Salary</th>
                                                             <th>Role</th>
                                                             <th>Joining Date</th>
-                                                            <th>Action</th>
-
+                                                            <th>Address</th>
+                                                            <th>Status</th>
+                                                            <th style="min-width: 120px">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -76,7 +83,7 @@
                 <!-- newUserModal -->
                 <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" 
                      aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Add New Employee</h4>
@@ -96,10 +103,30 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-12">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label for="phone">Phone</label>
-                                                <input class="form-control" id="phone" name="phone" required="true" type="text" placeholder="Enter Employee's Phome">
+                                                <input class="form-control" id="phone" name="phone" required="true" type="tel" placeholder="Enter Employee's Phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input class="form-control" id="email" name="email" type="email" placeholder="Enter Employee's Email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="cnic">CNIC # <small>( Format: 12345-1234567-0 )</small></label>
+                                                <input class="form-control" id="cnic" name="cnic" type="text" placeholder="12345-1234567-0" pattern="\d{5}-?\d{7}-?\d{1}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="doj">Date of Joining</label>
+                                                <input class="form-control" id="doj" name="doj" required="false" type="date" placeholder="Enter Employee's Date of Joining">
                                             </div>
                                         </div>
                                     </div>
@@ -112,24 +139,16 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label for="doj">Date of Joining</label>
-                                                <input class="form-control" id="doj" name="doj" required="false" type="date" placeholder="Enter Employee's Date of Joining">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label for="email">Email</label>
-                                                <input class="form-control" id="email" name="email" required="false" type="text" placeholder="Enter Employee's Email">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
                                                 <label for="role">Role</label>
                                                 <input class="form-control" id="role" name="role" required="true" type="text" placeholder="Enter Employee's Role i.e, Accountant, Manager, Labour">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label for="address">Address</label>
+                                                <input class="form-control" id="email" name="address" type="text" placeholder="Enter Employee's address">
                                             </div>
                                         </div>
                                     </div>
@@ -149,7 +168,7 @@
                 <!-- editUserModal -->
                 <div class="modal fade" id="editEmpModal" tabindex="-1" role="dialog" 
                      aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h4 class="modal-title">Edit Employee</h4>
@@ -171,10 +190,30 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-12">
+                                        <div class="col-sm-6">
                                             <div class="form-group">
                                                 <label for="ephone">Phone</label>
-                                                <input class="form-control" id="ephone" name="ephone" required type="text">
+                                                <input class="form-control" id="ephone" name="ephone" required type="text" placeholder="Enter Employee's Phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="eemail">Email</label>
+                                                <input class="form-control" id="eemail" name="eemail" type="email" placeholder="Enter Employee's Email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="ecnic">CNIC # <small>( Format: 12345-1234567-0 )</small></label>
+                                                <input class="form-control" id="ecnic" name="ecnic" type="text" placeholder="12345-1234567-0" pattern="\d{5}-?\d{7}-?\d{1}">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="edoj">Date of Joining</label>
+                                                <input class="form-control" id="edoj" name="edoj" required="false" type="date" placeholder="Enter Employee's Date of Joining">
                                             </div>
                                         </div>
                                     </div>
@@ -187,24 +226,16 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <label for="edoj">Date Of Joining</label>
-                                                <input class="form-control" id="edoj" name="edoj" required type="date">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label for="eemail">Email</label>
-                                                <input class="form-control" id="eemail" name="eemail" type="email">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
                                                 <label for="erole">Role</label>
                                                 <input class="form-control" id="erole" name="erole" required type="text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label for="eaddress">Address</label>
+                                                <input class="form-control" id="eaddress" name="eaddress" type="text">
                                             </div>
                                         </div>
                                     </div>
@@ -237,7 +268,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                                    <button class="btn btn-danger" type="submit" onclick="deleteEmp()">Confirm</button>
+                                    <button id="confirmDelBtn" class="btn btn-danger" type="submit">Confirm</button>
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                                 </div>
                             </form>

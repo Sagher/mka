@@ -188,6 +188,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         prop.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
         prop.put("hibernate.use_sql_comments", env.getProperty("hibernate.use_sql_comments"));
         prop.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        prop.put("hibernate.jdbc.batch_size", env.getProperty("hibernate.jdbc.batch_size"));
 
         prop.put("initialSize", env.getProperty("initialSize"));
         prop.put("maxActive", env.getProperty("maxActive"));

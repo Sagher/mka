@@ -7,6 +7,7 @@ package com.mka.service.impl;
 
 import com.mka.dao.StatsDao;
 import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import com.mka.service.StatsService;
 import java.util.List;
@@ -68,6 +69,36 @@ public class StatsServiceImpl implements StatsService {
             masterAccount = statsDao.getMasterAccount();
         }
         return masterAccount;
+    }
+
+    @Override
+    public boolean logCashTransaction(MasterAccountHistory mah) {
+        MasterAccount ma = getMasterAccount();
+        if (mah.getType().equals("+")) {
+            mah.setType("IN");
+            ma.setTotalCash(ma.getTotalCash() + mah.getAmount());
+        } else if (mah.getType().equals("-")) {
+            mah.setType("OUT");
+            ma.setTotalCash(ma.getTotalCash() - mah.getAmount());
+
+        } else {
+            mah.setType("HQ-OUT-SELF");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
+            ma.setTotalCash(ma.getTotalCash() - mah.getAmount());
+            ma.setCashInHand(ma.getCashInHand() + mah.getAmount());
+        }
+        boolean tranLogged = statsDao.logCashTransaction(mah);
+        if (tranLogged) {
+            updateMasterAccount(ma);
+            masterAccount = null;
+            return tranLogged;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean updateMasterAccount(MasterAccount ma) {
+        return statsDao.updateMasterAccount(ma);
     }
 
 }

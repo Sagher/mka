@@ -91,6 +91,8 @@
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
+                                                        <input style="display: none" name="unloadedCrush" class="unloadedCrush">
+                                                        <input style="display: none" name="unloadingCost" class="unloadingCost">
                                                     </div>
 
                                                     <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
@@ -114,7 +116,7 @@
                                                     <div class="form-group row" id="supBuyDiv" hidden="true">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8" id="buysupDiv">
-                                                            <select class="form-control buysup" id="dbuysupSelect" name="dbuysup">
+                                                            <select class="form-control buysup" id="dbuysupSelect" name="dbuysup" required="true">
                                                                 <option selected value="">-- Please select A Buyer/Supplier --</option>
                                                             </select>
                                                             <br>
@@ -172,6 +174,12 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
+                                                            <div  class="pull-left">
+                                                                <button class="btn btn-default" disabled="true" type="button"
+                                                                        id="addCarriageBtn" onclick="addCrushCarriage()">
+                                                                    <i class="fa fa-plus"></i> Add Carriage
+                                                                </button>
+                                                            </div>
                                                             <div class="pull-right">
                                                                 <button class="btn btn-lg btn-danger" onclick="resetdForm()" type="reset">
                                                                     <i class="fa fa-ban"></i> Reset</button>
@@ -293,7 +301,7 @@
                                                                 <div class="brand-card-header text-white bg-primary">
                                                                     <div class="card-body">
                                                                         <div class="item-name">
-                                                                            <strong>Master Account</strong></div>
+                                                                            <strong>HeadQuarter Account</strong></div>
                                                                         <div>Total Cash: ${masterAccount.totalCash} PKR</div>
                                                                         <div>Cash In Hand: ${masterAccount.cashInHand} PKR</div>
                                                                     </div>
@@ -306,16 +314,46 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" type="number" disabled="true">
-                                                            <span class="help-block">To HQ ACCOUNT</span>
+                                                            <select class="form-control" id="ttype" name="ttype">
+                                                                <option value="+">
+                                                                    To Headquarter Account
+                                                                </option>
+                                                                <option value="-">
+                                                                    From Headquarter Account
+                                                                </option>
+                                                                <option value="-+">
+                                                                    Cash In Hand
+                                                                </option>
+                                                            </select>
+                                                            <span class="help-block">Transaction Type</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" type="number" disabled="true">
-                                                            <span class="help-block">From HQ ACCOUNT</span>
+                                                            <input class="form-control" name="tamount" type="number" required="true">
+                                                            <span class="help-block">Amount</span>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-4">
+                                                            <input class="form-control" name="tpayer" type="text"  required="true">
+                                                            <span class="help-block">Payer</span>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <input class="form-control" name="tproject" type="text">
+                                                            <span class="help-block">Project</span>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <input class="form-control" type="text" name="tdesc">
+                                                            <span class="help-block">Description</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -327,7 +365,7 @@
                                                                 <button class="btn btn-lg btn-danger" onclick="resetCtForm()" type="reset">
                                                                     <i class="fa fa-ban"></i> Reset</button>
                                                                 <button id="cashTranBtn" class="btn btn-lg btn-primary"
-                                                                        onclick="logCashTransaction()" type="submit" disabled="true">
+                                                                        onclick="logCashTransaction()" type="submit">
                                                                     <i class="fa fa-floppy-o"></i> Log Transaction</button>
 
                                                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -346,6 +384,44 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="crushCarriageModal" tabindex="-1" role="dialog" 
+                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Crush Carriage</h4>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="username">Total Unloaded</label>
+                                            <input class="form-control" id="unloadedCrush" name="unloadedCrush" required="true" type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="password">Unloading/Carriage Cost</label>
+                                            <input class="form-control" id="unloadingCost" name="unloadingCost" required="true" type="number" placeholder="Unloading/Carriage Cost">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                                <button id="createUserBtn" class="btn btn-primary" 
+                                        type="submit" onclick="addCarriage()">Add Carriage</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div> 
             </main>
 
             <!-- right side bar -->

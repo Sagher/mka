@@ -9,6 +9,7 @@ import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
@@ -77,6 +78,7 @@ public class EntriesController {
                 model.addObject("user", u);
                 model.addObject("allRoles", Constants.ALL_ROLES);
                 model.addObject("users", userService.getAllUsers());
+                model.addObject("masterAccount", ss.getMasterAccount());
                 model.setViewName("subPages/entry");
             } else {
                 model.addObject("errorCode", "401");
@@ -152,6 +154,10 @@ public class EntriesController {
             String amount = request.getParameter("damount");
             String dadvance = request.getParameter("dadvance");
             String dateOfEntry = request.getParameter("doe");
+
+            // OPTIONAL unloadedCrush & unloadingCost in case of crush
+            String unloadedCrush = request.getParameter("unloadedCrush");
+            String unloadingCost = request.getParameter("unloadingCost");
 
             EntryItems item = entriesService.getEntryItemById(Integer.parseInt(dItemType));
             if (item != null) {
@@ -418,6 +424,37 @@ public class EntriesController {
     List<CustomersBuyers> getCustomersAndBuyers(
             HttpServletRequest request) {
         return userService.getCustomersAndBuyers();
+    }
+
+    @RequestMapping(value = "/logCashTransaction", method = RequestMethod.POST)
+    public @ResponseBody
+    String logCashTransaction(HttpServletRequest request, HttpSession httpSession) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            String ttype = request.getParameter("ttype");
+            String tamount = request.getParameter("tamount");
+            String tpayer = request.getParameter("tpayer");
+            String tproject = request.getParameter("tproject");
+            String tdesc = request.getParameter("tdesc");
+
+            MasterAccountHistory mah = new MasterAccountHistory();
+            mah.setType(ttype);
+            mah.setAmount(Integer.parseInt(tamount));
+            mah.setDescription(tdesc);
+            mah.setPayer(tpayer);
+            mah.setProject(tproject);
+
+            boolean transactionLogged = ss.logCashTransaction(mah);
+            if (!transactionLogged) {
+                return ("01:Failed To Log Transaction. Make sure all field are filled in.");
+            } else {
+                logActivity(request, auth.getName(), "ADDED ENTRY", mah.toString());
+                return "00:Transaction Logged Successfully";
+            }
+        } catch (Exception e) {
+            log.error("Exception while logging Transaction:", e);
+            return ("01:Invalid Values");
+        }
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

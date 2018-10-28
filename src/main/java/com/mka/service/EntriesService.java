@@ -3,6 +3,7 @@ package com.mka.service;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccountHistory;
 import java.util.List;
 
 /**

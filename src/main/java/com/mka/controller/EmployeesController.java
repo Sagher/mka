@@ -47,7 +47,7 @@ public class EmployeesController {
 
     @Autowired
     EmployeesService employeesService;
-    
+
     @Autowired
     ImageUtil imageUtil;
 
@@ -89,22 +89,26 @@ public class EmployeesController {
         try {
             int id = Integer.parseInt(request.getParameter("eid"));
             String name = request.getParameter("ename");
-            String email = request.getParameter("eemail");
             String phone = request.getParameter("ephone");
+            String cnic = request.getParameter("ecnic");
+            String email = request.getParameter("eemail");
             String salary = request.getParameter("esalary");
             String role = request.getParameter("erole");
             String doj = request.getParameter("edoj");
+            String address = request.getParameter("eaddress");
 
             Employees emp = employeesService.getEmployee(id);
             Employees oldEmp = new Employees();
             BeanUtils.copyProperties(emp, oldEmp);
             if (emp != null) {
                 emp.setName(name);
-                emp.setEmail(email);
+                emp.setEmail(!email.isEmpty() ? email : emp.getEmail());
+                emp.setCnic(cnic);
                 emp.setPhone(phone);
                 emp.setSalary(Integer.parseInt(salary));
                 emp.setRole(role);
                 emp.setJoiningDate(doj);
+                emp.setAddress(!address.isEmpty() ? address : emp.getAddress());
 
                 boolean updated = employeesService.updateEmployee(emp);
                 if (!updated) {
@@ -128,6 +132,8 @@ public class EmployeesController {
         try {
             String name = request.getParameter("name");
             String email = request.getParameter("email");
+            String address = request.getParameter("address");
+            String cnic = request.getParameter("cnic");
             String phone = request.getParameter("phone");
             String salary = request.getParameter("salary");
             String role = request.getParameter("role");
@@ -135,8 +141,10 @@ public class EmployeesController {
 
             Employees emp = new Employees();
             emp.setName(name);
-            emp.setEmail(email);
+            emp.setEmail(!email.isEmpty() ? email : null);
             emp.setPhone(phone);
+            emp.setCnic(cnic);
+            emp.setAddress(!address.isEmpty() ? address : null);
             emp.setSalary(Integer.parseInt(salary));
             emp.setRole(role);
             emp.setJoiningDate(doj);
@@ -162,17 +170,33 @@ public class EmployeesController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
             int id = Integer.parseInt(request.getParameter("eid"));
+            String terminationDate = request.getParameter("terminationDate");
 
             Employees emp = employeesService.getEmployee(id);
             if (emp != null) {
-                emp.setIsActive(false);
-                boolean updated = employeesService.updateEmployee(emp);
-                if (!updated) {
-                    return ("01:FAILED TO DELETE.");
+                if (terminationDate != null && !terminationDate.isEmpty()) {
+                    //terminate employee
+//                    emp.setIsActive(false);
+                    emp.setIsTerminated(true);
+                    emp.setTerminationDate(Constants.DATE_FORMAT.parse(terminationDate));
+                    boolean updated = employeesService.updateEmployee(emp);
+                    if (!updated) {
+                        return ("01:FAILED TO TERMINATE.");
+                    } else {
+                        logActivity(request, auth.getName(), "TERMINATED EMPLOYEE ", emp.toString());
+                        return "00:Employee Terminated Successfully";
+                    }
                 } else {
-                    logActivity(request, auth.getName(), "DELETED EMPLOYEE ", emp.toString());
-                    return "00:Employee Deleted Successfully";
+                    emp.setIsActive(false);
+                    boolean updated = employeesService.updateEmployee(emp);
+                    if (!updated) {
+                        return ("01:FAILED TO DELETE.");
+                    } else {
+                        logActivity(request, auth.getName(), "DELETED EMPLOYEE ", emp.toString());
+                        return "00:Employee Deleted Successfully";
+                    }
                 }
+
             }
         } catch (Exception e) {
             log.error("Exception while deleting employee:", e);
@@ -199,12 +223,32 @@ public class EmployeesController {
         List<Employees> data = employeesService.getEmployees(startIndex, fetchSize, orderBy, sortby, search);
         int totalSize = employeesService.getEmployeesCount(search);
 
-        resp.setData(data);
+        resp.setData(data != null ? data : "");
         resp.setRecordsFiltered(totalSize);
         resp.setRecordsTotal(totalSize);
         resp.setDraw(draw);
 
         return resp;
+    }
+
+    @RequestMapping(value = "/payAllEmployees", method = RequestMethod.GET)
+    public @ResponseBody
+    String payAllEmployees(HttpServletRequest request, HttpSession httpSession) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.isAuthenticated() && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+            User u = userService.getUser(auth.getName());
+            if (u != null
+                    && (u.getRole().equals(Constants.ROLE_ADMIN) || u.getRole().equals(Constants.ROLE_MANAGER))) {
+                if (!employeesService.payAllEmployees()) {
+                    return ("01:EMPLOYEES SALARIES HAVE ALREADY BEEN PAYED IN THIS MONTH");
+                } else {
+                    logActivity(request, auth.getName(), "PAY EMPLOYEES ", "Employees Salaries Have been Successfully Payed");
+                    return "00:Employees Salaries Have been Successfully Payed";
+                }
+            } else {
+            }
+        }
+        return ("01:FAILED TO PAY ALL EMPLOYEES.");
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

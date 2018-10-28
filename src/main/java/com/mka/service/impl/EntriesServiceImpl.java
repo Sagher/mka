@@ -8,7 +8,10 @@ import com.mka.dao.EntriesDao;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.service.EntriesService;
+import com.mka.service.StatsService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import java.util.List;
@@ -27,6 +30,9 @@ public class EntriesServiceImpl implements EntriesService {
 
     @Autowired
     EntriesDao entriesDao;
+
+    @Autowired
+    StatsService ss;
 
     private List<EntryItems> entryItems = null;
 
@@ -75,7 +81,13 @@ public class EntriesServiceImpl implements EntriesService {
 
     @Override
     public boolean logInDirectEntry(EntriesIndirect entry) {
-        return entriesDao.logInDirectEntry(entry);
+        boolean logged = entriesDao.logInDirectEntry(entry);
+        if (logged) {
+            MasterAccount ma = ss.getMasterAccount();
+            ma.setCashInHand(ma.getCashInHand() - entry.getAmount());
+            ss.updateMasterAccount(ma);
+        }
+        return logged;
     }
 
     @Override
@@ -106,11 +118,23 @@ public class EntriesServiceImpl implements EntriesService {
         item.setItemUnit(null);
         item.setEntryType(Constants.INDIRECT);
         item.setSubEntryType(Constants.EXPENSE);
-        item = entriesDao.createNewEntryItem(item);
-        if (item != null) {
-            entryItems.add(item);
+
+        List<EntryItems> items = getAllEntryItems().parallelStream().filter((EntryItems e) -> {
+            if (e.getItemName().equalsIgnoreCase(parameter)) {
+                return e.getEntryType().equalsIgnoreCase(Constants.INDIRECT);
+            }
+            return false;
+        }).collect(Collectors.toList());
+
+        if (items != null && items.size() > 0) {
+            return items.get(0);
+        } else {
+            item = entriesDao.createNewEntryItem(item);
+            if (item != null) {
+                entryItems.add(item);
+            }
+            return item;
         }
-        return item;
     }
 
 }

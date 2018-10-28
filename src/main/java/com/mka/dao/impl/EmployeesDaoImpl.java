@@ -6,8 +6,11 @@ package com.mka.dao.impl;
  */
 import com.mka.dao.EmployeesDao;
 import com.mka.model.Employees;
+import com.mka.model.EmployeessPayments;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
@@ -40,11 +43,14 @@ public class EmployeesDaoImpl implements EmployeesDao {
             }
             criteria.setFirstResult(startIndex);
             criteria.setMaxResults(fetchSize);
-            if (orderBy.equalsIgnoreCase("asc")) {
-                criteria.addOrder(Order.asc(sortBy));
-            } else {
-                criteria.addOrder(Order.desc(sortBy));
+            if (!sortBy.isEmpty()) {
+                if (!orderBy.isEmpty() && orderBy.equalsIgnoreCase("asc")) {
+                    criteria.addOrder(Order.asc(sortBy));
+                } else {
+                    criteria.addOrder(Order.desc(sortBy));
+                }
             }
+
             List<Employees> emps = criteria.list();
             if (emps.size() > 0) {
                 return emps;
@@ -167,5 +173,46 @@ public class EmployeesDaoImpl implements EmployeesDao {
                 session.close();
             }
         }
+    }
+
+    @Override
+    public boolean payAllEmployees(Map<Employees, EmployeessPayments> paymentRecord) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+            Iterator it = paymentRecord.entrySet().iterator();
+            int i = 0;
+            while (it.hasNext()) {
+                i++;
+                Map.Entry pair = (Map.Entry) it.next();
+                Employees emp = (Employees) pair.getKey();
+                EmployeessPayments ep = (EmployeessPayments) pair.getValue();
+                it.remove(); // avoids a ConcurrentModificationException
+                int res = (Integer) session.save(ep);
+
+                if (res > 0) {
+                    emp.setUpdatedDate(new Date());
+                    emp.setCurrentMonthPayed(true);
+                    session.evict(emp);
+                    session.saveOrUpdate(emp);
+                }
+                if (i % 20 == 0) { // Same as the JDBC batch size
+                    //flush a batch of inserts and release memory:
+                    session.flush();
+                    session.clear();
+                }
+            }
+            tx.commit();
+        } catch (Exception e) {
+            log.error("Exception in employeesDaoImpl payAllEmployees() : ", e);
+            return false;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return true;
     }
 }

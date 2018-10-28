@@ -6,6 +6,7 @@
 package com.mka.dao;
 
 import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import java.util.List;
 
@@ -22,4 +23,8 @@ public interface StatsDao {
     public int getAveragePricePerUnit(int itemId);
     
     public MasterAccount getMasterAccount();
+
+    public boolean logCashTransaction(MasterAccountHistory mah);
+
+    public boolean updateMasterAccount(MasterAccount ma);
 }

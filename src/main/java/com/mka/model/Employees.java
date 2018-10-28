@@ -5,10 +5,13 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,6 +35,34 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Employees.findAll", query = "SELECT e FROM Employees e")})
 public class Employees implements Serializable {
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "current_month_payed")
+    private boolean currentMonthPayed;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_terminated")
+    private boolean isTerminated;
+
+    @Column(name = "termination_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date terminationDate;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employees")
+    @JsonIgnore
+    private List<EmployeessPayments> employeessPaymentsList;
+
+    @Size(max = 255)
+    @Column(name = "address")
+    private String address;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 15)
+    @Column(name = "cnic")
+    private String cnic;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -207,6 +239,54 @@ public class Employees implements Serializable {
         this.name = name;
         this.salary = salary;
         this.role = role;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCnic() {
+        return cnic;
+    }
+
+    public void setCnic(String cnic) {
+        this.cnic = cnic;
+    }
+
+    public boolean getCurrentMonthPayed() {
+        return currentMonthPayed;
+    }
+
+    public void setCurrentMonthPayed(boolean currentMonthPayed) {
+        this.currentMonthPayed = currentMonthPayed;
+    }
+
+    public boolean getIsTerminated() {
+        return isTerminated;
+    }
+
+    public void setIsTerminated(boolean isTerminated) {
+        this.isTerminated = isTerminated;
+    }
+
+    public Date getTerminationDate() {
+        return terminationDate;
+    }
+
+    public void setTerminationDate(Date terminationDate) {
+        this.terminationDate = terminationDate;
+    }
+
+    public List<EmployeessPayments> getEmployeessPaymentsList() {
+        return employeessPaymentsList;
+    }
+
+    public void setEmployeessPaymentsList(List<EmployeessPayments> employeessPaymentsList) {
+        this.employeessPaymentsList = employeessPaymentsList;
     }
 
 }

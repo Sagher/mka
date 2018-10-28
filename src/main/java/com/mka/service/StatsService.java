@@ -6,6 +6,7 @@
 package com.mka.service;
 
 import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import java.util.List;
 
@@ -20,8 +21,12 @@ public interface StatsService {
     public StockTrace getStockTrace(int typeId);
 
     public boolean updateStockTrace(StockTrace st);
-    
+
     public int getAveragePricePerUnit(int itemId);
-    
+
     public MasterAccount getMasterAccount();
+
+    public boolean logCashTransaction(MasterAccountHistory mah);
+
+    public boolean updateMasterAccount(MasterAccount ma);
 }

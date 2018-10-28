@@ -16,16 +16,46 @@ $(document).ready(function () {
             "url": "employees/data"
         },
         "columns": [
+            /*
+             <th>ID</th>
+             <th>Name</th>
+             <th>Phone</th>
+             <th>CNIC</th>
+             <th>Email</th>
+             <th>Salary</th>
+             <th>Role</th>
+             <th>Joining Date</th>
+             <th>Address</th>
+             <th>Action</th>
+             */
             {"data": "id"},
             {"data": "name"},
             {"data": "phone"},
-            {"data": "salary"},
+            {"data": "cnic"},
             {"data": "email"},
+            {"data": "salary"},
             {"data": "role"},
             {"data": "joiningDate"},
+            {"data": "address"},
+            {"data": "", "render": function (data, type, full, meta) {
+                    var html = "";
+                    html += "<td align=\"center\">";
+                    if (full.isTerminated) {
+                        html += "<span class=\"badge badge-danger\">Terminated</span>";
+                        html += "<p class='small'>" + full.terminationDate + "</p>";
+
+                    } else {
+                        html += "<span class=\"badge badge-success\">Employeed</span>";
+                    }
+                    return html;
+                }
+            },
             {"data": "", "render": function (data, type, full, meta) {
                     var html = "";
                     html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"editEmp(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
+                    if (!full.isTerminated) {
+                        html += "<button id='ter-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"terminateEmp(" + full.id + ")\"><i class=\"fa fa-ban\"></i></button>";
+                    }
                     html += "<button id='del-" + full.id + "' style='margin-left:3px' class=\"btn btn-danger\" onclick=\"delEmp(" + full.id + ")\"><i class=\"fa fa-trash\"></i></button>";
                     return html;
                 }
@@ -41,7 +71,13 @@ $(document).ready(function () {
         "info": true,
         "stateSave": true,
         "responsive": true,
-        "pagingType": "full_numbers"
+        "pagingType": "full_numbers",
+        "oLanguage": {
+            "sEmptyTable": "No Employees Founds At The Moment"
+        },
+        "columnDefs": [
+            {"orderable": false, "targets": 9}
+        ]
 
     });
     $('.dataTables_filter input').attr("placeholder", "search by name");
@@ -100,10 +136,13 @@ function editEmp(id) {
         $("#eid").val(clickedRow[0]);
         $("#ename").val(clickedRow[1]);
         $("#ephone").val(clickedRow[2]);
-        $("#esalary").val(clickedRow[3]);
+        $("#ecnic").val(clickedRow[3]);
         $("#eemail").val(clickedRow[4]);
-        $("#erole").val(clickedRow[5]);
-        $("#edoj").val(clickedRow[6]);
+        $("#esalary").val(clickedRow[5]);
+        $("#erole").val(clickedRow[6]);
+        $("#edoj").val(clickedRow[7]);
+        $("#eaddress").val(clickedRow[8]);
+
         $("#editEmpModal").modal('show');
     } else {
         setTimeout(function () {
@@ -151,11 +190,14 @@ function delEmp(id) {
     console.log(id);
     console.log(clickedRow)
     if (clickedRow[0] == id) {
-        $("#erole").val(clickedRow[5]);
+        $("#erole").val(clickedRow[6]);
+        $("#confirmDelModal .modal-title").html("");
+        $("#confirmDelModal .modal-title").append("Confirm Deletion");
         $("#confirmDelModal .modal-body").html("");
         $("#confirmDelModal .modal-body")
-                .append("<p> This would permanentely delete: <br><br><b>" + clickedRow[1] + "</b> (" + clickedRow[5] + ") </p>")
+                .append("<p> This would permanentely delete: <br><br><b>" + clickedRow[1] + "</b> (" + clickedRow[6] + ") </p>")
                 .append(" <input name='eid' hidden='true' value='" + id + "'>")
+        $("#confirmDelModal #confirmDelBtn").attr("onclick", "deleteEmp()");
         $("#confirmDelModal").modal('show');
     } else {
         setTimeout(function () {
@@ -197,3 +239,85 @@ function deleteEmp() {
     });
 }
 
+
+function terminateEmp(id) {
+    console.log(id);
+    console.log(clickedRow)
+    if (clickedRow[0] == id) {
+        $("#erole").val(clickedRow[6]);
+        $("#confirmDelModal .modal-title").html("");
+        $("#confirmDelModal .modal-title").append("Confirm TERMINATION");
+        $("#confirmDelModal .modal-body").html("");
+        $("#confirmDelModal .modal-body")
+                .append("<p> This would permanentely delete: <br><br><b>" + clickedRow[1] + "</b> (" + clickedRow[6] + ") </p>")
+                .append(" <input name='eid' hidden='true' value='" + id + "'>")
+                .append(" <label>Termination Date </label>")
+                .append(" <input class='form-control' name='terminationDate' type='date' required='true'>")
+        $("#confirmDelModal #confirmDelBtn").attr("onclick", "terminateEmployee()");
+        $("#confirmDelModal").modal('show');
+    } else {
+        setTimeout(function () {
+            $("#ter-" + id).click();
+        }, 50);
+    }
+    return;
+}
+
+function terminateEmployee() {
+    $('#delEmpForm').ajaxForm({
+        beforeSend: function () {
+        },
+        uploadProgress: function (event, position, total, percentComplete) {
+        },
+        complete: function (xhr) {
+            response = xhr.responseText.split(":");
+            console.log(response);
+            respCode = response[0];
+            respMessage = response[1];
+            if (respCode === '00') {
+                $('#confirmDelModal').modal('hide');
+                noty({
+                    text: respMessage,
+                    type: "success", layout: "center", timeout: 2000
+                });
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
+
+            } else {
+                noty({
+                    text: respMessage,
+                    type: "error", layout: "center", timeout: 4000
+                });
+            }
+
+        }
+    });
+}
+
+function payAllEmployees() {
+    $.get("payAllEmployees", {
+        name: "Donald Duck",
+        city: "Duckburg"
+    }, function (data, status) {
+        response = data.split(":");
+        console.log(response);
+        respCode = response[0];
+        respMessage = response[1];
+        if (respCode === '00') {
+            noty({
+                text: respMessage,
+                type: "success", layout: "center", timeout: 2000
+            });
+            setTimeout(function () {
+                location.reload();
+            }, 2000);
+
+        } else {
+            noty({
+                text: respMessage,
+                type: "error", layout: "center", timeout: 4000
+            });
+        }
+    });
+}

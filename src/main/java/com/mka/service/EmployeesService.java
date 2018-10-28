@@ -23,4 +23,6 @@ public interface EmployeesService {
     public boolean updateEmployee(Employees emp);
 
     public Employees getEmployee(int id);
+
+    public boolean payAllEmployees();
 }

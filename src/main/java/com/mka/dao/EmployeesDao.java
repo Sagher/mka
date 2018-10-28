@@ -5,7 +5,9 @@ package com.mka.dao;
  * @author Sagher Mehmood
  */
 import com.mka.model.Employees;
+import com.mka.model.EmployeessPayments;
 import java.util.List;
+import java.util.Map;
 
 public interface EmployeesDao {
 
@@ -18,4 +20,6 @@ public interface EmployeesDao {
     public boolean updateEmployee(Employees emp);
 
     public Employees getEmployee(int id);
+
+    public boolean payAllEmployees(Map<Employees, EmployeessPayments> paymentRecord);
 }

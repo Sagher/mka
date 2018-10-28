@@ -80,6 +80,14 @@ ditemTypeSelection.change(function () {
         for (var i in entryItemsList) {
             if (entryItemsList[i].id === parseInt(selectItemId, 10)) {
 
+                // show add carriage button for crush
+                if (selectItemId == 6) {
+                    console.log("show add carriage button for crush")
+                    $("#addCarriageBtn").removeAttr("disabled");
+                } else {
+                    $("#addCarriageBtn").attr("disabled", "true");
+                }
+
                 // show subItemTypeDiv if there is further type
                 if (entryItemsList[i].itemType !== null) {
                     console.log(entryItemsList[i].itemType);
@@ -144,6 +152,20 @@ ditemTypeSelection.change(function () {
     }
 });
 
+function addCrushCarriage() {
+    console.log("POPUP");
+    $('#crushCarriageModal').modal('show');
+}
+
+function addCarriage() {
+    $('#crushCarriageModal').modal('hide');
+    console.log($("#unloadedCrush").val());
+    console.log($("#unloadingCost").val());
+
+    $("#dentryForm .unloadedCrush").val($("#unloadedCrush").val());
+    $("#dentryForm .unloadingCost").val($("#unloadingCost").val());
+
+}
 
 // attach change event listener to 'dEntryType' select box
 //entryTypeSelection.change(function () {
@@ -322,6 +344,42 @@ function logiEntry() {
                     type: "error", layout: "center", timeout: 4000
                 });
                 $("#logiEntryBtn").show();
+            }
+
+        }
+    });
+}
+
+function logCashTransaction() {
+    $('#cashTranForm').ajaxForm({
+        beforeSend: function () {
+            $("#cashTranBtn").hide();
+        },
+        uploadProgress: function (event, position, total, percentComplete) {
+        },
+        complete: function (xhr) {
+            response = xhr.responseText.split(":");
+            console.log(response);
+            respCode = response[0];
+            respMessage = response[1];
+            if (respCode === '00') {
+                noty({
+                    text: respMessage,
+                    type: "success", layout: "center", timeout: 4000
+                });
+                resetdForm();
+                $("#cashTranBtn").show();
+
+                setTimeout(function () {
+                    location.reload();
+                }, 5000);
+
+            } else {
+                noty({
+                    text: respMessage,
+                    type: "error", layout: "center", timeout: 4000
+                });
+                $("#cashTranBtn").show();
             }
 
         }
