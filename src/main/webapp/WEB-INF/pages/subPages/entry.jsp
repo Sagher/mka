@@ -155,11 +155,13 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
                                                             <span class="help-block">Quantity of the material</span>
-                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
+                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" 
+                                                                   placeholder="Quantity" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
                                                         </div>
                                                         <div class="col-md-4">
                                                             <span class="help-block" id="pup">Per Unit Price</span>
-                                                            <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate">
+                                                            <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate"
+                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}" >
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -171,7 +173,8 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <span class="help-block">Advance Received/Paid</span>
-                                                            <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" required="true">
+                                                            <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" 
+                                                                   required="true" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -274,7 +277,8 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount of Expenditure</span>
-                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost">
+                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost" 
+                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -282,7 +286,8 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Advance paid</span>
-                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost">
+                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost" 
+                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -363,7 +368,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount</span>
-                                                            <input class="form-control" name="tamount" type="number" required="true">
+                                                            <input class="form-control" name="tamount" type="number" required="true" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>

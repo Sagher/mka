@@ -238,7 +238,10 @@ public class EntriesController {
 
                 if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity()
                         && entryType.equalsIgnoreCase(Constants.SALE)) {
-                    return ("01:Not Enough stock to log this sale");
+                    return ("01:Not Enough stock to make this sale");
+                } else if (ss.getMasterAccount().getCashInHand() < entry.getAdvance()
+                        && entryType.equalsIgnoreCase(Constants.PURCHASE)) {
+                    return ("01:Not Enough cash in hand to make this purchase");
                 }
 
                 boolean entryLogged = entriesService.logDirectEntry(entry);
@@ -301,7 +304,7 @@ public class EntriesController {
                 entry.setIsActive(true);
 
                 MasterAccount ma = ss.getMasterAccount();
-                if (ma.getCashInHand() < entry.getAmount()) {
+                if (ma.getCashInHand() < entry.getAdvance()) {
                     return ("01:Not Enough Cash In Hand to Log this Expense");
                 }
 
@@ -544,7 +547,7 @@ public class EntriesController {
             if (!transactionLogged) {
                 return ("01:Failed To Log Transaction. Make sure all field are filled in.");
             } else {
-                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
+//                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
                 return "00:Transaction Logged Successfully";
             }
         } catch (Exception e) {
