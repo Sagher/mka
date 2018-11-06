@@ -38,13 +38,18 @@
                                         <div class="card">
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
-                                                <span>Entries</span>
+                                                <span>
+                                                    <b>${itemType.itemName}</b> 
+                                                    Entries
+                                                </span>
                                             </div>
                                             <div class="card-body">
                                                 <div id="filtersDiv">
+                                                    <input hidden="true" id="itemTypeId" value="${itemType.id}">
                                                     <div class="form-group row">
 
-                                                        <div class="col-sm-5">
+                                                        <div class="col-sm-3">
+                                                            <label>From</label>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">
@@ -54,7 +59,8 @@
                                                                 <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-5">
+                                                        <div class="col-sm-3">
+                                                            <label>To</label>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">
@@ -63,6 +69,52 @@
                                                                 </div>
                                                                 <input class="form-control" id="to" type="date" name="to" placeholder="Search By Entry Date">
                                                             </div>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <label>Entry Type</label>
+                                                            <select class="form-control" id="subEntryType" name="subEntryType">
+                                                                <option selected value="">ALL</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <label>Buyer/Supplier</label>
+                                                            <select class="form-control" id="buySup" name="buySup">
+                                                                <option selected value="">All</option>
+                                                            </select>
+                                                        </div><div class="col-sm-2">
+                                                            <label>Project</label>
+                                                            <select class="form-control" id="proj" name="proj">
+                                                                <option selected value="">All</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+
+                                                        <div class="col-sm-4">
+                                                            <!--                                                            <div class="input-group">
+                                                                                                                            <div class="input-group-prepend">
+                                                                                                                                <span class="input-group-text">
+                                                                                                                                    From
+                                                                                                                                </span>
+                                                                                                                            </div>
+                                                                                                                            <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
+                                                                                                                        </div>-->
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <!--                                                            <div class="input-group">
+                                                                                                                            <div class="input-group-prepend">
+                                                                                                                                <span class="input-group-text">
+                                                                                                                                    To
+                                                                                                                                </span>
+                                                                                                                            </div>
+                                                                                                                            <input class="form-control" id="to" type="date" name="to" placeholder="Search By Entry Date">
+                                                                                                                        </div>-->
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <!--                                                            <select class="form-control" id="subEntryType" name="subEntryType">
+                                                                                                                            <option selected value="">ALL TYPES</option>
+                                                                                                                        </select>-->
                                                         </div>
                                                         <div class="col-sm-2">
                                                             <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>

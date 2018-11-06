@@ -10,7 +10,7 @@
         </session-timeout>
     </session-config>
     <!-- enabled for dev to immediately reflect changes. comment out on production to render from nginx with non-encoded urls -->
-<!--    <filter>
+    <filter>
         <filter-name>resourceUrlEncodingFilter</filter-name>
         <filter-class>
             org.springframework.web.servlet.resource.ResourceUrlEncodingFilter
@@ -19,5 +19,5 @@
     <filter-mapping>
         <filter-name>resourceUrlEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>-->
+    </filter-mapping>
 </web-app>

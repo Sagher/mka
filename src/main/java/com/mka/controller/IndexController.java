@@ -52,19 +52,22 @@ public class IndexController {
             saleUnits = 0;
             totalStock = 0;
             List<StockTrace> stockTrace = ss.getStats();
-            stockTrace.parallelStream().filter((StockTrace e) -> {
-                totalSale += e.getSalesAmount();
-                totalPurchase += e.getPurchaseAmount();
-                totalStock += e.getStockAmount();
+            try {
+                stockTrace.parallelStream().filter((StockTrace e) -> {
+                    totalSale += e.getSalesAmount();
+                    totalPurchase += e.getPurchaseAmount();
+                    totalStock += e.getStockAmount();
 
-                saleUnits += e.getSalesUnit();
-                purchaseUnits += e.getPurchaseUnit();
-                stockUnits += e.getStockUnits();
+                    saleUnits += e.getSalesUnit();
+                    purchaseUnits += e.getPurchaseUnit();
+                    stockUnits += e.getStockUnits();
 
 //                log.info(e.toString());
-                return true;
-            }).collect(Collectors.toList());
+                    return true;
+                }).collect(Collectors.toList());
+            } catch (Exception e) {
 
+            }
             model.addObject("user", u);
             model.addObject("users", userService.getAllUsers());
             model.addObject("totalSaleUnits", saleUnits + " Units");

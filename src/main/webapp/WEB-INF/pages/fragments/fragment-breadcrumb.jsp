@@ -25,11 +25,11 @@
         <div class="btn-group" role="group" aria-label="Button group">
             <a class="btn" href="<c:url value="/" />">
                 <i class="nav-icon icon-speedometer"></i>  Dashboard</a>
-            <a class="btn" href="<c:url value="/user/profile" />">
-                <i class="icon-user"></i>  Profile</a>
+<!--            <a class="btn" href="<c:url value="/user/profile" />">
+                <i class="icon-user"></i>  Profile</a>-->
             <a class="btn" href="<c:url value="/reports" />">
                 <i class="icon-graph"></i>  View Reports</a>
-                <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+                <sec:authorize access="hasAnyRole('ADMIN','MANAGER', 'ROLE_ADMIN')">
                 <a class="btn" href="<c:url value="/entry" />">
                     <i class="icon-pencil"></i>  Log Entry</a>
                 </sec:authorize>

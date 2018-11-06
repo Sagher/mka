@@ -16,6 +16,7 @@ import java.util.List;
 public class Constants {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("yyyy-MM");
     public static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static final List<String> ALL_ROLES = Arrays.asList(new String[]{"ADMIN", "READONLY", "MANAGER"});

@@ -16,7 +16,7 @@
                 </a>
             </li>
             <li class="nav-title">Entry & Reporting</li>
-                <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+                <sec:authorize access="hasAnyRole('ADMIN','MANAGER', 'ROLE_ADMIN')">
                 <li class="nav-item">
                     <a class="nav-link" href="<c:url value="/entry" />">
                         <i class="nav-icon icon-pencil"></i>Log Entry
@@ -28,7 +28,7 @@
                     <i class="nav-icon icon-graph"></i>View Reports
                 </a>
             </li>
-            <sec:authorize access="hasAnyRole('ADMIN')">
+            <sec:authorize access="hasAnyRole('ADMIN', 'ROLE_ADMIN')">
                 <li class="nav-title">Users</li>
                 <li class="nav-item">
                     <a class="nav-link" href="<c:url value="/users" />">
@@ -36,7 +36,7 @@
                     </a>
                 </li>
             </sec:authorize>
-            <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+            <sec:authorize access="hasAnyRole('ADMIN','MANAGER', 'ROLE_ADMIN')">
                 <li class="nav-title">Employees</li>
                 <li class="nav-item">
                     <a class="nav-link" href="<c:url value="/employees" />">

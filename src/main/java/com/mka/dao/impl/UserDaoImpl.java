@@ -6,6 +6,7 @@ package com.mka.dao.impl;
  */
 import com.mka.dao.UserDao;
 import com.mka.model.CustomersBuyers;
+import com.mka.model.Projects;
 import com.mka.model.User;
 import java.util.Date;
 import java.util.List;
@@ -227,6 +228,61 @@ public class UserDaoImpl implements UserDao {
             log.info("CustomerAndBuyer Added: " + cusBuy);
         } catch (Exception e) {
             log.error("Exception in addCustomerAndBuyer() " + cusBuy.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
+    }
+    
+    @Override
+    public List<Projects> getProjects() {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(Projects.class);
+            criteria.add(Restrictions.eq("isActive", true));
+            List<Projects> projects = criteria.list();
+            if (projects.size() > 0) {
+                return projects;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getProjects() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean addProject(Projects proj) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(proj);
+            proj.setIsActive(true);
+            session.save(proj);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("Projects Added: " + proj);
+        } catch (Exception e) {
+            log.error("Exception in addProject() " + proj.toString(), e);
             if (tx != null) {
                 tx.rollback();
             }

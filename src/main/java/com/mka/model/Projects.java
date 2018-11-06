@@ -5,8 +5,8 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,8 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -26,16 +24,10 @@ import javax.validation.constraints.Size;
  * @author Sagher Mehmood
  */
 @Entity
-@Table(name = "master_account_history")
+@Table(name = "projects")
 @NamedQueries({
-    @NamedQuery(name = "MasterAccountHistory.findAll", query = "SELECT m FROM MasterAccountHistory m")})
-public class MasterAccountHistory implements Serializable {
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    @NamedQuery(name = "Projects.findAll", query = "SELECT p FROM Projects p")})
+public class Projects implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,27 +35,28 @@ public class MasterAccountHistory implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 50)
-    @Column(name = "type")
-    private String type;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "amount")
-    private int amount;
-    @Size(max = 255)
-    @Column(name = "description")
-    private String description;
+    @Size(min = 1, max = 255)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_active")
+    @JsonIgnore
+    private boolean isActive;
 
-    public MasterAccountHistory() {
+    public Projects() {
     }
 
-    public MasterAccountHistory(Integer id) {
+    public Projects(Integer id) {
         this.id = id;
     }
 
-    public MasterAccountHistory(Integer id, int amount) {
+    public Projects(Integer id, String name, boolean isActive) {
         this.id = id;
-        this.amount = amount;
+        this.name = name;
+        this.isActive = isActive;
     }
 
     public Integer getId() {
@@ -74,28 +67,20 @@ public class MasterAccountHistory implements Serializable {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getAmount() {
-        return amount;
+    public boolean getIsActive() {
+        return isActive;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     @Override
@@ -108,10 +93,10 @@ public class MasterAccountHistory implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof MasterAccountHistory)) {
+        if (!(object instanceof Projects)) {
             return false;
         }
-        MasterAccountHistory other = (MasterAccountHistory) object;
+        Projects other = (Projects) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -120,15 +105,7 @@ public class MasterAccountHistory implements Serializable {
 
     @Override
     public String toString() {
-        return "MasterAccountHistory{" + "id=" + id + ", type=" + type + ", amount=" + amount + ", description=" + description + '}';
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+        return "com.mka.model.Projects[ id=" + id + " ]";
     }
 
 }

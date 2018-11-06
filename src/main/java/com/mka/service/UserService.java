@@ -5,6 +5,7 @@ package com.mka.service;
  * @author Sagher Mehmood
  */
 import com.mka.model.CustomersBuyers;
+import com.mka.model.Projects;
 import com.mka.model.User;
 import java.util.List;
 
@@ -27,4 +28,8 @@ public interface UserService {
     public List<CustomersBuyers> getCustomersAndBuyers();
 
     public boolean addCustomerAndBuyer(String cusBuy);
+
+    public List<Projects> getProjects();
+
+    public boolean addProject(String proj);
 }

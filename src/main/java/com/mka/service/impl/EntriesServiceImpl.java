@@ -6,6 +6,7 @@ package com.mka.service.impl;
  */
 import com.mka.dao.EntriesDao;
 import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
@@ -25,9 +26,8 @@ public class EntriesServiceImpl implements EntriesService {
 
     private static final Logger log = Logger.getLogger(EntriesServiceImpl.class);
 
-    @Autowired
-    AsyncUtil asyncUtil;
-
+//    @Autowired
+//    AsyncUtil asyncUtil;
     @Autowired
     EntriesDao entriesDao;
 
@@ -47,7 +47,7 @@ public class EntriesServiceImpl implements EntriesService {
     public EntryItems getEntryItemById(int id) {
         EntryItems item = null;
         try {
-            item = entryItems.parallelStream().filter(e -> e.getId() == id).collect(Collectors.toList()).get(0);
+            item = getAllEntryItems().parallelStream().filter(e -> e.getId() == id).collect(Collectors.toList()).get(0);
         } catch (Exception e) {
             log.error("Exception in getEntryItemById(" + id + "): ", e);
         }
@@ -60,13 +60,15 @@ public class EntriesServiceImpl implements EntriesService {
     }
 
     @Override
-    public List<EntriesDirect> getDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
-        return entriesDao.getDirectEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate);
+    public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project) {
+        return entriesDao.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier, project);
     }
 
     @Override
-    public int getDirectEntriesCount(String startDate, String endDate) {
-        return entriesDao.getDirectEntriesCount(startDate, endDate);
+    public int getDirectEntriesCount(EntryItems entryItem, String subEntryType, String startDate, String endDate,
+            String buyerSupplier, String project) {
+        return entriesDao.getDirectEntriesCount(entryItem, subEntryType, startDate, endDate, buyerSupplier, project);
     }
 
     @Override
@@ -137,4 +139,7 @@ public class EntriesServiceImpl implements EntriesService {
         }
     }
 
+    public void addEntryDetail(EntriesDirectDetails entryDetail) {
+        entriesDao.addEntryDetail(entryDetail);
+    }
 }

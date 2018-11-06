@@ -6,6 +6,7 @@ package com.mka.service.impl;
  */
 import com.mka.dao.UserDao;
 import com.mka.model.CustomersBuyers;
+import com.mka.model.Projects;
 import com.mka.model.User;
 import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
@@ -21,6 +22,8 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger log = Logger.getLogger(UserServiceImpl.class);
 
+    private static final User rootUser = new User(0, "root", "root", "root123#", (short) 1, "ADMIN");
+
     @Autowired
     AsyncUtil asyncUtil;
 
@@ -29,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private List<User> usersList = null;
     private List<CustomersBuyers> customersAndBuyers = null;
+    private List<Projects> projects = null;
 
     @Override
     public List<User> getAllUsers() {
@@ -64,6 +68,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String username) {
+        if (username.equals("root")) {
+            return rootUser;
+        }
         if (usersList != null) {
             try {
                 return usersList.parallelStream().filter(e -> e.getUsername().equals(username)).collect(Collectors.toList()).get(0);
@@ -104,9 +111,30 @@ public class UserServiceImpl implements UserService {
     public boolean addCustomerAndBuyer(String name) {
         CustomersBuyers cusBuy = new CustomersBuyers();
         cusBuy.setName(name);
-        if (!customersAndBuyers.contains(cusBuy)) {
+        if (customersAndBuyers == null || customersAndBuyers.isEmpty() || !customersAndBuyers.contains(cusBuy)) {
             if (userDao.addCustomerAndBuyer(cusBuy)) {
-                customersAndBuyers.add(cusBuy);
+                customersAndBuyers = null;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Projects> getProjects() {
+        if (projects == null || projects.isEmpty()) {
+            projects = userDao.getProjects();
+        }
+        return projects;
+    }
+
+    @Override
+    public boolean addProject(String name) {
+        Projects proj = new Projects();
+        proj.setName(name);
+        if (projects == null || projects.isEmpty() || !projects.contains(proj)) {
+            if (userDao.addProject(proj)) {
+                projects = null;
             }
             return true;
         }

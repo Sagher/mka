@@ -6,6 +6,7 @@
 package com.mka.controller;
 
 import static com.mka.controller.UserController.log;
+import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
@@ -13,6 +14,7 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -63,8 +65,8 @@ public class ReportsController {
             User u = userService.getUser(auth.getName());
             if (u != null) {
                 model.addObject("user", u);
-                model.addObject("allRoles", Constants.ALL_ROLES);
-                model.addObject("users", userService.getAllUsers());
+                List<StockTrace> stockTrace = ss.getStats();
+                model.addObject("stockTrace", stockTrace);
                 model.setViewName("subPages/reports");
             } else {
                 model.addObject("errorCode", "401");

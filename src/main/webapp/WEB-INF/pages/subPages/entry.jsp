@@ -11,13 +11,16 @@
         <c:import url="../fragments/global-css.jsp" />
 
         <style>
-            select, input{
+            select, input, textarea{
                 background-color: #f3f3f3 !important;
             }
             .form-control, .btn {
                 -webkit-border-radius: 50px;
                 -moz-border-radius: 50px;
                 border-radius: 50px;
+            }
+            .help-block{
+                margin-left: 5px;
             }
         </style>
     </head>
@@ -93,6 +96,7 @@
                                                         <label class="col-md-2"></label>
                                                         <input style="display: none" name="unloadedCrush" class="unloadedCrush">
                                                         <input style="display: none" name="unloadingCost" class="unloadingCost">
+                                                        <input style="display: none" name="unloadingParty" class="unloadingParty">
                                                     </div>
 
                                                     <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
@@ -116,6 +120,7 @@
                                                     <div class="form-group row" id="supBuyDiv" hidden="true">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8" id="buysupDiv">
+                                                            <span class="help-block">Buyer/Supplier</span>
                                                             <select class="form-control buysup" id="dbuysupSelect" name="dbuysup" required="true">
                                                                 <option selected value="">-- Please select A Buyer/Supplier --</option>
                                                             </select>
@@ -127,38 +132,46 @@
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
-                                                        <div class="col-md-4">
-                                                            <input class="form-control" id="dproject" type="text" name="dproject" placeholder="Name of Project">
+                                                        <div class="col-md-8">
                                                             <span class="help-block">Project</span>
+                                                            <select class="form-control dproj" id="projSelect" name="dproj" required="true">
+                                                                <option selected value="">-- Please select A Project --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control proj" id="dproject" type="text" 
+                                                                   name="dproject" placeholder="Custom Project">
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <input class="form-control" id="ddescription" type="text" name="ddescription" 
-                                                                   placeholder="Description If Any">
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <span class="help-block">Description</span>
+                                                            <textarea class="form-control" id="ddescription" type="text" name="ddescription" 
+                                                                      placeholder="Description If Any"></textarea>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
                                                             <span class="help-block">Quantity of the material</span>
+                                                            <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" placeholder="Quantity">
                                                         </div>
                                                         <div class="col-md-4">
+                                                            <span class="help-block" id="pup">Per Unit Price</span>
                                                             <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate">
-                                                            <span class="help-block">Per Unit Price</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
                                                             <span class="help-block">Total Price</span>
+                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
                                                         </div>
                                                         <div class="col-md-4">
-                                                            <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" required="true">
                                                             <span class="help-block">Advance Received/Paid</span>
+                                                            <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" required="true">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -203,6 +216,23 @@
                                             <div class="tab-pane fade" id="indirecttab" role="tabpanel" aria-labelledby="indirect-tab">
                                                 <form id="ientryForm" class="form-horizontal" action="<c:url value="/logInDirectEntry"/>"
                                                       method="post" enctype="multipart/form-data">
+                                                    <div  class="animated fadeIn form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="brand-card item-summary">
+                                                                <div class="brand-card-header text-white bg-primary">
+                                                                    <div class="card-body">
+                                                                        <div class="item-name">
+                                                                            <strong>Cash In Hand</strong>
+                                                                            <br>
+                                                                            ${masterAccount.cashInHand} PKR
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8" id="iItemTypeDiv">
@@ -227,32 +257,32 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" id="iname" type="text" required="true" name="iname" placeholder="ABC Corporation">
                                                             <span class="help-block">Name</span>
+                                                            <input class="form-control" id="iname" type="text" required="true" name="iname" placeholder="ABC Corporation">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" id="idesc" type="text" name="idesc">
                                                             <span class="help-block">Description</span>
+                                                            <input class="form-control" id="idesc" type="text" name="idesc">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost">
                                                             <span class="help-block">Amount of Expenditure</span>
+                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row" id="rateDiv">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost">
                                                             <span class="help-block">Advance paid</span>
+                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -314,6 +344,7 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
+                                                            <span class="help-block">Transaction Type</span>
                                                             <select class="form-control" id="ttype" name="ttype">
                                                                 <option value="+">
                                                                     To Headquarter Account
@@ -325,35 +356,48 @@
                                                                     Cash In Hand
                                                                 </option>
                                                             </select>
-                                                            <span class="help-block">Transaction Type</span>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" name="tamount" type="number" required="true">
                                                             <span class="help-block">Amount</span>
+                                                            <input class="form-control" name="tamount" type="number" required="true">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-md-2"></label>
-                                                        <div class="col-md-4">
-                                                            <input class="form-control" name="tpayer" type="text"  required="true">
-                                                            <span class="help-block">Payer</span>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <input class="form-control" name="tproject" type="text">
-                                                            <span class="help-block">Project</span>
-                                                        </div>
-                                                        <label class="col-md-2"></label>
-                                                    </div>
+
+                                                    <!--                                                    <div class="form-group row">
+                                                                                                            <label class="col-md-2"></label>
+                                                                                                            <div class="col-md-8">
+                                                                                                                <span class="help-block">Buyer/Supplier</span>
+                                                                                                                <select class="form-control" id="tbuysupSelect" name="tpayer" required="true">
+                                                                                                                    <option selected value="">-- Please select A Payer/Receiver --</option>
+                                                                                                                </select>
+                                                                                                                <br>
+                                                                                                                <input hidden="true" class="form-control" id="tbuysupInput" type="text" 
+                                                                                                                       name="tbuysupInput" placeholder="Custom Buyer/Supplier">
+                                                                                                            </div>
+                                                                                                            <label class="col-md-2"></label>
+                                                                                                        </div>
+                                                                                                        <div class="form-group row">
+                                                                                                            <label class="col-md-2"></label>
+                                                                                                            <div class="col-md-8">
+                                                                                                                <span class="help-block">Project</span>
+                                                                                                                <select class="form-control tproj" id="tprojSelect" name="tproj" required="true">
+                                                                                                                    <option selected value="">-- Please select A Project --</option>
+                                                                                                                </select>
+                                                                                                                <br>
+                                                                                                                <input hidden="true" class="form-control proj" id="tproject" type="text" 
+                                                                                                                       name="tproject" placeholder="Custom Project">
+                                                                                                            </div>
+                                                                                                        </div>-->
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" type="text" name="tdesc">
                                                             <span class="help-block">Description</span>
+                                                            <input class="form-control" type="text" name="tdesc">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -399,7 +443,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="username">Total Unloaded</label>
+                                            <label for="unloadedCrush">Total Unloaded</label>
                                             <input class="form-control" id="unloadedCrush" name="unloadedCrush" required="true" type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
                                         </div>
                                     </div>
@@ -407,8 +451,16 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="password">Unloading/Carriage Cost</label>
+                                            <label for="unloadingCost">Unloading/Carriage Cost</label>
                                             <input class="form-control" id="unloadingCost" name="unloadingCost" required="true" type="number" placeholder="Unloading/Carriage Cost">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label for="unloadingParty">Carriage Provided By</label>
+                                            <input class="form-control" id="unloadingParty" name="unloadingParty" required="true" type="text" placeholder="Carriage Provided By">
                                         </div>
                                     </div>
                                 </div>
@@ -421,7 +473,6 @@
 
                         </div>
                     </div>
-                </div> 
             </main>
 
             <!-- right side bar -->

@@ -59,36 +59,38 @@ public class EmployeesServiceImpl implements EmployeesService {
         List<Employees> employees = employeesDao.getEmployees(0, employeesDao.getEmployeesCount(""), "", "", "");
         Map<Employees, EmployeessPayments> paymentRecord = new HashMap<>();
         int totalAmount = 0;
-        for (Employees emp : employees) {
-            if (!emp.getCurrentMonthPayed() && !emp.getIsTerminated()) {
-                totalAmount += emp.getSalary();
-                EmployeessPayments empPayment = new EmployeessPayments();
-                empPayment.setAmountPayed(emp.getSalary());
-                empPayment.setEmployees(emp);
-                empPayment.setPaymentDate(new Date());
-                paymentRecord.put(emp, empPayment);
-            } else {
-                log.warn("Employees Current Month Salary is already paid: " + emp.toString());
-            }
-        }
-        if (!paymentRecord.isEmpty()) {
-            boolean salariesPayed = employeesDao.payAllEmployees(paymentRecord);
-            if (salariesPayed) {
-                // indirect salaries expense
-                EntriesIndirect entry = new EntriesIndirect();
-                entry.setItem(entriesService.createNewEntryItem("Salaries"));
-                entry.setName("Employyes Salaries");
-                entry.setDescription("Employees Salaries Payed From Portal");
-                entry.setAmount(totalAmount);
-                entry.setAdvance(0);
-                entry.setEntryDate(new Date());
-                entry.setIsActive(true);
-
-                boolean entryLogged = entriesService.logInDirectEntry(entry);
-                if (!entryLogged) {
-                    log.warn("Failed to Log Salaries Indirect Entry");
+        if (employees != null && !employees.isEmpty()) {
+            for (Employees emp : employees) {
+                if (!emp.getCurrentMonthPayed() && !emp.getIsTerminated()) {
+                    totalAmount += emp.getSalary();
+                    EmployeessPayments empPayment = new EmployeessPayments();
+                    empPayment.setAmountPayed(emp.getSalary());
+                    empPayment.setEmployees(emp);
+                    empPayment.setPaymentDate(new Date());
+                    paymentRecord.put(emp, empPayment);
+                } else {
+                    log.warn("Employees Current Month Salary is already paid: " + emp.toString());
                 }
-                return salariesPayed;
+            }
+            if (!paymentRecord.isEmpty()) {
+                boolean salariesPayed = employeesDao.payAllEmployees(paymentRecord);
+                if (salariesPayed) {
+                    // indirect salaries expense
+                    EntriesIndirect entry = new EntriesIndirect();
+                    entry.setItem(entriesService.createNewEntryItem("Salaries"));
+                    entry.setName("Employyes Salaries");
+                    entry.setDescription("Employees Salaries Payed From Portal");
+                    entry.setAmount(totalAmount);
+                    entry.setAdvance(0);
+                    entry.setEntryDate(new Date());
+                    entry.setIsActive(true);
+
+                    boolean entryLogged = entriesService.logInDirectEntry(entry);
+                    if (!entryLogged) {
+                        log.warn("Failed to Log Salaries Indirect Entry");
+                    }
+                    return salariesPayed;
+                }
             }
         }
 

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,6 +36,14 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "sub_entry_type")
+    private String subEntryType;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entryId")
+    private EntriesDirectDetails entriesDirectDetails;
 
     @Lob
     @Size(max = 65535)
@@ -51,14 +61,6 @@ public class EntriesDirect implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 20)
-    @Column(name = "item_type")
-    private String itemType;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "sub_entry_type")
-    private String subEntryType;
     @Basic(optional = false)
     @Column(name = "buyer")
     private String buyer;
@@ -110,9 +112,8 @@ public class EntriesDirect implements Serializable {
         this.id = id;
     }
 
-    public EntriesDirect(Integer id, String subEntryType, String buyer, String supplier, String project, int quantity, int rate, int totalPrice, boolean isActive, Date createdDate) {
+    public EntriesDirect(Integer id, String buyer, String supplier, String project, int quantity, int rate, int totalPrice, boolean isActive, Date createdDate) {
         this.id = id;
-        this.subEntryType = subEntryType;
         this.buyer = buyer;
         this.supplier = supplier;
         this.project = project;
@@ -129,22 +130,6 @@ public class EntriesDirect implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
-    }
-
-    public String getSubEntryType() {
-        return subEntryType;
-    }
-
-    public void setSubEntryType(String subEntryType) {
-        this.subEntryType = subEntryType;
     }
 
     public String getBuyer() {
@@ -186,7 +171,6 @@ public class EntriesDirect implements Serializable {
     public void setRate(int rate) {
         this.rate = rate;
     }
-
 
     public int getTotalPrice() {
         return totalPrice;
@@ -258,7 +242,7 @@ public class EntriesDirect implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id + ", itemType=" + itemType + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
+        return "id=" + id + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
     public int getAdvance() {
@@ -275,6 +259,22 @@ public class EntriesDirect implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getSubEntryType() {
+        return subEntryType;
+    }
+
+    public void setSubEntryType(String subEntryType) {
+        this.subEntryType = subEntryType;
+    }
+
+    public EntriesDirectDetails getEntriesDirectDetails() {
+        return entriesDirectDetails;
+    }
+
+    public void setEntriesDirectDetails(EntriesDirectDetails entriesDirectDetails) {
+        this.entriesDirectDetails = entriesDirectDetails;
     }
 
 }

@@ -6,9 +6,11 @@
 package com.mka.utils;
 
 import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesDirectDetails;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.UserActivity;
+import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
@@ -37,6 +39,9 @@ public class AsyncUtil {
     @Autowired
     StatsService ss;
 
+    @Autowired
+    EntriesService entriesService;
+
     @Async
     public void logActivity(HttpServletRequest request, String userName, String remoteAddr, String ua, String actionType, String actionDescription) {
         User user = userService.getUser(userName);
@@ -63,7 +68,8 @@ public class AsyncUtil {
     @Async
     public void updateStockTrace(EntriesDirect entry) {
         try {
-            StockTrace st = ss.getStockTrace(entry.getItem().getId());
+            StockTrace st = ss.getStockTrace(entry.getItem().getId(),
+                    entry.getEntriesDirectDetails() != null ? entry.getEntriesDirectDetails().getSubType() : null);
             if (entry.getSubEntryType().equals(Constants.SALE)) {
                 st.setSalesUnit(st.getSalesUnit() + entry.getQuantity());
                 st.setStockUnits(st.getStockUnits() - entry.getQuantity());
@@ -90,6 +96,16 @@ public class AsyncUtil {
     @Async
     public void addToCustomersAndBuyersList(String customerBuyerSupplier) {
         userService.addCustomerAndBuyer(customerBuyerSupplier);
+    }
+
+    @Async
+    public void addToProjectsList(String projName) {
+        userService.addProject(projName);
+    }
+
+    @Async
+    public void addEntryDetail(EntriesDirectDetails entryDetail) {
+        entriesService.addEntryDetail(entryDetail);
     }
 
 }

@@ -5,6 +5,7 @@ package com.mka.dao;
  * @author Sagher Mehmood
  */
 import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import java.util.List;
@@ -15,9 +16,11 @@ public interface EntriesDao {
 
     public boolean logDirectEntry(EntriesDirect entry);
 
-    public List<EntriesDirect> getDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate);
+    public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project);
 
-    public int getDirectEntriesCount(String startDate, String endDate);
+    public int getDirectEntriesCount(EntryItems entryItem, String subEntryType, String startDate, String endDate,
+            String buyerSupplier, String project);
 
     public EntriesDirect getDirectEntry(int id);
 
@@ -34,4 +37,6 @@ public interface EntriesDao {
     public boolean updateInDirectEntry(EntriesIndirect entry);
 
     public EntryItems createNewEntryItem(EntryItems item);
+
+    public void addEntryDetail(EntriesDirectDetails entryDetail);
 }

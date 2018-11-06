@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,6 +31,16 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "StockTrace.findAll", query = "SELECT s FROM StockTrace s")})
 public class StockTrace implements Serializable {
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "average_unit_price")
+    private BigDecimal averageUnitPrice;
+
+    @Size(max = 50)
+    @Column(name = "sub_type")
+    private String subType;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -68,10 +79,6 @@ public class StockTrace implements Serializable {
     private int stockAmount;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "average_unit_price")
-    private int averageUnitPrice;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 15)
     @Column(name = "div_bg_theme_class")
     private String divBgThemeClass;
@@ -79,6 +86,10 @@ public class StockTrace implements Serializable {
     @ManyToOne(optional = false)
     @JsonIgnore
     private EntryItems type;
+
+    public int getItemId() {
+        return type.getId();
+    }
 
     public String getItemName() {
         return type.getItemName();
@@ -159,13 +170,6 @@ public class StockTrace implements Serializable {
         this.stockAmount = stockAmount;
     }
 
-    public int getAverageUnitPrice() {
-        return averageUnitPrice;
-    }
-
-    public void setAverageUnitPrice(int averageUnitPrice) {
-        this.averageUnitPrice = averageUnitPrice;
-    }
 
     public String getDivBgThemeClass() {
         return divBgThemeClass;
@@ -206,6 +210,22 @@ public class StockTrace implements Serializable {
     @Override
     public String toString() {
         return "id=" + id + ", month=" + month + ", salesUnit=" + salesUnit + ", salesAmount=" + salesAmount + ", purchaseUnit=" + purchaseUnit + ", purchaseAmount=" + purchaseAmount + ", stockUnits=" + stockUnits + ", stockAmount=" + stockAmount + ", averageUnitPrice=" + averageUnitPrice + ", divBgThemeClass=" + divBgThemeClass + ", type=" + type;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
+    }
+
+    public BigDecimal getAverageUnitPrice() {
+        return averageUnitPrice;
+    }
+
+    public void setAverageUnitPrice(BigDecimal averageUnitPrice) {
+        this.averageUnitPrice = averageUnitPrice;
     }
 
 }

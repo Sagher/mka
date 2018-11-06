@@ -5,15 +5,17 @@
  */
 var table;
 var clickedRow = [];
+var itemTypeId;
 //-------------------------------
 $(document).ready(function () {
+    itemTypeId = $("#itemTypeId").val() !== '' ? $("#itemTypeId").val() : 0;
     table = $("#viewDatatable").DataTable({
         "dom": 'T<"clear">Blfrtip',
         "oLanguage": {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
         "ajax": {
-            "url": "entries/data"
+            "url": "entries/data?itemTypeId=" + itemTypeId
         },
         "columns": [
             /*
@@ -36,9 +38,9 @@ $(document).ready(function () {
             },
             {"data": "entryDate"},
             {"data": "itemName", "render": function (data, type, full, meta) {
-                    if (full.itemType != null) {
+                    if (full.entriesDirectDetails != null) {
 //                        console.log(data + " (" + full.itemType + ")")
-                        return data + " (" + full.itemType + ")";
+                        return data + " (" + full.entriesDirectDetails.subType + ")";
                     }
                     return data;
                 }
@@ -71,7 +73,7 @@ $(document).ready(function () {
         "responsive": true,
         "pagingType": "full_numbers",
         "oLanguage": {
-            "sEmptyTable": "No Entries Found Against the selected Dates"
+            "sEmptyTable": "No Entries Found"
         }
 
     });
@@ -86,16 +88,67 @@ $(document).ready(function () {
         });
 //        console.log(clickedRow)
     });
+
+    if (itemTypeId > 0) {
+        console.log(itemTypeId);
+        $.ajax({
+            url: "getEntryItem?id=" + itemTypeId,
+            dataType: "json",
+            success: function (data) {
+                var itemType = data.subEntryType.split(";");
+                for (var j in itemType) {
+                    $("#subEntryType").append($("<option />").val(itemType[j]).text(itemType[j]));
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(textStatus);
+            }
+        });
+    }
+
+    $.ajax({
+        url: "customersAndBuyers",
+        dataType: "json",
+        success: function (data) {
+            for (var i in data) {
+                $("#buySup").append($("<option />").val(data[i].name).text(data[i].name));
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus);
+        }
+    });
+    $.ajax({
+        url: "projects",
+        dataType: "json",
+        success: function (data) {
+            for (var i in data) {
+                $("#proj").append($("<option />").val(data[i].name).text(data[i].name));
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus);
+        }
+    });
 });
 
 function advanceSearch() {
     var fromDate = $('#from').val();
     var toDate = $('#to').val();
+    var dEntryType = $("#subEntryType").val();
+    var buySup = $("#buySup").val();
+    var proj = $("#proj").val();
+
 
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
+    console.log("dEntryType:" + dEntryType);
+    console.log("buySup:" + buySup);
+    console.log("proj:" + toDate);
 
-    table.ajax.url("entries/data?fromDate=" + fromDate + "&toDate=" + toDate);
+
+    table.ajax.url("entries/data?itemTypeId=" + itemTypeId + "&fromDate=" + fromDate + "&toDate=" + toDate
+            + "&subEntryType=" + dEntryType + "&buyerSupplier=" + buySup + "&project=" + proj);
     table.ajax.reload();
 }
 

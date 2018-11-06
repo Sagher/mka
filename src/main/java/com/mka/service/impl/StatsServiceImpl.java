@@ -10,9 +10,14 @@ import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import com.mka.service.StatsService;
+import com.mka.utils.Constants;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +48,14 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public StockTrace getStockTrace(int typeId) {
+    public StockTrace getStockTrace(int typeId, String subType) {
         try {
 
+            if (subType != null && !subType.isEmpty() && !subType.equals("null")) {
+                return statItems.parallelStream().filter(e -> e.getType().getId() == typeId && e.getSubType().equalsIgnoreCase(subType))
+                        .collect(Collectors.toList()).get(0);
+
+            }
             return statItems.parallelStream().filter(e -> e.getType().getId() == typeId).collect(Collectors.toList()).get(0);
         } catch (Exception e) {
 
@@ -59,7 +69,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public int getAveragePricePerUnit(int itemId) {
+    public BigDecimal getAveragePricePerUnit(int itemId) {
         return statsDao.getAveragePricePerUnit(itemId);
     }
 
@@ -99,6 +109,27 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public boolean updateMasterAccount(MasterAccount ma) {
         return statsDao.updateMasterAccount(ma);
+    }
+
+    @Override
+    public boolean insertStockTraceForNewMonth() {
+        statItems = getStats();
+        if (statItems != null && !statItems.isEmpty()) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, 1);
+            calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+            Date nextMonthFirstDay = calendar.getTime();
+            for (StockTrace s : statItems) {
+                StockTrace ss = new StockTrace();
+                BeanUtils.copyProperties(s, ss);
+                ss.setId(null);
+                ss.setMonth(Constants.MONTH_FORMAT.format(nextMonthFirstDay));
+
+                statsDao.insertStockTraceForNewMonth(ss);
+            }
+            return true;
+        }
+        return false;
     }
 
 }

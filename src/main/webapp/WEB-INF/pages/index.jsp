@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <jsp:directive.page session="true" />
 <html>
     <head>
@@ -50,9 +51,11 @@
                                 <div class="card text-white bg-primary">
                                     <div class="card-body pb-0">
                                         <div class="btn-group float-right">
-                                            <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                More
-                                            </button>
+                                            <a href="<c:url value="/reports" />">
+                                                <button class="btn btn-transparent dropdown-toggle p-0" type="button">
+                                                    More
+                                                </button>
+                                            </a>
                                         </div>
                                         <div class="text-value">${totalSaleUnits}</div>
                                         <div>Total Sales</div>
@@ -60,9 +63,6 @@
                                         <div>Total Price</div>
                                         <div class="info-box-bottom-div"></div>
                                     </div>
-                                    <!--                                    <div class="chart-wrapper mt-3 mx-3" style="height:35px;">
-                                                                            <canvas class="chart" id="card-chart1" height="35"></canvas>
-                                                                        </div>-->
                                 </div>
                             </div>
                             <!-- /.col-->
@@ -70,9 +70,11 @@
                                 <div class="card text-white bg-info">
                                     <div class="card-body pb-0">
                                         <div class="btn-group float-right">
-                                            <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                More
-                                            </button>
+                                            <a href="<c:url value="/reports" />">
+                                                <button class="btn btn-transparent dropdown-toggle p-0" type="button">
+                                                    More
+                                                </button>
+                                            </a>
                                         </div>
                                         <div class="text-value">${totalPurchaseUnits}</div>
                                         <div>Total Purchases</div>
@@ -80,9 +82,6 @@
                                         <div>Total Price</div>
                                         <div class="info-box-bottom-div"></div>
                                     </div>
-                                    <!--                                    <div class="chart-wrapper mt-3 mx-3" style="height:10px;">
-                                                                            <canvas class="chart" id="card-chart2" height="10"></canvas>
-                                                                        </div>-->
                                 </div>
                             </div>
                             <!-- /.col-->
@@ -90,9 +89,11 @@
                                 <div class="card text-white bg-warning">
                                     <div class="card-body pb-0">
                                         <div class="btn-group float-right">
-                                            <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                More
-                                            </button>
+                                            <a href="<c:url value="/reports" />">
+                                                <button class="btn btn-transparent dropdown-toggle p-0" type="button">
+                                                    More
+                                                </button>
+                                            </a>
                                         </div>
                                         <div class="text-value">${totalStockUnits}</div>
                                         <div>Total Stock</div>
@@ -106,13 +107,6 @@
                             <div class="col-sm-6 col-lg-3">
                                 <div class="card text-white bg-danger">
                                     <div class="card-body pb-0">
-<!--                                        <div class="btn-group float-right">
-                                            <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                More
-                                            </button>
-                                        </div>-->
-<!--                                        <div class="text-value">${totalUsers}</div>
-                                        <div>Total Users</div>-->
                                         <div class="text-value">${masterAccount.cashInHand} PKR</div>
                                         <div>Cash In Hand</div>
                                         <div class="text-value">${masterAccount.totalCash} PKR</div>
@@ -120,8 +114,6 @@
                                         <div class="info-box-bottom-div"></div>
 
                                     </div>
-<!--                                    <div class="chart-wrapper mt-3 mx-3" style="height:35px;">-->
-                                    <!--</div>-->
                                 </div>
                             </div>
                             <!-- /.col-->
@@ -163,11 +155,13 @@
                                         <div class="brand-card-header text-white ${item.divBgThemeClass}">
                                             <div class="card-body">
                                                 <div class="btn-group float-right">
-                                                    <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                        More
-                                                    </button>
+                                                    <a href="<c:url value="/entries?type=direct&eitem=${item.itemId}" />">
+                                                        <button class="btn btn-transparent dropdown-toggle p-0" type="button">
+                                                            More
+                                                        </button>
+                                                    </a>
                                                 </div>
-                                                <div class="item-name">${item.itemName}</div>
+                                                <div class="item-name">${item.itemName} <small>${item.subType}</small></div>
                                                 <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
                                                 <div>Total Sales Amount: ${item.salesAmount} PKR</div>
                                             </div>
@@ -199,7 +193,7 @@
                                                         <div class="callout callout-info">
                                                             <small class="text-muted">Sales</small>
                                                             <br>
-                                                            <strong class="h4">9,123</strong>
+                                                            <strong class="h4">${totalSale}</strong>
                                                             <div class="chart-wrapper">
                                                                 <canvas id="sparkline-chart-1" width="100" height="30"></canvas>
                                                             </div>
@@ -210,7 +204,7 @@
                                                         <div class="callout callout-danger">
                                                             <small class="text-muted">Purchases</small>
                                                             <br>
-                                                            <strong class="h4">22,643</strong>
+                                                            <strong class="h4">${totalPurchase}</strong>
                                                             <div class="chart-wrapper">
                                                                 <canvas id="sparkline-chart-2" width="100" height="30"></canvas>
                                                             </div>
@@ -226,10 +220,10 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 34%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -239,10 +233,10 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 56%" aria-valuenow="56" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 94%" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -252,10 +246,10 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -265,23 +259,22 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </div>                                                </div>
                                                 <div class="progress-group mb-4">
                                                     <div class="progress-group-prepend">
                                                         <span class="progress-group-text">Friday</span>
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -291,10 +284,10 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -304,10 +297,10 @@
                                                     </div>
                                                     <div class="progress-group-bars">
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-info" role="progressbar" style="width: 12%" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-info" role="progressbar" style="width: ${totalPurchases}%" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                         <div class="progress progress-xs">
-                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 67%" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
                                                 </div>

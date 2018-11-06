@@ -7,9 +7,12 @@ package com.mka.controller;
 
 import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
+import com.mka.model.Projects;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
@@ -20,6 +23,7 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -97,7 +101,8 @@ public class EntriesController {
     @RequestMapping(value = "/entries", method = RequestMethod.GET)
     public ModelAndView entries(
             HttpServletRequest request, HttpSession session,
-            @RequestParam(value = "type", required = false, defaultValue = Constants.DIRECT) String type) {
+            @RequestParam(value = "type", required = false, defaultValue = Constants.DIRECT) String type,
+            @RequestParam(value = "eitem", required = false, defaultValue = "0") int itemId) {
 
         ModelAndView model = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -109,6 +114,10 @@ public class EntriesController {
                 model.addObject("allRoles", Constants.ALL_ROLES);
                 model.addObject("users", userService.getAllUsers());
                 if (type.equalsIgnoreCase(Constants.DIRECT)) {
+                    StockTrace st = ss.getStockTrace(itemId, null);
+                    if (itemId != 0 && st != null) {
+                        model.addObject("itemType", st.getType());
+                    }
                     model.setViewName("subPages/directEntries");
                 } else {
                     model.setViewName("subPages/indirectEntries");
@@ -133,11 +142,19 @@ public class EntriesController {
         return entriesService.getAllEntryItems();
     }
 
+    @RequestMapping(value = "/getEntryItem")
+    public @ResponseBody
+    EntryItems getEntryItem(int id) {
+        return entriesService.getEntryItemById(id);
+    }
+
     @RequestMapping(value = "/logDirectEntry", method = RequestMethod.POST)
     public @ResponseBody
     String logDirectEntry(HttpServletRequest request, HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
+            EntriesDirectDetails entryDetail = null;
+
             String dItemType = request.getParameter("dItemType");
             String subItemType = request.getParameter("dItemSubType");
             String entryType = request.getParameter("dEntryType");
@@ -146,7 +163,12 @@ public class EntriesController {
                 customerBuyerSupplier = request.getParameter("dbuysupInput");
                 asyncUtil.addToCustomersAndBuyersList(customerBuyerSupplier);
             }
-            String project = request.getParameter("dproject");
+            String dProj = request.getParameter("dproj");
+            if (dProj.equalsIgnoreCase("other")) {
+                dProj = request.getParameter("dproject");
+                asyncUtil.addToProjectsList(dProj);
+            }
+
             String description = request.getParameter("ddescription") != null
                     ? request.getParameter("ddescription") : null;
             String quantity = request.getParameter("dquantity");
@@ -155,15 +177,10 @@ public class EntriesController {
             String dadvance = request.getParameter("dadvance");
             String dateOfEntry = request.getParameter("doe");
 
-            // OPTIONAL unloadedCrush & unloadingCost in case of crush
-            String unloadedCrush = request.getParameter("unloadedCrush");
-            String unloadingCost = request.getParameter("unloadingCost");
-
             EntryItems item = entriesService.getEntryItemById(Integer.parseInt(dItemType));
             if (item != null) {
                 EntriesDirect entry = new EntriesDirect();
                 entry.setItem(item);
-                entry.setItemType(subItemType);
                 entry.setSubEntryType(entryType);
                 if (entryType.equalsIgnoreCase(Constants.SALE)) {
                     entry.setBuyer(customerBuyerSupplier);
@@ -172,14 +189,57 @@ public class EntriesController {
                     entry.setSupplier(customerBuyerSupplier);
                     entry.setBuyer(null);
                 }
-                entry.setProject(project);
+                entry.setProject(dProj);
                 entry.setDescription(description);
-                entry.setQuantity(Integer.parseInt(quantity));
-                entry.setRate(Integer.parseInt(rate));
+
+                // OPTIONAL unloadedCrush & unloadingCost in case of crush
+                String totalUnloadedCrush = request.getParameter("unloadedCrush");
+                String carriageCost = request.getParameter("unloadingCost");
+                String unloadingParty = request.getParameter("unloadingParty");
+
+                if (item.getItemName().equalsIgnoreCase("CRUSH")) {
+
+                    if (!totalUnloadedCrush.isEmpty() || totalUnloadedCrush.equals("0")
+                            || !carriageCost.isEmpty() || carriageCost.equals("0")
+                            || !unloadingParty.isEmpty() || unloadingParty.equals("0")) {
+                        int cCost = Integer.parseInt(carriageCost);
+                        int tCost = Integer.parseInt(amount);
+                        int totalUnloaded = Integer.parseInt(totalUnloadedCrush);
+
+                        int newRate = (cCost + tCost) / totalUnloaded;
+                        int newQuantity = totalUnloaded;
+                        entryDetail = new EntriesDirectDetails();
+                        entryDetail.setSubType(subItemType);
+                        entryDetail.setTotalUnloaded(totalUnloaded);
+                        entryDetail.setUnloadingCost(cCost);
+                        entryDetail.setUnloadingParty(unloadingParty);
+
+                        entry.setQuantity(newQuantity);
+                        entry.setRate(newRate);
+                    } else {
+                        entryDetail = new EntriesDirectDetails();
+                        entryDetail.setSubType(subItemType);
+                        entryDetail.setTotalUnloaded(Integer.parseInt(quantity));
+                        entryDetail.setUnloadingCost(0);
+                        entryDetail.setUnloadingParty(null);
+
+                        entry.setQuantity(Integer.parseInt(quantity));
+                        entry.setRate(Integer.parseInt(rate));
+                    }
+                } else {
+
+                    entry.setQuantity(Integer.parseInt(quantity));
+                    entry.setRate(Integer.parseInt(rate));
+                }
                 entry.setTotalPrice(Integer.parseInt(amount));
                 entry.setAdvance(Integer.parseInt(dadvance));
                 entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
                 entry.setIsActive(true);
+
+                if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity()
+                        && entryType.equalsIgnoreCase(Constants.SALE)) {
+                    return ("01:Not Enough stock to log this sale");
+                }
 
                 boolean entryLogged = entriesService.logDirectEntry(entry);
                 if (!entryLogged) {
@@ -187,7 +247,13 @@ public class EntriesController {
                 } else {
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
                     // async update stock trace
+                    if (entryDetail != null) {
+                        entryDetail.setEntryId(entry);
+                        asyncUtil.addEntryDetail(entryDetail);
+                    }
+                    entry.setEntriesDirectDetails(entryDetail);
                     asyncUtil.updateStockTrace(entry);
+
                     return "00:Entry Logged Successfully";
                 }
             } else {
@@ -234,10 +300,17 @@ public class EntriesController {
                 entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
                 entry.setIsActive(true);
 
+                MasterAccount ma = ss.getMasterAccount();
+                if (ma.getCashInHand() < entry.getAmount()) {
+                    return ("01:Not Enough Cash In Hand to Log this Expense");
+                }
+
                 boolean entryLogged = entriesService.logInDirectEntry(entry);
                 if (!entryLogged) {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
+                    ma.setCashInHand(ma.getCashInHand() - entry.getAmount());
+                    ss.updateMasterAccount(ma);
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
                     return "00:Entry Logged Successfully";
                 }
@@ -256,6 +329,10 @@ public class EntriesController {
             HttpServletRequest request,
             @RequestParam(value = "type", required = false, defaultValue = Constants.DIRECT) String type,
             @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
+            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
+            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
+            @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
+            @RequestParam(value = "project", required = false, defaultValue = "") String project,
             @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
             @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
             @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
@@ -271,8 +348,15 @@ public class EntriesController {
         Object data;
         int totalSize;
         if (type.equalsIgnoreCase(Constants.DIRECT)) {
-            data = entriesService.getDirectEntries(startIndex, fetchSize, orderBy, sortby, startDate, endDate);
-            totalSize = entriesService.getDirectEntriesCount(startDate, endDate);
+            if (itemTypeId > 0) {
+                EntryItems entryItem = entriesService.getEntryItemById(itemTypeId);
+
+                data = entriesService.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                totalSize = entriesService.getDirectEntriesCount(entryItem, subEntryType, startDate, endDate, buyerSupplier, project);
+            } else {
+                data = entriesService.getDirectEntries(null, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                totalSize = entriesService.getDirectEntriesCount(null, subEntryType, startDate, endDate, buyerSupplier, project);
+            }
         } else {
             data = entriesService.getInDirectEntries(startIndex, fetchSize, orderBy, sortby, startDate, endDate);
             totalSize = entriesService.getInDirectEntriesCount(startDate, endDate);
@@ -414,16 +498,32 @@ public class EntriesController {
     public @ResponseBody
     StockTrace getStockTrace(
             HttpServletRequest request,
-            @RequestParam(value = "entryTypeId", required = false, defaultValue = "0") int id) {
+            @RequestParam(value = "entryTypeId", required = false, defaultValue = "0") int id,
+            @RequestParam(value = "subType", required = false, defaultValue = "") String subType) {
 
-        return ss.getStockTrace(id);
+        return ss.getStockTrace(id, subType);
     }
 
     @RequestMapping(value = "/customersAndBuyers", method = RequestMethod.GET)
     public @ResponseBody
     List<CustomersBuyers> getCustomersAndBuyers(
             HttpServletRequest request) {
-        return userService.getCustomersAndBuyers();
+        List<CustomersBuyers> respList = userService.getCustomersAndBuyers();
+        if (respList == null || respList.isEmpty()) {
+            respList = new ArrayList<>();
+        }
+        return respList;
+    }
+
+    @RequestMapping(value = "/projects", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Projects> getProjects(
+            HttpServletRequest request) {
+        List<Projects> respList = userService.getProjects();
+        if (respList == null || respList.isEmpty()) {
+            respList = new ArrayList<>();
+        }
+        return respList;
     }
 
     @RequestMapping(value = "/logCashTransaction", method = RequestMethod.POST)
@@ -433,22 +533,18 @@ public class EntriesController {
         try {
             String ttype = request.getParameter("ttype");
             String tamount = request.getParameter("tamount");
-            String tpayer = request.getParameter("tpayer");
-            String tproject = request.getParameter("tproject");
             String tdesc = request.getParameter("tdesc");
 
             MasterAccountHistory mah = new MasterAccountHistory();
             mah.setType(ttype);
             mah.setAmount(Integer.parseInt(tamount));
             mah.setDescription(tdesc);
-            mah.setPayer(tpayer);
-            mah.setProject(tproject);
 
             boolean transactionLogged = ss.logCashTransaction(mah);
             if (!transactionLogged) {
                 return ("01:Failed To Log Transaction. Make sure all field are filled in.");
             } else {
-                logActivity(request, auth.getName(), "ADDED ENTRY", mah.toString());
+                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
                 return "00:Transaction Logged Successfully";
             }
         } catch (Exception e) {

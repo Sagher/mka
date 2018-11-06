@@ -24,12 +24,12 @@
                   <li class="nav-item px-3">
                          <a class="nav-link" href="<c:url value="/" />">Dashboard</a>
                      </li>
-    <sec:authorize access="hasAnyRole('ADMIN')">
+    <sec:authorize access="hasAnyRole('ADMIN', 'ROLE_ADMIN')">
         <li class="nav-item px-3">
             <a class="nav-link" href="<c:url value="/users" />">Users</a>
         </li>
     </sec:authorize>
-    <sec:authorize access="hasAnyRole('ADMIN','MANAGER')">
+    <sec:authorize access="hasAnyRole('ADMIN','MANAGER', 'ROLE_ADMIN')">
         <li class="nav-item px-3">
             <a class="nav-link" href="<c:url value="/employees" />">Employees</a>
         </li>

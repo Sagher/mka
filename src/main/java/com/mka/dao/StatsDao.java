@@ -8,6 +8,7 @@ package com.mka.dao;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -18,10 +19,12 @@ public interface StatsDao {
 
     public List<StockTrace> getStats();
 
+    public boolean insertStockTraceForNewMonth(StockTrace stat);
+
     public boolean updateStockTrace(StockTrace st);
 
-    public int getAveragePricePerUnit(int itemId);
-    
+    public BigDecimal getAveragePricePerUnit(int itemId);
+
     public MasterAccount getMasterAccount();
 
     public boolean logCashTransaction(MasterAccountHistory mah);

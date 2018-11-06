@@ -5,6 +5,7 @@ package com.mka.dao;
  * @author Sagher Mehmood
  */
 import com.mka.model.CustomersBuyers;
+import com.mka.model.Projects;
 import com.mka.model.User;
 import java.util.List;
 
@@ -25,5 +26,9 @@ public interface UserDao {
     public List<CustomersBuyers> getCustomersAndBuyers();
 
     public boolean addCustomerAndBuyer(CustomersBuyers cusBuy);
+    
+     public List<Projects> getProjects();
+
+    public boolean addProject(Projects proj);
 
 }

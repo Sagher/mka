@@ -6,6 +6,7 @@ package com.mka.dao.impl;
  */
 import com.mka.dao.EntriesDao;
 import com.mka.model.EntriesDirect;
+import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.utils.Constants;
@@ -17,6 +18,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -87,18 +89,35 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
-    public List<EntriesDirect> getDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
+    public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(EntriesDirect.class);
             criteria.add(Restrictions.eq("isActive", true));
+
+            if (entryItem != null) {
+                criteria.add(Restrictions.eq("item", entryItem));
+            }
+            if (!subEntryType.isEmpty()) {
+                criteria.add(Restrictions.eq("subEntryType", subEntryType));
+            }
             if (!startDate.isEmpty()) {
                 criteria.add(Restrictions.ge("entryDate", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
                 criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
             }
+            if (!buyerSupplier.isEmpty()) {
+                Criterion c1 = Restrictions.eq("supplier", buyerSupplier);
+                Criterion c2 = Restrictions.eq("buyer", buyerSupplier);
+                criteria.add(Restrictions.or(c1, c2));
+            }
+            if (!project.isEmpty()) {
+                criteria.add(Restrictions.eq("project", project));
+            }
+
             criteria.setFirstResult(startIndex);
             criteria.setMaxResults(fetchSize);
             if (orderBy.equalsIgnoreCase("asc")) {
@@ -126,18 +145,34 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
-    public int getDirectEntriesCount(String startDate, String endDate) {
+    public int getDirectEntriesCount(EntryItems entryItem, String subEntryType, String startDate,
+            String endDate, String buyerSupplier, String project) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(EntriesDirect.class);
             criteria.add(Restrictions.eq("isActive", true));
+            if (entryItem != null) {
+                criteria.add(Restrictions.eq("item", entryItem));
+            }
+            if (!subEntryType.isEmpty()) {
+                criteria.add(Restrictions.eq("subEntryType", subEntryType));
+            }
             if (!startDate.isEmpty()) {
                 criteria.add(Restrictions.ge("entryDate", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
                 criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
             }
+            if (!buyerSupplier.isEmpty()) {
+                Criterion c1 = Restrictions.eq("supplier", buyerSupplier);
+                Criterion c2 = Restrictions.eq("buyer", buyerSupplier);
+                criteria.add(Restrictions.or(c1, c2));
+            }
+            if (!project.isEmpty()) {
+                criteria.add(Restrictions.eq("project", project));
+            }
+
             return (((Number) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue());
         } catch (Exception e) {
             log.error("Exception in getDirectEntriesCount() : ", e);
@@ -389,4 +424,31 @@ public class EntriesDaoImpl implements EntriesDao {
         return item;
     }
 
+    public void addEntryDetail(EntriesDirectDetails entryDetail) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(entryDetail);
+            session.save(entryDetail);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("New Entry Item Detail Created: " + entryDetail);
+        } catch (Exception e) {
+            log.error("Exception in addEntryDetail() " + entryDetail.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
 }
