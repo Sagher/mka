@@ -78,7 +78,7 @@
                                                             <th class="id">ID</th>
                                                             <th>Entry Date</th>
                                                             <th>Item</th>
-                                                            <th>Type</th>
+                                                            <!--<th>Type</th>-->
                                                             <th>Name</th>
                                                             <th>Description</th>
                                                             <th>Amount</th>

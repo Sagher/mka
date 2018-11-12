@@ -52,11 +52,11 @@ public class StatsServiceImpl implements StatsService {
         try {
 
             if (subType != null && !subType.isEmpty() && !subType.equals("null")) {
-                return statItems.parallelStream().filter(e -> e.getType().getId() == typeId && e.getSubType().equalsIgnoreCase(subType))
+                return getStats().parallelStream().filter(e -> e.getType().getId() == typeId && e.getSubType().equalsIgnoreCase(subType))
                         .collect(Collectors.toList()).get(0);
 
             }
-            return statItems.parallelStream().filter(e -> e.getType().getId() == typeId).collect(Collectors.toList()).get(0);
+            return getStats().parallelStream().filter(e -> e.getType().getId() == typeId).collect(Collectors.toList()).get(0);
         } catch (Exception e) {
 
         }

@@ -156,12 +156,20 @@
                                                         <div class="col-md-4">
                                                             <span class="help-block">Quantity of the material</span>
                                                             <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" 
-                                                                   placeholder="Quantity" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
+                                                                   placeholder="Quantity" onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }">
                                                         </div>
                                                         <div class="col-md-4">
                                                             <span class="help-block" id="pup">Per Unit Price</span>
                                                             <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate"
-                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}" >
+                                                                   onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }" >
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -174,7 +182,29 @@
                                                         <div class="col-md-4">
                                                             <span class="help-block">Advance Received/Paid</span>
                                                             <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" 
-                                                                   required="true" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
+                                                                   required="true" onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Pay From</span>
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" id="inline-radio1" type="radio" value="1" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio0">Main Account</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -190,8 +220,8 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <div  class="pull-left">
-                                                                <button class="btn btn-default" disabled="true" type="button"
+                                                            <div  class="pull-left" id="addCarriageDiv" hidden="true">
+                                                                <button class="btn btn-default" type="button"
                                                                         id="addCarriageBtn" onclick="addCrushCarriage()">
                                                                     <i class="fa fa-plus"></i> Add Carriage
                                                                 </button>
@@ -261,7 +291,13 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Name</span>
-                                                            <input class="form-control" id="iname" type="text" required="true" name="iname" placeholder="ABC Corporation">
+                                                            <!--<input class="form-control" id="iname" type="text" required="true" name="iname">-->
+                                                            <select class="form-control" id="iname" name="iname" required="true">
+                                                                <option selected value="">-- Please select A Payer/Receiver --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="ibuysupInput" type="text" 
+                                                                   name="ibuysupInput" placeholder="Custom Buyer/Supplier">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -278,7 +314,11 @@
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount of Expenditure</span>
                                                             <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost" 
-                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
+                                                                   onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -287,7 +327,11 @@
                                                         <div class="col-md-8">
                                                             <span class="help-block">Advance paid</span>
                                                             <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost" 
-                                                                   onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
+                                                                   onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -368,36 +412,41 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount</span>
-                                                            <input class="form-control" name="tamount" type="number" required="true" onblur="if (this.value == '') {this.value = '0';}"  onfocus="if (this.value == '0') {this.value = '';}">
+                                                            <input class="form-control" name="tamount" type="number" required="true" onblur="if (this.value == '') {
+                                                                        this.value = '0';
+                                                                    }"  onfocus="if (this.value == '0') {
+                                                                                this.value = '';
+                                                                            }">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <!--                                                    <div class="form-group row">
-                                                                                                            <label class="col-md-2"></label>
-                                                                                                            <div class="col-md-8">
-                                                                                                                <span class="help-block">Buyer/Supplier</span>
-                                                                                                                <select class="form-control" id="tbuysupSelect" name="tpayer" required="true">
-                                                                                                                    <option selected value="">-- Please select A Payer/Receiver --</option>
-                                                                                                                </select>
-                                                                                                                <br>
-                                                                                                                <input hidden="true" class="form-control" id="tbuysupInput" type="text" 
-                                                                                                                       name="tbuysupInput" placeholder="Custom Buyer/Supplier">
-                                                                                                            </div>
-                                                                                                            <label class="col-md-2"></label>
-                                                                                                        </div>
-                                                                                                        <div class="form-group row">
-                                                                                                            <label class="col-md-2"></label>
-                                                                                                            <div class="col-md-8">
-                                                                                                                <span class="help-block">Project</span>
-                                                                                                                <select class="form-control tproj" id="tprojSelect" name="tproj" required="true">
-                                                                                                                    <option selected value="">-- Please select A Project --</option>
-                                                                                                                </select>
-                                                                                                                <br>
-                                                                                                                <input hidden="true" class="form-control proj" id="tproject" type="text" 
-                                                                                                                       name="tproject" placeholder="Custom Project">
-                                                                                                            </div>
-                                                                                                        </div>-->
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Payee</span>
+                                                            <select class="form-control" id="tbuysupSelect" name="tpayer" required="true">
+                                                                <option selected value="">-- Please select A Payer/Receiver --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="tbuysupInput" type="text" 
+                                                                   name="tbuysupInput" placeholder="Custom Buyer/Supplier">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <!--
+                                    <div class="form-group row">
+                                        <label class="col-md-2"></label>
+                                        <div class="col-md-8">
+                                            <span class="help-block">Project</span>
+                                            <select class="form-control tproj" id="tprojSelect" name="tproj" required="true">
+                                                <option selected value="">-- Please select A Project --</option>
+                                            </select>
+                                            <br>
+                                            <input hidden="true" class="form-control proj" id="tproject" type="text" 
+                                                   name="tproject" placeholder="Custom Project">
+                                        </div>
+                                    </div>-->
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">

@@ -35,6 +35,10 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntryItems.findAll", query = "SELECT e FROM EntryItems e")})
 public class EntryItems implements Serializable {
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemType")
+    @JsonIgnore
+    private List<AccountPayableReceivable> accountPayableReceivableList;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_date")
@@ -210,6 +214,14 @@ public class EntryItems implements Serializable {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public List<AccountPayableReceivable> getAccountPayableReceivableList() {
+        return accountPayableReceivableList;
+    }
+
+    public void setAccountPayableReceivableList(List<AccountPayableReceivable> accountPayableReceivableList) {
+        this.accountPayableReceivableList = accountPayableReceivableList;
     }
 
 }

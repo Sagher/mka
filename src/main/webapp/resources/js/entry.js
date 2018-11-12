@@ -54,9 +54,12 @@ $(document).ready(function () {
                 console.log(customersBuyersList[i])
                 customerBuyerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 tCustomerBuyerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                iname.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+
             }
             customerBuyerSelect.append($("<option />").val('Other').text('Other'));
             tCustomerBuyerSelect.append($("<option />").val('Other').text('Other'));
+            iname.append($("<option />").val('Other').text('Other'));
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(textStatus);
@@ -98,9 +101,9 @@ ditemTypeSelection.change(function () {
                 // show add carriage button for crush
                 if (selectItemId == 6) {
                     console.log("show add carriage button for crush")
-                    $("#addCarriageBtn").removeAttr("disabled");
+                    $("#addCarriageDiv").removeAttr("hidden");
                 } else {
-                    $("#addCarriageBtn").attr("disabled", "true");
+                    $("#addCarriageDiv").attr("hidden", "true");
                 }
 
                 // show subItemTypeDiv if there is further type
@@ -364,6 +367,7 @@ iItemTypeSelection.change(function () {
         entryTypeSelection.removeAttr("size");
     }
 });
+
 var iItemTypeInput = $("#iItemTypeInput");
 iItemTypeSelection.change(function () {
     if ($('#iItemType option:selected').text() == "Other") {
@@ -374,6 +378,20 @@ iItemTypeSelection.change(function () {
         iItemTypeInput.removeAttr("required");
     }
 });
+
+var iname = $("#iname");
+
+//attach change event to customer/buyer and supplier select
+iname.change(function () {
+    if ($('#iname option:selected').text() == "Other") {
+        $("#ibuysupInput").removeAttr("hidden");
+        $("#ibuysupInput").attr("required", "true");
+    } else {
+        $("#ibuysupInput").attr("hidden", "true");
+        $("#ibuysupInput").removeAttr("required");
+    }
+});
+
 function logiEntry() {
     $('#ientryForm').ajaxForm({
         beforeSend: function () {
@@ -417,16 +435,17 @@ var tCustomerBuyerSelect = $("#tbuysupSelect");
 var tCusByInput = $("#tbuysupInput");
 var tProjSelect = $("#tprojSelect");
 var tprojectInput = $("#tproject");
+
 //attach change event to customer/buyer and supplier select
-//tCustomerBuyerSelect.change(function () {
-//    if ($('#tbuysupSelect option:selected').text() == "Other") {
-//        tCusByInput.removeAttr("hidden");
-//        tCusByInput.attr("required", "true");
-//    } else {
-//        tCusByInput.attr("hidden", "true");
-//        tCusByInput.removeAttr("required");
-//    }
-//});
+tCustomerBuyerSelect.change(function () {
+    if ($('#tbuysupSelect option:selected').text() == "Other") {
+        tCusByInput.removeAttr("hidden");
+        tCusByInput.attr("required", "true");
+    } else {
+        tCusByInput.attr("hidden", "true");
+        tCusByInput.removeAttr("required");
+    }
+});
 //
 ////attach change event to project select
 //tProjSelect.change(function () {

@@ -117,6 +117,7 @@ public class EntriesController {
                     StockTrace st = ss.getStockTrace(itemId, null);
                     if (itemId != 0 && st != null) {
                         model.addObject("itemType", st.getType());
+                        model.addObject("stockTrace", st);
                     }
                     model.setViewName("subPages/directEntries");
                 } else {
@@ -152,120 +153,14 @@ public class EntriesController {
     public @ResponseBody
     String logDirectEntry(HttpServletRequest request, HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        try {
-            EntriesDirectDetails entryDetail = null;
-
-            String dItemType = request.getParameter("dItemType");
-            String subItemType = request.getParameter("dItemSubType");
-            String entryType = request.getParameter("dEntryType");
-            String customerBuyerSupplier = request.getParameter("dbuysup");
-            if (customerBuyerSupplier.equalsIgnoreCase("other")) {
-                customerBuyerSupplier = request.getParameter("dbuysupInput");
-                asyncUtil.addToCustomersAndBuyersList(customerBuyerSupplier);
-            }
-            String dProj = request.getParameter("dproj");
-            if (dProj.equalsIgnoreCase("other")) {
-                dProj = request.getParameter("dproject");
-                asyncUtil.addToProjectsList(dProj);
-            }
-
-            String description = request.getParameter("ddescription") != null
-                    ? request.getParameter("ddescription") : null;
-            String quantity = request.getParameter("dquantity");
-            String rate = request.getParameter("drate");
-            String amount = request.getParameter("damount");
-            String dadvance = request.getParameter("dadvance");
-            String dateOfEntry = request.getParameter("doe");
-
-            EntryItems item = entriesService.getEntryItemById(Integer.parseInt(dItemType));
-            if (item != null) {
-                EntriesDirect entry = new EntriesDirect();
-                entry.setItem(item);
-                entry.setSubEntryType(entryType);
-                if (entryType.equalsIgnoreCase(Constants.SALE)) {
-                    entry.setBuyer(customerBuyerSupplier);
-                    entry.setSupplier(null);
-                } else {
-                    entry.setSupplier(customerBuyerSupplier);
-                    entry.setBuyer(null);
-                }
-                entry.setProject(dProj);
-                entry.setDescription(description);
-
-                // OPTIONAL unloadedCrush & unloadingCost in case of crush
-                String totalUnloadedCrush = request.getParameter("unloadedCrush");
-                String carriageCost = request.getParameter("unloadingCost");
-                String unloadingParty = request.getParameter("unloadingParty");
-
-                if (item.getItemName().equalsIgnoreCase("CRUSH")) {
-
-                    if (!totalUnloadedCrush.isEmpty() || totalUnloadedCrush.equals("0")
-                            || !carriageCost.isEmpty() || carriageCost.equals("0")
-                            || !unloadingParty.isEmpty() || unloadingParty.equals("0")) {
-                        int cCost = Integer.parseInt(carriageCost);
-                        int tCost = Integer.parseInt(amount);
-                        int totalUnloaded = Integer.parseInt(totalUnloadedCrush);
-
-                        int newRate = (cCost + tCost) / totalUnloaded;
-                        int newQuantity = totalUnloaded;
-                        entryDetail = new EntriesDirectDetails();
-                        entryDetail.setSubType(subItemType);
-                        entryDetail.setTotalUnloaded(totalUnloaded);
-                        entryDetail.setUnloadingCost(cCost);
-                        entryDetail.setUnloadingParty(unloadingParty);
-
-                        entry.setQuantity(newQuantity);
-                        entry.setRate(newRate);
-                    } else {
-                        entryDetail = new EntriesDirectDetails();
-                        entryDetail.setSubType(subItemType);
-                        entryDetail.setTotalUnloaded(Integer.parseInt(quantity));
-                        entryDetail.setUnloadingCost(0);
-                        entryDetail.setUnloadingParty(null);
-
-                        entry.setQuantity(Integer.parseInt(quantity));
-                        entry.setRate(Integer.parseInt(rate));
-                    }
-                } else {
-
-                    entry.setQuantity(Integer.parseInt(quantity));
-                    entry.setRate(Integer.parseInt(rate));
-                }
-                entry.setTotalPrice(Integer.parseInt(amount));
-                entry.setAdvance(Integer.parseInt(dadvance));
-                entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
-                entry.setIsActive(true);
-
-                if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity()
-                        && entryType.equalsIgnoreCase(Constants.SALE)) {
-                    return ("01:Not Enough stock to make this sale");
-                } else if (ss.getMasterAccount().getCashInHand() < entry.getAdvance()
-                        && entryType.equalsIgnoreCase(Constants.PURCHASE)) {
-                    return ("01:Not Enough cash in hand to make this purchase");
-                }
-
-                boolean entryLogged = entriesService.logDirectEntry(entry);
-                if (!entryLogged) {
-                    return ("01:Failed To Log Entry. Make sure all field are filled in.");
-                } else {
-                    logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
-                    // async update stock trace
-                    if (entryDetail != null) {
-                        entryDetail.setEntryId(entry);
-                        asyncUtil.addEntryDetail(entryDetail);
-                    }
-                    entry.setEntriesDirectDetails(entryDetail);
-                    asyncUtil.updateStockTrace(entry);
-
-                    return "00:Entry Logged Successfully";
-                }
-            } else {
-                return ("01:Invalid Item Type");
-            }
-        } catch (Exception e) {
-            log.error("Exception while logging Entry:", e);
-            return ("01:Invalid Values");
+        Object entryLogged = entriesService.logDirectEntry(request);
+        if (entryLogged instanceof EntriesDirect) {
+            logActivity(request, auth.getName(), "ADDED ENTRY", entryLogged.toString());
+            return "00:Entry Logged Successfully";
+        } else if (entryLogged instanceof String) {
+            return ((String) entryLogged);
         }
+        return ("01:Invalid Values");
     }
 
     @RequestMapping(value = "/logInDirectEntry", method = RequestMethod.POST)
@@ -283,6 +178,11 @@ public class EntriesController {
             }
             String iItemSubType = request.getParameter("iItemSubType");
             String iname = request.getParameter("iname");
+            if (iname.equalsIgnoreCase("other")) {
+                iname = request.getParameter("ibuysupInput");
+                asyncUtil.addToCustomersAndBuyersList(iname);
+            }
+
             String idesc = request.getParameter("idesc");
             String icost = request.getParameter("icost");
             String iAdvance = request.getParameter("iadvance");
@@ -312,8 +212,6 @@ public class EntriesController {
                 if (!entryLogged) {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
-                    ma.setCashInHand(ma.getCashInHand() - entry.getAmount());
-                    ss.updateMasterAccount(ma);
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
                     return "00:Entry Logged Successfully";
                 }
@@ -537,11 +435,18 @@ public class EntriesController {
             String ttype = request.getParameter("ttype");
             String tamount = request.getParameter("tamount");
             String tdesc = request.getParameter("tdesc");
+            String tpayer = request.getParameter("tpayer");
+
+            if (tpayer.equalsIgnoreCase("other")) {
+                tpayer = request.getParameter("tbuysupInput");
+                asyncUtil.addToCustomersAndBuyersList(tpayer);
+            }
 
             MasterAccountHistory mah = new MasterAccountHistory();
             mah.setType(ttype);
             mah.setAmount(Integer.parseInt(tamount));
             mah.setDescription(tdesc);
+            mah.setPayee(tpayer);
 
             boolean transactionLogged = ss.logCashTransaction(mah);
             if (!transactionLogged) {

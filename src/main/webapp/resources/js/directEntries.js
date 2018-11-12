@@ -55,7 +55,7 @@ $(document).ready(function () {
             {"data": "advance"},
             {"data": "", "render": function (data, type, full, meta) {
                     var html = "";
-                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
+//                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
                     html += "<button id='del-" + full.id + "' style='margin-left:3px' class=\"btn btn-danger\" onclick=\"del(" + full.id + ")\"><i class=\"fa fa-trash\"></i></button>";
                     return html;
                 }
@@ -104,6 +104,43 @@ $(document).ready(function () {
                 console.log(textStatus);
             }
         });
+
+        // populate stock div
+//        var dItemSubTypeSelection = '';
+//        $.get("entries/stockTrace?entryTypeId=" + itemTypeId + "&subType=" + dItemSubTypeSelection, function (data) {
+//            if (data !== undefined) {
+//                stockData = data;
+//                $("#stockDetailDiv").removeAttr("hidden");
+//                var html = '';
+//                html += '<div class="brand-card-header text-white bg-info">\n\
+//                    <div class="card-body">\n\
+//                    <div class="item-name">';
+//                if (data.subType !== null) {
+//                    html += ('<strong>' + data.itemName + '</strong> <small>' + data.subType + '</small></div>');
+//                } else {
+//                    html += ('<strong>' + data.itemName + '</strong></div>');
+//                }
+//                html += ('<div>Total Sales: ' + data.salesUnit + ' ' + data.itemUnit + '</div>\n\
+//                    <div>Total Sales Amount: ' + data.salesAmount + ' PKR</div>\n\
+//                    </div></div>\n\
+//                    <div class="brand-card-body"><div>\n\
+//                    <div class="text-value">' + data.stockUnits + ' ' + data.itemUnit + '</div>\n\
+//                    <div class="text-uppercase text-muted small">In Stock</div>\n\
+//                    </div>\n\
+//                    <div>\n\
+//                    <div class="text-value">' + data.stockAmount + ' PKR</div>\n\
+//                    <div class="text-uppercase text-muted small">Total Stock Price</div>\n\
+//                    </div>\n\
+//                    <div>\n\
+//                    <div class="text-value">' + data.averageUnitPrice + ' PKR</div>\n\
+//                    <div class="text-uppercase text-muted small">Average Per ' + ' ' + data.itemUnit + ' Price</div>\n\
+//                    </div>\n\
+//                    </div>');
+//
+//                $("#stockDetail").html(html);
+//            }
+//            console.log(data)
+//        });
     }
 
     $.ajax({
@@ -226,7 +263,7 @@ function del(id) {
         $("#erole").val(clickedRow[5]);
         $("#confirmDelModal .modal-body").html("");
         $("#confirmDelModal .modal-body")
-                .append("<p> This would permanentely delete: <br><br><b>" + clickedRow[1] + "</b> (" + clickedRow[5] + ") </p>")
+                .append("<p> This would permanentely delete: <br><br><b>" + clickedRow[1] + "</b> (" + clickedRow[2] + ") </p>")
                 .append(" <input name='eid' hidden='true' value='" + id + "'>")
         $("#confirmDelModal").modal('show');
     } else {

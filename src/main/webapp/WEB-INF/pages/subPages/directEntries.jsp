@@ -46,6 +46,12 @@
                                             <div class="card-body">
                                                 <div id="filtersDiv">
                                                     <input hidden="true" id="itemTypeId" value="${itemType.id}">
+<!--                                                    <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
+                                                        <div class="col-md-6">
+                                                            <div class="brand-card item-summary" id="stockDetail">
+                                                            </div>
+                                                        </div>
+                                                    </div>-->
                                                     <div class="form-group row">
 
                                                         <div class="col-sm-3">

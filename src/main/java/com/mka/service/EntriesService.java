@@ -6,6 +6,7 @@ import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccountHistory;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -17,7 +18,7 @@ public interface EntriesService {
 
     public EntryItems getEntryItemById(int id);
 
-    public boolean logDirectEntry(EntriesDirect entry);
+    public Object logDirectEntry(HttpServletRequest request);
 
     public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
             String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project);

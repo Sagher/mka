@@ -218,7 +218,7 @@ public class StatsDaoImpl implements StatsDao {
             session.flush();
             response = true;
         } catch (Exception e) {
-            log.error("Exception in updateStockTrace() " + ma.toString(), e);
+            log.error("Exception in updateMasterAccount() " + ma.toString(), e);
             if (tx != null) {
                 tx.rollback();
             }

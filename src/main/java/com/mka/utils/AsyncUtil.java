@@ -5,15 +5,17 @@
  */
 package com.mka.utils;
 
+import com.mka.dao.AccountsDao;
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntriesDirect;
-import com.mka.model.EntriesDirectDetails;
+import com.mka.model.EntriesIndirect;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.UserActivity;
-import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
+import java.math.BigInteger;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -40,8 +42,10 @@ public class AsyncUtil {
     StatsService ss;
 
     @Autowired
-    EntriesService entriesService;
+    AccountsDao accountsDao;
 
+//    @Autowired
+//    EntriesService entriesService;
     @Async
     public void logActivity(HttpServletRequest request, String userName, String remoteAddr, String ua, String actionType, String actionDescription) {
         User user = userService.getUser(userName);
@@ -103,9 +107,64 @@ public class AsyncUtil {
         userService.addProject(projName);
     }
 
-    @Async
-    public void addEntryDetail(EntriesDirectDetails entryDetail) {
-        entriesService.addEntryDetail(entryDetail);
+//    @Async
+//    public void addEntryDetail(EntriesDirectDetails entryDetail) {
+//        entriesService.addEntryDetail(entryDetail);
+//    }
+    public void updateDirectAccountPayableReceivable(EntriesDirect entry) {
+        try {
+            if (entry.getSubEntryType().equalsIgnoreCase(Constants.SALE) && entry.getTotalPrice() != entry.getAdvance()) {
+                // receivable
+                AccountPayableReceivable receivable = new AccountPayableReceivable();
+                receivable.setAccountName(entry.getBuyer());
+                receivable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
+                receivable.setEntryId(entry.getId());
+                receivable.setIsActive(true);
+                receivable.setType(Constants.RECEIVABLE);
+                receivable.setItemType(entry.getItem());
+
+                if (!accountsDao.logAccountPayableReceivable(receivable)) {
+                    log.warn("*** Account Recevaible not logged ***");
+                }
+
+            } else if (entry.getSubEntryType().equalsIgnoreCase(Constants.PURCHASE) && entry.getTotalPrice() != entry.getAdvance()) {
+                //payable
+                AccountPayableReceivable payable = new AccountPayableReceivable();
+                payable.setAccountName(entry.getSupplier());
+                payable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
+                payable.setEntryId(entry.getId());
+                payable.setIsActive(true);
+                payable.setType(Constants.PAYABLE);
+                payable.setItemType(entry.getItem());
+
+                if (!accountsDao.logAccountPayableReceivable(payable)) {
+                    log.warn("*** Account Payable not logged ***");
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void updateIndirectAccountPayableReceivable(EntriesIndirect entry) {
+        try {
+            if (entry.getAmount() != entry.getAdvance()) {
+                //payable
+                AccountPayableReceivable payable = new AccountPayableReceivable();
+                payable.setAccountName(entry.getName());
+                payable.setAmount(BigInteger.valueOf(entry.getAmount() - entry.getAdvance()));
+                payable.setEntryId(entry.getId());
+                payable.setIsActive(true);
+                payable.setType(Constants.PAYABLE);
+                payable.setItemType(entry.getItem());
+
+                if (!accountsDao.logAccountPayableReceivable(payable)) {
+                    log.warn("*** Account Payable not logged ***");
+                }
+            }
+        } catch (Exception e) {
+
+        }
     }
 
 }

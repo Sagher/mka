@@ -53,6 +53,17 @@ public class MasterAccountHistory implements Serializable {
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+    @Size(max = 255)
+    @Column(name = "payee")
+    private String payee;
+
+    public String getPayee() {
+        return payee;
+    }
+
+    public void setPayee(String payee) {
+        this.payee = payee;
+    }
 
     public MasterAccountHistory() {
     }

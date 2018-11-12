@@ -78,6 +78,45 @@
                                 </div>
                             </c:forEach>
                         </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/report?type=RECEIVABLE" />">
+                                                <div class="item-name">Accounts Receivable Report</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/report?type=PAYABLE" />">
+                                                <div class="item-name">Accounts Payable Report</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+<!--                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a class="disabled" href="<c:url value="/report?type=indirect" />">
+                                                <div class="item-name">Profit & Loss Report</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+
                         <hr>
 
                         <div class="row">
@@ -93,6 +132,7 @@
                                 </div>
                             </div>
                         </div>
+
 
                     </div>
                 </div>

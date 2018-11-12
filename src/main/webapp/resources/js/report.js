@@ -13,42 +13,24 @@ $(document).ready(function () {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
         "ajax": {
-            "url": "entries/data?type=indirect"
+            "url": "report/data?type=" + $("#type").val()
         },
         "columns": [
             /*
-             <th>ID</th>
-             <th>Entry Date</th>
-             <th>Item</th>
-             <th>Type</th>
-             <th>Buyer</th>
-             <th>Supplier</th>
-             <th>Quantity</th>
-             <th>Rate</th>
+             <th>Name</th>
              <th>Amount</th>
-             <th>Advance</th>
-             <th>Action</th>
+             <th>Type</th>
+             <th>Date</th>
              */
-            {"data": "id", "render": function (data, type, full, meta) {
-                    var html = "<div class='id'>" + data + "</div>";
-                    return html;
-                }
-            },
-            {"data": "entryDate"},
-            {"data": "itemName"},
-//            {"data": "itemType"},
-            {"data": "name"},
-            {"data": "description"},
+//            {"data": "id", "render": function (data, type, full, meta) {
+//                    var html = "<div class='id'>" + data + "</div>";
+//                    return html;
+//                }
+//            },
+            {"data": "accountName"},
             {"data": "amount"},
-            {"data": "advance"},
-            {"data": "", "render": function (data, type, full, meta) {
-                    var html = "";
-//                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
-                    html += "<button id='del-" + full.id + "' style='margin-left:3px' class=\"btn btn-danger\" onclick=\"del(" + full.id + ")\"><i class=\"fa fa-trash\"></i></button>";
-                    return html;
-                }
-            }
-
+            {"data": "itemType.itemName"},
+            {"data": "createdDate"}
         ],
         "processing": true,
         "serverSide": true,
@@ -61,7 +43,7 @@ $(document).ready(function () {
         "responsive": true,
         "pagingType": "full_numbers",
         "oLanguage": {
-            "sEmptyTable": "No Entries Found Against the selected Dates"
+            "sEmptyTable": "No Entries Found"
         }
 
     });
@@ -85,7 +67,7 @@ function advanceSearch() {
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
 
-    table.ajax.url("entries/data?type=indirect&fromDate=" + fromDate + "&toDate=" + toDate);
+    table.ajax.url("report/data?type=indirect&fromDate=" + fromDate + "&toDate=" + toDate);
     table.ajax.reload();
 }
 
