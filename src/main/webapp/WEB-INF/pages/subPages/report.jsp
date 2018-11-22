@@ -76,10 +76,12 @@
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th>Name</th>
-                                                            <th>Amount</th>
-                                                            <th>Type</th>
                                                             <th>Date</th>
+                                                            <th>Project</th>
+                                                            <th>Name</th>
+                                                            <th>Type</th>
+                                                            <th>Item</th>
+                                                            <th>Amount</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>

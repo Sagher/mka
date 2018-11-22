@@ -68,6 +68,9 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" id="cashtran-tab" data-toggle="tab" href="#cashtrantab" role="tab" aria-controls="cashtrantab" aria-selected="false">Cash Transaction</a>
                                             </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="asphalt-tab" data-toggle="tab" href="#asphaltsaletab" role="tab" aria-controls="asphaltsaletab" aria-selected="false">Asphalt Sale</a>
+                                            </li>
                                         </ul>
 
                                         <div class="tab-content" id="">
@@ -76,6 +79,7 @@
                                             <div class="tab-pane fade active show" id="directtab" role="tabpanel" aria-labelledby="direct-tab">
                                                 <form id="dentryForm" class="form-horizontal" action="<c:url value="/logDirectEntry"/>"
                                                       method="post" enctype="multipart/form-data">
+                                                    <br>
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -220,13 +224,51 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <div  class="pull-left" id="addCarriageDiv" hidden="true">
-                                                                <button class="btn btn-default" type="button"
-                                                                        id="addCarriageBtn" onclick="addCrushCarriage()">
-                                                                    <i class="fa fa-plus"></i> Add Carriage
-                                                                </button>
+                                                            <div class="row">
+                                                                <div  class="pull-left" id="addCarriageDiv" hidden="true">
+                                                                    <button class="btn btn-default" type="button"
+                                                                            id="addCarriageBtn" onclick="addCrushCarriage()">
+                                                                        <i class="fa fa-plus"></i> Add Carriage
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="" hidden="true" id="crushCarriageForm">
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadedCrush">Total Unloaded</label>
+                                                                            <input class="form-control" id="unloadedCrush" name="unloadedCrush" type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingCost">Unloading Cost Per Cubic Ft.</label>
+                                                                            <input class="form-control" id="unloadingCost" name="unloadingCost" type="number" value="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingCost">Total Unloading Cost</label>
+                                                                            <input class="form-control" id="totalUnloadingCost" name="totalUnloadingCost" value="0" type="number">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingParty">Carriage Provided By</label>
+                                                                            <input class="form-control" id="unloadingParty" name="unloadingParty" type="text" placeholder="Carriage Provided By">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="pull-right">
+                                                                <br>
                                                                 <button class="btn btn-lg btn-danger" onclick="resetdForm()" type="reset">
                                                                     <i class="fa fa-ban"></i> Reset</button>
                                                                 <button id="logdEntryBtn" class="btn btn-lg btn-primary"
@@ -237,6 +279,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
+
                                                 </form>
                                             </div>
                                             <!--
@@ -249,17 +292,16 @@
                                             <div class="tab-pane fade" id="indirecttab" role="tabpanel" aria-labelledby="indirect-tab">
                                                 <form id="ientryForm" class="form-horizontal" action="<c:url value="/logInDirectEntry"/>"
                                                       method="post" enctype="multipart/form-data">
-                                                    <div  class="animated fadeIn form-group row">
+                                                    <div class="animated fadeIn form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <div class="brand-card item-summary">
                                                                 <div class="brand-card-header text-white bg-primary">
                                                                     <div class="card-body">
                                                                         <div class="item-name">
-                                                                            <strong>Cash In Hand</strong>
-                                                                            <br>
-                                                                            ${masterAccount.cashInHand} PKR
-                                                                        </div>
+                                                                            <strong>Head Office Account</strong></div>
+                                                                        <div>Total Cash: ${masterAccount.totalCash} PKR</div>
+                                                                        <div>Cash In Hand: ${masterAccount.cashInHand} PKR</div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -335,6 +377,24 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Pay From</span>
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" id="inline-radio1" type="radio" value="1" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio0">Main Account</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
                                                     <div class="form-group row" style="display: none">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -373,14 +433,14 @@
                                                 <form id="cashTranForm" class="form-horizontal" action="<c:url value="/logCashTransaction"/>"
                                                       method="post" enctype="multipart/form-data">
 
-                                                    <div id="masterAccountDetailDiv" class="animated fadeIn form-group row">
+                                                    <div class="animated fadeIn form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <div class="brand-card item-summary">
                                                                 <div class="brand-card-header text-white bg-primary">
                                                                     <div class="card-body">
                                                                         <div class="item-name">
-                                                                            <strong>HeadQuarter Account</strong></div>
+                                                                            <strong>Head Office Account</strong></div>
                                                                         <div>Total Cash: ${masterAccount.totalCash} PKR</div>
                                                                         <div>Cash In Hand: ${masterAccount.cashInHand} PKR</div>
                                                                     </div>
@@ -472,7 +532,185 @@
                                                         <label class="col-md-2"></label>
                                                     </div>
                                                 </form>
-                                            </div>                    
+                                            </div> 
+
+                                            <!--
+                                
+                                
+                                                ASPHALT SALE                                               
+                                
+                                
+                                            -->
+                                            <div class="tab-pane fade" id="asphaltsaletab" role="tabpanel" aria-labelledby="asphalt-tab">
+                                                <form id="asphaltSaleForm" class="form-horizontal" action="<c:url value="/logAsphaltSale"/>"
+                                                      method="post" enctype="multipart/form-data">
+                                                    <br>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Total Asphalt in TONS</span>
+                                                            <input class="form-control" name="tass" id="tass" type="number" required="true" onblur="if (this.value == '') {
+                                                                        this.value = '0';
+                                                                    }" onfocus="if (this.value == '0') {
+                                                                                this.value = '';
+                                                                            }">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Customer</span>
+                                                            <select class="form-control" id="asCusSelect" name="asCus" required="true">
+                                                                <option selected value="">-- Please select A Customer --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="asCusInput" type="text" 
+                                                                   name="asCusInput" placeholder="Custom Buyer">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Project</span>
+                                                            <select class="form-control" id="asProjSelect" name="asProj" required="true">
+                                                                <option selected value="">-- Please select A Project --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="asProjInput" type="text" 
+                                                                   name="asProjInput" placeholder="Custom Project">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <c:forEach items="${stockTrace}" var="item">
+                                                        <div class="form-group row">
+                                                            <label class="col-md-2"></label>
+                                                            <div class="col-md-8">
+                                                                <h6>${item.itemName} ${item.subType}</h6>
+
+                                                                <span class="help-block">${item.itemUnit} / Ton</span>
+                                                                <input class="form-control" id="${item.id}rate" type="number" 
+                                                                       name="${item.id}rate" value="0" 
+                                                                       onchange="updateAssRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
+                                                                <br>                                                                
+                                                                <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
+                                                                <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"
+                                                                       name="${item.id}quantity" value="0" >
+                                                                <br>                                                                
+                                                                <span class="help-block">Total ${item.itemName} ${item.subType} Cost (Total Quantity x Avg Rate i.e, ${item.averageUnitPrice})</span>
+                                                                <input tabindex="-1" class="form-control" id="${item.id}cost" type="number" readonly="readonly"
+                                                                       name="${item.id}cost" value="0">
+                                                            </div>
+                                                            <label class="col-md-2"></label>
+                                                        </div>
+                                                    </c:forEach>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Laying Cost Per Ton</span>
+                                                            <input class="form-control" id="alcCost" onchange="addLayingCostToTotalCost(this.value)" type="number" name="alcCost" value="0">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Rate / Ton</span>
+                                                            <input class="form-control" id="costPerTon" type="number"  readonly="readonly"
+                                                                   name="costPerTon" value="0">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Sale Rate</span>
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" onclick="changeTotalCost(1)" id="inline-radio1" type="radio" value="1" name="pricePoint">
+                                                                    <label class="form-check-label" for="inline-radio1">Direct</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" onclick="changeTotalCost(0)" id="inline-radio0" type="radio" value="0" name="pricePoint">
+                                                                    <label class="form-check-label" for="inline-radio0">In-Direct</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row" id="mixRateDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Mixture Rate / Ton</span>
+                                                            <input class="form-control" id="mixtureRate" type="number" onchange="addMixtureCost(this.value)"
+                                                                   name="totalSaleAmount" value="0">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row" id="">
+                                                        <br>
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Total Cost Head Office</span>
+                                                            <input class="form-control" id="totalCostHQ" name="totalCostHQ" type="number" value="0" readonly="readonly">
+                                                            <span class="help-block">Total Cost For Customer/Buyer</span>
+                                                            <input class="form-control" id="totalCostCustomer" name="totalCostCustomer" type="number" value="0" readonly="readonly">
+                                                            <span class="help-block">Advance Paid</span>
+                                                            <input class="form-control" id="advancePaid" name="advancePaid" type="number" value="0">
+                                                        </div>    
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row" hidden="true" id="assLayingCost">
+                                                        <br>
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <h5>Laying Charges</h5>
+                                                            <span class="help-block">Name</span>
+                                                            <input class="form-control" id="assLayer" name="assLayer" type="text" placeholder="">
+                                                            <span class="help-block">Per Ton Cost</span>
+                                                            <input class="form-control" id="assLayingCostPerTon" name="assLayingCostPerTon" type="number" value="0">
+                                                            <span class="help-block">Total Cost</span>
+                                                            <input class="form-control" id="totalAssLayingCost" name="totalAssLayingCost" value="0" type="number">
+                                                            <span class="help-block">Advance</span>
+                                                            <input class="form-control" id="assLayingAdvance" name="assLayingAdvance" type="number" value="0">
+                                                        </div>    
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <br>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div  class="pull-left" id="addCarriageDiv">
+                                                                <button class="btn btn-default" type="button"
+                                                                        id="addAssLayingBtn" onclick="addLayingCost()">
+                                                                    <i class="fa fa-plus"></i> Add Laying Cost
+                                                                </button>
+                                                            </div>
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-lg btn-danger" type="reset">
+                                                                    <i class="fa fa-ban"></i> Reset</button>
+                                                                <button id="assSaleBtn" class="btn btn-lg btn-primary"
+                                                                        onclick="logAssSale()" type="submit">
+                                                                    <i class="fa fa-floppy-o"></i> Log Asphalt Sale</button>
+
+                                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                </form>
+                                            </div> 
 
                                         </div>
 
@@ -483,50 +721,7 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="crushCarriageModal" tabindex="-1" role="dialog" 
-                     aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Add Crush Carriage</h4>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label for="unloadedCrush">Total Unloaded</label>
-                                            <input class="form-control" id="unloadedCrush" name="unloadedCrush" required="true" type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label for="unloadingCost">Unloading/Carriage Cost</label>
-                                            <input class="form-control" id="unloadingCost" name="unloadingCost" required="true" type="number" placeholder="Unloading/Carriage Cost">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label for="unloadingParty">Carriage Provided By</label>
-                                            <input class="form-control" id="unloadingParty" name="unloadingParty" required="true" type="text" placeholder="Carriage Provided By">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                                <button id="createUserBtn" class="btn btn-primary" 
-                                        type="submit" onclick="addCarriage()">Add Carriage</button>
-                            </div>
 
-                        </div>
-                    </div>
             </main>
 
             <!-- right side bar -->

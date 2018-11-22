@@ -4,7 +4,6 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
-import com.mka.model.MasterAccountHistory;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,4 +42,6 @@ public interface EntriesService {
     public EntryItems createNewEntryItem(String parameter);
 
     public void addEntryDetail(EntriesDirectDetails entryDetail);
+
+    public Object logAsphaltSale(HttpServletRequest request);
 }

@@ -34,6 +34,10 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "AccountPayableReceivable.findAll", query = "SELECT a FROM AccountPayableReceivable a")})
 public class AccountPayableReceivable implements Serializable {
 
+    @Size(max = 50)
+    @Column(name = "project")
+    private String project;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,6 +176,14 @@ public class AccountPayableReceivable implements Serializable {
     @Override
     public String toString() {
         return "AccountPayableReceivable{" + "id=" + id + ", accountName=" + accountName + ", amount=" + amount + ", type=" + type + ", entryId=" + entryId + '}';
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
     }
 
 }

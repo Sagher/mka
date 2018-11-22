@@ -5,6 +5,8 @@ package com.mka.dao.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.EntriesDao;
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
@@ -39,6 +41,7 @@ public class EntriesDaoImpl implements EntriesDao {
         try {
             session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(EntryItems.class);
+            criteria.add(Restrictions.eq("isActive", true));
             List<EntryItems> entryItems = criteria.list();
             if (entryItems.size() > 0) {
                 return entryItems;
@@ -450,5 +453,71 @@ public class EntriesDaoImpl implements EntriesDao {
                 session.close();
             }
         }
+    }
+
+    public boolean logAsphaltSale(AsphaltSales ass) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            ass.setIsActive(true);
+            ass.setCreatedDate(new Date());
+            ass.setEntryDate(new Date());
+
+            session.evict(ass);
+            session.save(ass);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("New Asphalt sale Logged: " + ass);
+        } catch (Exception e) {
+            log.error("Exception in logAsphaltSale() " + ass.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public boolean logAsphaltSaleConsumptions(List<AsphaltSaleConsumption> asses) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+
+            for (AsphaltSaleConsumption ass : asses) {
+                session.evict(ass);
+                session.save(ass);
+            }
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("New AsphaltSaleConsumptions Logged: " + asses);
+        } catch (Exception e) {
+            log.error("Exception in logAsphaltSaleConsumptions() " + asses.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
     }
 }

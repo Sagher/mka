@@ -4,18 +4,21 @@ package com.mka.service.impl;
  *
  * @author Sagher Mehmood
  */
-import static com.mka.controller.EntriesController.log;
 import com.mka.dao.EntriesDao;
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
-import com.mka.model.MasterAccountHistory;
+import com.mka.model.StockTrace;
 import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -101,24 +104,26 @@ public class EntriesServiceImpl implements EntriesService {
 
                 // OPTIONAL unloadedCrush & unloadingCost in case of crush
                 String totalUnloadedCrush = request.getParameter("unloadedCrush");
-                String carriageCost = request.getParameter("unloadingCost");
+                String unloadingRate = request.getParameter("unloadingCost");
+                String totalUnloadingCost = request.getParameter("totalUnloadingCost");
                 String unloadingParty = request.getParameter("unloadingParty");
 
                 if (item.getItemName().equalsIgnoreCase("CRUSH")) {
 
                     if (!totalUnloadedCrush.isEmpty() || totalUnloadedCrush.equals("0")
-                            || !carriageCost.isEmpty() || carriageCost.equals("0")
+                            || !unloadingRate.isEmpty() || unloadingRate.equals("0")
                             || !unloadingParty.isEmpty() || unloadingParty.equals("0")) {
-                        int cCost = Integer.parseInt(carriageCost);
+                        int cRate = Integer.parseInt(unloadingRate);
+                        int cAmount = Integer.parseInt(totalUnloadingCost);
                         int tCost = Integer.parseInt(amount);
                         int totalUnloaded = Integer.parseInt(totalUnloadedCrush);
 
-                        int newRate = (cCost + tCost) / totalUnloaded;
+                        int newRate = (cAmount + tCost) / totalUnloaded;
                         int newQuantity = totalUnloaded;
                         entryDetail = new EntriesDirectDetails();
                         entryDetail.setSubType(subItemType);
                         entryDetail.setTotalUnloaded(totalUnloaded);
-                        entryDetail.setUnloadingCost(cCost);
+                        entryDetail.setUnloadingCost(cAmount);
                         entryDetail.setUnloadingParty(unloadingParty);
 
                         entry.setQuantity(newQuantity);
@@ -165,6 +170,7 @@ public class EntriesServiceImpl implements EntriesService {
                     entry.setEntriesDirectDetails(entryDetail);
                     asyncUtil.updateStockTrace(entry);
                     asyncUtil.updateDirectAccountPayableReceivable(entry);
+                    asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance());
                     return entry;
                 }
 
@@ -203,16 +209,6 @@ public class EntriesServiceImpl implements EntriesService {
     @Override
     public boolean logInDirectEntry(EntriesIndirect entry) {
         boolean logged = entriesDao.logInDirectEntry(entry);
-        if (logged) {
-
-            MasterAccount ma = ss.getMasterAccount();
-            if (ma.getCashInHand() > 0 && entry.getAdvance() > 0) {
-                ma.setCashInHand(ma.getCashInHand() - entry.getAdvance());
-                ss.updateMasterAccount(ma);
-            }
-            asyncUtil.updateIndirectAccountPayableReceivable(entry);
-
-        }
         return logged;
     }
 
@@ -265,5 +261,100 @@ public class EntriesServiceImpl implements EntriesService {
 
     public void addEntryDetail(EntriesDirectDetails entryDetail) {
         entriesDao.addEntryDetail(entryDetail);
+    }
+
+    @Override
+    public Object logAsphaltSale(HttpServletRequest request) {
+        try {
+
+            String totalAss = request.getParameter("tass");
+            String customer = request.getParameter("asCus");
+            String customerNew = request.getParameter("asCusInput");
+            String asProj = request.getParameter("asProj");
+            String asProjInput = request.getParameter("asProjInput");
+            String totalCostHQ = request.getParameter("totalCostHQ");
+            String costPerTon = request.getParameter("costPerTon");
+            String totalCostCustomer = request.getParameter("totalCostCustomer");
+            String advancePaid = request.getParameter("advancePaid");
+
+            if (customer.equalsIgnoreCase("other")) {
+                customer = customerNew;
+                asyncUtil.addToCustomersAndBuyersList(customer);
+            }
+            if (asProj.equalsIgnoreCase("other")) {
+                asProj = asProjInput;
+                asyncUtil.addToProjectsList(asProj);
+            }
+
+            for (StockTrace s : ss.getStats()) {
+                log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
+                        + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
+
+                if (ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
+                        < Integer.parseInt(request.getParameter(s.getId() + "quantity"))) {
+                    return ("01:Not Enough " + s.getItemName() + (s.getSubType() != null ? s.getSubType() : "") + " to make this sale");
+                }
+            }
+
+            AsphaltSales realAss = new AsphaltSales();
+            realAss.setBuyer(customer);
+            realAss.setProject(asProj);
+            realAss.setQuantity(Integer.parseInt(totalAss));
+            realAss.setTotalSaleAmount(Integer.parseInt(totalCostHQ));
+
+            if (entriesDao.logAsphaltSale(realAss)) {
+                List<AsphaltSaleConsumption> assConsumptions = new ArrayList<>();
+                for (StockTrace s : ss.getStats()) {
+                    log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
+                            + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
+
+                    AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
+                    ass.setItemName(s.getItemName() + (s.getSubType() != null ? s.getSubType() : ""));
+                    ass.setItemQuantity(Integer.parseInt(request.getParameter(s.getId() + "quantity")));
+                    ass.setItemRate(Integer.parseInt(request.getParameter(s.getId() + "rate")));
+                    ass.setItemAmount(Integer.parseInt(request.getParameter(s.getId() + "cost")));
+                    ass.setAsphlatSaleId(realAss);
+
+                    assConsumptions.add(ass);
+                }
+
+                String assLayer = request.getParameter("assLayer");
+                String assLayingCostPerTon = request.getParameter("assLayingCostPerTon");
+                String totalAssLayingCost = request.getParameter("totalAssLayingCost");
+                String assLayingAdvance = request.getParameter("assLayingAdvance");
+
+                AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
+                ass.setItemName("LAYED BY " + assLayer);
+                ass.setItemQuantity(0);
+                ass.setItemRate(Integer.parseInt(assLayingCostPerTon));
+                ass.setItemAmount(Integer.parseInt(totalAssLayingCost));
+                assConsumptions.add(ass);
+                ass.setAsphlatSaleId(realAss);
+
+                boolean logged = entriesDao.logAsphaltSaleConsumptions(assConsumptions);
+
+                if (logged) {
+                    if (Integer.parseInt(assLayingAdvance) != Integer.parseInt(totalAssLayingCost)) {
+                        // advance payable
+                        int payableAmount = Integer.parseInt(totalAssLayingCost) - Integer.parseInt(assLayingAdvance);
+                        String payableTo = assLayer;
+                        asyncUtil.logAmountPayable(BigInteger.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject());
+                    }
+                    // update stockTrace
+                    for (StockTrace s : ss.getStats()) {
+
+                        s.setStockUnits(s.getStockUnits() - Integer.parseInt(request.getParameter(s.getId() + "quantity")));
+                        s.setStockAmount(s.getStockAmount() - Integer.parseInt(request.getParameter(s.getId() + "cost")));
+
+                        asyncUtil.updateStockTrace(s);
+                    }
+                }
+            }
+
+            return realAss;
+        } catch (Exception e) {
+            log.error("Exception while logging Entry:", e);
+            return ("01:Failed To Log Entry. Make sure all field are filled in.");
+        }
     }
 }

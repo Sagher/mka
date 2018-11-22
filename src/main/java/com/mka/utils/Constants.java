@@ -31,7 +31,7 @@ public class Constants {
 
 //    public static String BASE_PATH = "E:\\";
 //    public static String IMAGES_BASE_PATH = "resources\\img\\avatars\\";
-    public static final String BASE_PATH = "/var/www/html/mka";
+    public static final String BASE_PATH = "/var/www/asphaltplant";
     public static final String IMAGES_BASE_PATH = "/resources/img/avatars/";
     public static final String DEFAULT_IMG = "/resources/img/avatars/default-image.jpg";
 

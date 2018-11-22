@@ -4,6 +4,8 @@ package com.mka.dao;
  *
  * @author Sagher Mehmood
  */
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
@@ -39,4 +41,8 @@ public interface EntriesDao {
     public EntryItems createNewEntryItem(EntryItems item);
 
     public void addEntryDetail(EntriesDirectDetails entryDetail);
+
+    public boolean logAsphaltSale(AsphaltSales ass);
+
+    public boolean logAsphaltSaleConsumptions(List<AsphaltSaleConsumption> ass);
 }

@@ -17,20 +17,24 @@ $(document).ready(function () {
         },
         "columns": [
             /*
-             <th>Name</th>
-             <th>Amount</th>
-             <th>Type</th>
              <th>Date</th>
+             <th>Project</th>
+             <th>Name</th>
+             <th>Type</th>
+             <th>Item</th>
+             <th>Amount</th>
              */
 //            {"data": "id", "render": function (data, type, full, meta) {
 //                    var html = "<div class='id'>" + data + "</div>";
 //                    return html;
 //                }
 //            },
+            {"data": "createdDate"},
+            {"data": "project"},
             {"data": "accountName"},
-            {"data": "amount"},
+            {"data": "type"},
             {"data": "itemType.itemName"},
-            {"data": "createdDate"}
+            {"data": "amount"}
         ],
         "processing": true,
         "serverSide": true,

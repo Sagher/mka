@@ -31,7 +31,6 @@ $(document).ready(function () {
             entryItemsList = data;
 //            console.log(entryItemsList);
             for (var i in entryItemsList) {
-                console.log(entryItemsList[i])
                 if (entryItemsList[i].entryType === 'DIRECT') {
                     ditemTypeSelection.append($("<option />").val(entryItemsList[i].id).text(entryItemsList[i].itemName));
                 } else {
@@ -51,15 +50,17 @@ $(document).ready(function () {
         success: function (data) {
             customersBuyersList = data;
             for (var i in customersBuyersList) {
-                console.log(customersBuyersList[i])
                 customerBuyerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 tCustomerBuyerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 iname.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                asCusSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
 
             }
             customerBuyerSelect.append($("<option />").val('Other').text('Other'));
             tCustomerBuyerSelect.append($("<option />").val('Other').text('Other'));
             iname.append($("<option />").val('Other').text('Other'));
+            asCusSelect.append($("<option />").val('Other').text('Other'));
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(textStatus);
@@ -71,12 +72,15 @@ $(document).ready(function () {
         success: function (data) {
             projectsList = data;
             for (var i in projectsList) {
-                console.log(projectsList[i])
                 projectSelect.append($("<option />").val(projectsList[i].name).text(projectsList[i].name));
                 tProjSelect.append($("<option />").val(projectsList[i].name).text(projectsList[i].name));
+                asProjSelect.append($("<option />").val(projectsList[i].name).text(projectsList[i].name));
+
             }
             projectSelect.append($("<option />").val('Other').text('Other'));
             tProjSelect.append($("<option />").val('Other').text('Other'));
+            asProjSelect.append($("<option />").val('Other').text('Other'));
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log(textStatus);
@@ -100,7 +104,6 @@ ditemTypeSelection.change(function () {
 
                 // show add carriage button for crush
                 if (selectItemId == 6) {
-                    console.log("show add carriage button for crush")
                     $("#addCarriageDiv").removeAttr("hidden");
                 } else {
                     $("#addCarriageDiv").attr("hidden", "true");
@@ -168,7 +171,6 @@ ditemTypeSelection.change(function () {
                 $("#pup").html("Per " + data.itemUnit + " Price");
                 $("#stockDetail").html(html);
             }
-            console.log(data)
         });
     } else {
         $("#stockDetailDiv").attr("hidden", "true");
@@ -210,44 +212,29 @@ dItemSubTypeSelection.change(function () {
 
             $("#stockDetail").html(html);
         }
-        console.log(data)
     });
 });
 function addCrushCarriage() {
-    console.log("POPUP");
-    $('#crushCarriageModal').modal('show');
+    $("#crushCarriageForm").removeAttr("hidden");
+    $("#addCarriageDiv").attr("hidden", "true");
 }
 
-function addCarriage() {
-    $('#crushCarriageModal').modal('hide');
-    console.log($("#unloadedCrush").val());
-    console.log($("#unloadingCost").val());
-    console.log($("#unloadingParty").val());
-    $("#dentryForm .unloadedCrush").val($("#unloadedCrush").val());
-    $("#dentryForm .unloadingCost").val($("#unloadingCost").val());
-    $("#dentryForm .unloadingParty").val($("#unloadingParty").val());
-}
-
-// attach change event listener to 'dEntryType' select box
-//entryTypeSelection.change(function () {
-//    var selectEntryType = entryTypeSelection.val();
-//    console.log(selectEntryType);
-//    $("#supBuyDiv").removeAttr("hidden");
-//    if (selectEntryType === 'SALE') {
-////        $(".buysup-label").html("Name Of Buyer");
-//    } else {
-////        $(".buysup-label").html("Name Of Supplier");
-//
-//    }
-//
-//});
 
 // attach change event listener to rate and quantity to calculate amount select box
 $("#drate, #dquantity").change(function () {
-    if (quantity.val().length > 0 && rate.val().length > 0) {
+    if (quantity.val().length > 0 || rate.val().length > 0) {
         var am = quantity.val() * rate.val();
-        console.log(am)
         amount.val(am);
+    } else {
+
+    }
+});
+
+// attach change event listener to unloading rate and quantity 
+$("#unloadedCrush, #unloadingCost").change(function () {
+    if ($("#unloadedCrush").val().length > 0 || $("#unloadingCost").val().length > 0) {
+        var am = $("#unloadedCrush").val() * $("#unloadingCost").val();
+        $("#totalUnloadingCost").val(am);
     } else {
 
     }
@@ -302,7 +289,7 @@ function logdEntry() {
             if (respCode === '00') {
                 noty({
                     text: respMessage,
-                    type: "success", layout: "center", timeout: 4000
+                    type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
                 $("#logdEntryBtn").show();
@@ -312,7 +299,7 @@ function logdEntry() {
             } else {
                 noty({
                     text: respMessage,
-                    type: "error", layout: "center", timeout: 4000
+                    type: "error", layout: "top", timeout: 4000
                 });
                 $("#logdEntryBtn").show();
             }
@@ -407,7 +394,7 @@ function logiEntry() {
             if (respCode === '00') {
                 noty({
                     text: respMessage,
-                    type: "success", layout: "center", timeout: 4000
+                    type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
                 $("#logiEntryBtn").show();
@@ -417,7 +404,7 @@ function logiEntry() {
             } else {
                 noty({
                     text: respMessage,
-                    type: "error", layout: "center", timeout: 4000
+                    type: "error", layout: "top", timeout: 4000
                 });
                 $("#logiEntryBtn").show();
             }
@@ -473,7 +460,7 @@ function logCashTransaction() {
             if (respCode === '00') {
                 noty({
                     text: respMessage,
-                    type: "success", layout: "center", timeout: 4000
+                    type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
                 $("#cashTranBtn").show();
@@ -483,9 +470,130 @@ function logCashTransaction() {
             } else {
                 noty({
                     text: respMessage,
-                    type: "error", layout: "center", timeout: 4000
+                    type: "error", layout: "top", timeout: 4000
                 });
                 $("#cashTranBtn").show();
+            }
+
+        }
+    });
+}
+
+
+/*
+ * 
+ * ASPHALT SALE
+ * 
+ */
+
+var asCusSelect = $("#asCusSelect");
+var asCusInput = $("#asCusInput");
+var asProjSelect = $("#asProjSelect");
+var asProjInput = $("#asProjInput");
+
+//attach change event to customer/buyer and supplier select
+asCusSelect.change(function () {
+    if ($('#asCusSelect option:selected').text() == "Other") {
+        asCusInput.removeAttr("hidden");
+        asCusInput.attr("required", "true");
+    } else {
+        asCusInput.attr("hidden", "true");
+        asCusInput.removeAttr("required");
+    }
+});
+//attach change event to project select
+asProjSelect.change(function () {
+    if ($('#asProjSelect option:selected').text() == "Other") {
+        asProjInput.removeAttr("hidden");
+        asProjInput.attr("required", "true");
+    } else {
+        asProjInput.removeAttr("required");
+        asProjInput.attr("hidden", "true");
+    }
+});
+
+$("#assLayingCostPerTon").change(function () {
+    if ($("#assLayingCostPerTon").val().length > 0 || rate.val().length > 0) {
+        var am = $("#assLayingCostPerTon").val() * $("#tass").val();
+        $("#totalAssLayingCost").val(am);
+    } else {
+
+    }
+});
+
+function updateAssRate(itemName, value, avgRate) {
+    console.log(itemName + ", " + value + ", " + avgRate);
+    var item = itemName.split("~")[0];
+    var totalQuantity = 1 * value;
+    var qId = "#" + item + "quantity";
+    $(qId).val(totalQuantity);
+    var costId = "#" + item + "cost";
+    var itemCost = totalQuantity * Math.ceil(avgRate);
+    $(costId).val(itemCost);
+    var totalSaleAmount = $("#costPerTon").val();
+    $("#costPerTon").val(parseInt(totalSaleAmount, 10) + itemCost);
+
+    var total = parseInt($("#costPerTon").val(), 10) + parseInt(value, 10);
+    total = total * parseInt($("#tass").val());
+    $("#totalCostHQ").val(total);
+}
+
+function addMixtureCost(value) {
+    var total = parseInt($("#totalCostHQ").val(), 10) + parseInt(value, 10);
+    total = total * parseInt($("#tass").val());
+    $("#totalCostCustomer").val(total)
+
+}
+
+function addLayingCostToTotalCost(layingCostPerTon) {
+    var total = parseInt($("#costPerTon").val(), 10) + parseInt(layingCostPerTon, 10);
+    total = total * parseInt($("#tass").val());
+    $("#totalCostHQ").val(total);
+
+}
+
+function addLayingCost() {
+    $("#assLayingCost").removeAttr("hidden");
+    $("#addAssLayingBtn").attr("hidden", "true");
+}
+
+function changeTotalCost(value) {
+    if (value === 0) {
+        $("#mixRateDiv").removeAttr("hidden");
+    } else {
+        $("#mixRateDiv").attr("hidden", "true");
+    }
+}
+
+function logAssSale() {
+    $('#asphaltSaleForm').ajaxForm({
+        beforeSend: function () {
+            $("#assSaleBtn").hide();
+        },
+        uploadProgress: function (event, position, total, percentComplete) {
+        },
+        complete: function (xhr) {
+            response = xhr.responseText.split(":");
+            console.log(response);
+            respCode = response[0];
+            respMessage = response[1];
+            if (respCode === '00') {
+                noty({
+                    text: respMessage,
+                    type: "success", layout: "top", timeout: 4000
+                });
+                alert(respMessage);
+                $("#assSaleBtn").show();
+//                setTimeout(function () {
+//                    location.reload();
+//                }, 5000);
+            } else {
+                noty({
+                    text: respMessage,
+                    type: "error", layout: "top", timeout: 4000
+                });
+                alert(respMessage);
+                $("#assSaleBtn").show();
             }
 
         }

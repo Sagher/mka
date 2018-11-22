@@ -100,7 +100,7 @@ public class AccountsDaoImpl implements AccountsDao {
             } else if (!sortBy.isEmpty()) {
                 criteria.addOrder(Order.desc(sortBy));
             } else {
-                criteria.addOrder(Order.desc("createdDate"));
+                criteria.addOrder(Order.desc("id"));
             }
             List<AccountPayableReceivable> emps = criteria.list();
             if (emps.size() > 0) {

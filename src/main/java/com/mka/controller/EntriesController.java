@@ -5,6 +5,7 @@
  */
 package com.mka.controller;
 
+import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
@@ -83,6 +84,8 @@ public class EntriesController {
                 model.addObject("allRoles", Constants.ALL_ROLES);
                 model.addObject("users", userService.getAllUsers());
                 model.addObject("masterAccount", ss.getMasterAccount());
+                model.addObject("stockTrace", ss.getStats());
+
                 model.setViewName("subPages/entry");
             } else {
                 model.addObject("errorCode", "401");
@@ -187,6 +190,7 @@ public class EntriesController {
             String icost = request.getParameter("icost");
             String iAdvance = request.getParameter("iadvance");
             String dateOfEntry = request.getParameter("idoe");
+            String payfrom = request.getParameter("payfrom");
 
             if (item != null) {
                 EntriesIndirect entry = new EntriesIndirect();
@@ -206,12 +210,17 @@ public class EntriesController {
                 MasterAccount ma = ss.getMasterAccount();
                 if (ma.getCashInHand() < entry.getAdvance()) {
                     return ("01:Not Enough Cash In Hand to Log this Expense");
+                } else if (ma.getCashInHand() < entry.getAdvance() && payfrom.equals("1")) {
+                    return ("01:Not Enough cash in hand to make this purchase");
+                } else if (ma.getTotalCash() < entry.getAdvance() && payfrom.equals("0")) {
+                    return ("01:Not Enough cash in Main Account to make this purchase");
                 }
 
                 boolean entryLogged = entriesService.logInDirectEntry(entry);
                 if (!entryLogged) {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
+                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance());
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
                     return "00:Entry Logged Successfully";
                 }
@@ -459,6 +468,20 @@ public class EntriesController {
             log.error("Exception while logging Transaction:", e);
             return ("01:Invalid Values");
         }
+    }
+
+    @RequestMapping(value = "/logAsphaltSale", method = RequestMethod.POST)
+    public @ResponseBody
+    String logAsphaltSale(HttpServletRequest request, HttpSession httpSession) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Object entryLogged = entriesService.logAsphaltSale(request);
+        if (entryLogged instanceof AsphaltSales) {
+            logActivity(request, auth.getName(), "Asphalt Sale Logged", entryLogged.toString());
+            return "00:Sale Logged Successfully";
+        } else if (entryLogged instanceof String) {
+            return ((String) entryLogged);
+        }
+        return ("01:Invalid Values");
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

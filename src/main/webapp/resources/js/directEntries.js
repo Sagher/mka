@@ -31,11 +31,11 @@ $(document).ready(function () {
              <th>Advance</th>
              <th>Action</th>
              */
-            {"data": "id", "render": function (data, type, full, meta) {
-                    var html = "<div class='id'>" + data + "</div>";
-                    return html;
-                }
-            },
+//            {"data": "id", "render": function (data, type, full, meta) {
+//                    var html = "<div class='id'>" + data + "</div>";
+//                    return html;
+//                }
+//            },
             {"data": "entryDate"},
             {"data": "itemName", "render": function (data, type, full, meta) {
                     if (full.entriesDirectDetails != null) {
@@ -52,14 +52,14 @@ $(document).ready(function () {
             {"data": "quantity"},
             {"data": "rate"},
             {"data": "totalPrice"},
-            {"data": "advance"},
-            {"data": "", "render": function (data, type, full, meta) {
-                    var html = "";
-//                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
-                    html += "<button id='del-" + full.id + "' style='margin-left:3px' class=\"btn btn-danger\" onclick=\"del(" + full.id + ")\"><i class=\"fa fa-trash\"></i></button>";
-                    return html;
-                }
-            }
+            {"data": "advance"}
+//            {"data": "", "render": function (data, type, full, meta) {
+//                    var html = "";
+////                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";
+//                    html += "<button id='del-" + full.id + "' style='margin-left:3px' class=\"btn btn-danger\" onclick=\"del(" + full.id + ")\"><i class=\"fa fa-trash\"></i></button>";
+//                    return html;
+//                }
+//            }
 
         ],
         "processing": true,

@@ -133,7 +133,7 @@
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th class="id">ID</th>
+                                                            <!--<th class="id">ID</th>-->
                                                             <th>Entry Date</th>
                                                             <th>Item</th>
                                                             <th>Type</th>
@@ -144,7 +144,7 @@
                                                             <th>Rate</th>
                                                             <th>Amount</th>
                                                             <th>Advance</th>
-                                                            <th style="min-width: 80px">Action</th>
+                                                            <!--<th style="min-width: 80px">Action</th>-->
                                                         </tr>
                                                     </thead>
                                                     <style>

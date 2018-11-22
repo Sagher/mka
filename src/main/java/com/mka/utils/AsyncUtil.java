@@ -9,12 +9,15 @@ import com.mka.dao.AccountsDao;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
+import com.mka.model.EntryItems;
+import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.UserActivity;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +93,20 @@ public class AsyncUtil {
                 st.setStockUnits(st.getStockUnits() + entry.getQuantity());
             }
 
-            st.setAverageUnitPrice(ss.getAveragePricePerUnit(entry.getItem().getId()));
+//            st.setAverageUnitPrice(ss.getAveragePricePerUnit(entry.getItem().getId()));
+            st.setAverageUnitPrice(BigDecimal.valueOf((st.getStockAmount() / st.getStockUnits())));
+
+            ss.updateStockTrace(st);
+        } catch (Exception e) {
+            log.error("Exception in updateStockTrace: ", e);
+        }
+    }
+
+    @Async
+    public void updateStockTrace(StockTrace st) {
+        try {
+
+            st.setAverageUnitPrice(ss.getAveragePricePerUnit(st.getItemId()));
             ss.updateStockTrace(st);
         } catch (Exception e) {
             log.error("Exception in updateStockTrace: ", e);
@@ -120,6 +136,7 @@ public class AsyncUtil {
                 receivable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
                 receivable.setEntryId(entry.getId());
                 receivable.setIsActive(true);
+                receivable.setProject(entry.getProject());
                 receivable.setType(Constants.RECEIVABLE);
                 receivable.setItemType(entry.getItem());
 
@@ -134,6 +151,7 @@ public class AsyncUtil {
                 payable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
                 payable.setEntryId(entry.getId());
                 payable.setIsActive(true);
+                payable.setProject(entry.getProject());
                 payable.setType(Constants.PAYABLE);
                 payable.setItemType(entry.getItem());
 
@@ -155,6 +173,7 @@ public class AsyncUtil {
                 payable.setAmount(BigInteger.valueOf(entry.getAmount() - entry.getAdvance()));
                 payable.setEntryId(entry.getId());
                 payable.setIsActive(true);
+                payable.setProject(entry.getName());
                 payable.setType(Constants.PAYABLE);
                 payable.setItemType(entry.getItem());
 
@@ -165,6 +184,35 @@ public class AsyncUtil {
         } catch (Exception e) {
 
         }
+    }
+
+    public void logAmountPayable(BigInteger amount, String payableTo, int entryId, String project) {
+        try {
+            //payable
+            AccountPayableReceivable payable = new AccountPayableReceivable();
+            payable.setAccountName(payableTo);
+            payable.setAmount(amount);
+            payable.setEntryId(entryId);
+            payable.setIsActive(true);
+            payable.setProject(project);
+            payable.setType(Constants.PAYABLE);
+            payable.setItemType(new EntryItems(17));
+
+            if (!accountsDao.logAccountPayableReceivable(payable)) {
+                log.warn("*** Account Payable not logged ***");
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void updateMasterAccount(MasterAccount masterAccount, String payfrom, int advance) {
+        if (payfrom.equals("1")) {
+            masterAccount.setCashInHand(masterAccount.getCashInHand() - advance);
+        } else if (payfrom.equals("0")) {
+            masterAccount.setTotalCash(masterAccount.getTotalCash() - advance);
+        }
+        ss.updateMasterAccount(masterAccount);
     }
 
 }
