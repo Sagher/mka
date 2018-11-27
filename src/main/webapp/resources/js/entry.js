@@ -23,6 +23,8 @@ var rate = $("#drate");
 var amount = $("#damount");
 var advance = $("#dadvance");
 var dateOfEntry = $("#doe");
+var cashDateOfEntry = $("#cdoe");
+
 $(document).ready(function () {
     $.ajax({
         url: "getEntryItemsList",
@@ -88,6 +90,18 @@ $(document).ready(function () {
     });
     dateOfEntry.val(new Date().toDateInputValue());
     idateOfEntry.val(new Date().toDateInputValue());
+    cashDateOfEntry.val(new Date().toDateInputValue());
+
+    dateOfEntry.attr("max", new Date().toDateInputValue());
+    idateOfEntry.attr("max", new Date().toDateInputValue());
+    cashDateOfEntry.attr("max", new Date().toDateInputValue());
+
+    var firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+    dateOfEntry.attr("min", firstDay.toDateInputValue());
+    idateOfEntry.attr("min", firstDay.toDateInputValue());
+    cashDateOfEntry.attr("min", firstDay.toDateInputValue());
+
 });
 // attach change event listener to 'itemType' select box
 ditemTypeSelection.change(function () {
@@ -214,6 +228,28 @@ dItemSubTypeSelection.change(function () {
         }
     });
 });
+
+entryTypeSelection.change(function () {
+    var type = entryTypeSelection.val();
+    if (type === 'CONSUME') {
+        console.log('consumate');
+        $("#damount").attr("readonly", "true");
+        $("#dadvance").attr("readonly", "true");
+        $("#drate").attr("readonly", "true");
+        $("#drate").val(stockData.averageUnitPrice);
+        $("#supBuyDiv").attr("hidden", "true");
+        $("#dbuysupSelect").removeAttr("required");
+
+
+    } else {
+        $("#damount").removeAttr("readonly");
+        $("#dadvance").removeAttr("readonly");
+        $("#drate").removeAttr("readonly");
+        $("#supBuyDiv").removeAttr("hidden");
+        $("#dbuysupSelect").attr("required", "true");
+    }
+});
+
 function addCrushCarriage() {
     $("#crushCarriageForm").removeAttr("hidden");
     $("#addCarriageDiv").attr("hidden", "true");
@@ -417,11 +453,12 @@ function logiEntry() {
  * CASH TRAN
  * 
  */
-
+var ttype = $("#ttype");
 var tCustomerBuyerSelect = $("#tbuysupSelect");
 var tCusByInput = $("#tbuysupInput");
 var tProjSelect = $("#tprojSelect");
 var tprojectInput = $("#tproject");
+var cashInHandOptionsDiv = $("#cashInHandOptionsDiv");
 
 //attach change event to customer/buyer and supplier select
 tCustomerBuyerSelect.change(function () {
@@ -434,16 +471,32 @@ tCustomerBuyerSelect.change(function () {
     }
 });
 //
-////attach change event to project select
-//tProjSelect.change(function () {
-//    if ($('#tprojSelect option:selected').text() == "Other") {
-//        tprojectInput.removeAttr("hidden");
-//        tprojectInput.attr("required", "true");
-//    } else {
-//        tprojectInput.removeAttr("required");
-//        tprojectInput.attr("hidden", "true");
-//    }
-//});
+//attach change event to project select
+ttype.change(function () {
+    if ($('#ttype option:selected').val() == "-+") {
+        cashInHandOptionsDiv.removeAttr("hidden");
+        changeCashTranCusLabel(1);
+    } else {
+        cashInHandOptionsDiv.attr("hidden", "true");
+        changeCashTranCusLabel(0);
+
+    }
+});
+
+function changeCashTranCusLabel(value) {
+    if (value === 0) {
+        $("#tPayeeLabel").html("Customer");
+        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" id="tbuysupSelect" name="tpayer" required="true"><option selected value="">-- Please select An Option --</option></select><br><input hidden="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" placeholder="Custom Buyer/Supplier">');
+        for (var i in customersBuyersList) {
+            $("#tbuysupSelect").append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+        }
+        $("#tbuysupSelect").append($("<option />").val('Other').text('Other'));
+    } else {
+        $("#tPayeeLabel").html("Payee");
+        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" style="display:none" id="tbuysupSelect" name="tpayer" required="true"><option selected value="Other">Other</option></select><input readonly="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" value="HeadOffice">');
+
+    }
+}
 
 function logCashTransaction() {
     $('#cashTranForm').ajaxForm({
@@ -513,56 +566,50 @@ asProjSelect.change(function () {
 });
 
 $("#assLayingCostPerTon").change(function () {
-    if ($("#assLayingCostPerTon").val().length > 0 || rate.val().length > 0) {
+    if ($("#assLayingCostPerTon").val().length > 0) {
         var am = $("#assLayingCostPerTon").val() * $("#tass").val();
         $("#totalAssLayingCost").val(am);
-    } else {
-
     }
+    updateTotalAssCostAndPerTonAssRate();
 });
+
+$("#assCarCostPerTon").change(function () {
+    if ($("#assCarCostPerTon").val().length > 0) {
+        var am = $("#assCarCostPerTon").val() * $("#tass").val();
+        $("#totalAssCarCost").val(am);
+    }
+    updateTotalAssCostAndPerTonAssRate();
+});
+
+$("#expRate").change(function () {
+    if ($("#expRate").val().length > 0) {
+        var am = $("#expRate").val() * $("#tass").val();
+        $("#expCost").val(am);
+    }
+    updateTotalAssCostAndPerTonAssRate();
+});
+
+function updateTotalAssCostAndPerTonAssRate() {
+    var expCost = $("#expCost").val();
+    var tAssCarCost = $("#totalAssCarCost").val();
+    var tAssLayingCost = $("#totalAssLayingCost").val();
+    var totalSaleCost = parseFloat(expCost) + parseFloat(tAssCarCost) + parseFloat(tAssLayingCost);
+    console.log(totalSaleCost);
+    $("#assSaleCost").val(totalSaleCost);
+    $("#assSaleRate").val(totalSaleCost / parseFloat($("#tass").val()));
+}
+
 
 function updateAssRate(itemName, value, avgRate) {
     console.log(itemName + ", " + value + ", " + avgRate);
     var item = itemName.split("~")[0];
-    var totalQuantity = 1 * value;
+    var totalQuantity = parseInt($("#tass").val()) * value;
     var qId = "#" + item + "quantity";
     $(qId).val(totalQuantity);
     var costId = "#" + item + "cost";
     var itemCost = totalQuantity * Math.ceil(avgRate);
     $(costId).val(itemCost);
-    var totalSaleAmount = $("#costPerTon").val();
-    $("#costPerTon").val(parseInt(totalSaleAmount, 10) + itemCost);
 
-    var total = parseInt($("#costPerTon").val(), 10) + parseInt(value, 10);
-    total = total * parseInt($("#tass").val());
-    $("#totalCostHQ").val(total);
-}
-
-function addMixtureCost(value) {
-    var total = parseInt($("#totalCostHQ").val(), 10) + parseInt(value, 10);
-    total = total * parseInt($("#tass").val());
-    $("#totalCostCustomer").val(total)
-
-}
-
-function addLayingCostToTotalCost(layingCostPerTon) {
-    var total = parseInt($("#costPerTon").val(), 10) + parseInt(layingCostPerTon, 10);
-    total = total * parseInt($("#tass").val());
-    $("#totalCostHQ").val(total);
-
-}
-
-function addLayingCost() {
-    $("#assLayingCost").removeAttr("hidden");
-    $("#addAssLayingBtn").attr("hidden", "true");
-}
-
-function changeTotalCost(value) {
-    if (value === 0) {
-        $("#mixRateDiv").removeAttr("hidden");
-    } else {
-        $("#mixRateDiv").attr("hidden", "true");
-    }
 }
 
 function logAssSale() {
@@ -582,17 +629,15 @@ function logAssSale() {
                     text: respMessage,
                     type: "success", layout: "top", timeout: 4000
                 });
-                alert(respMessage);
                 $("#assSaleBtn").show();
-//                setTimeout(function () {
-//                    location.reload();
-//                }, 5000);
+                setTimeout(function () {
+                    location.reload();
+                }, 5000);
             } else {
                 noty({
                     text: respMessage,
                     type: "error", layout: "top", timeout: 4000
                 });
-                alert(respMessage);
                 $("#assSaleBtn").show();
             }
 

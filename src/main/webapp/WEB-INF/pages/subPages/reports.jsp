@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:directive.page session="true" />
 <html>
     <head>
@@ -55,22 +56,27 @@
                                                 <div class="btn-group float-right">
                                                     <a href="<c:url value="/entries?type=direct&eitem=${item.itemId}" />">
                                                         <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                            Detail
+                                                            More
                                                         </button>
                                                     </a>
                                                 </div>
                                                 <div class="item-name">${item.itemName} <small>${item.subType}</small></div>
                                                 <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
-                                                <div>Total Sales Amount: ${item.salesAmount} PKR</div>
+                                                <div>Total Sales Amount: 
+                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.salesAmount}"/>
+                                                    PKR</div>
                                             </div>
                                         </div>
                                         <div class="brand-card-body">
                                             <div>
-                                                <div class="text-value">${item.stockUnits} ${item.itemUnit}</div>
+                                                <div class="text-value small">${item.stockUnits} ${item.itemUnit}</div>
                                                 <div class="text-uppercase text-muted small">In Stock</div>
                                             </div>
                                             <div>
-                                                <div class="text-value">${item.stockAmount} PKR</div>
+                                                <div class="text-value small">
+                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.stockAmount}"/>
+                                                    PKR
+                                                </div>
                                                 <div class="text-uppercase text-muted small">Stock Value</div>
                                             </div>
                                         </div>
@@ -86,7 +92,7 @@
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a href="<c:url value="/report?type=RECEIVABLE" />">
+                                            <a href="<c:url value="/report?type=receivable" />">
                                                 <div class="item-name">Accounts Receivable Report</div>
                                             </a>
                                         </div>
@@ -97,35 +103,41 @@
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a href="<c:url value="/report?type=PAYABLE" />">
+                                            <a href="<c:url value="/report?type=payable" />">
                                                 <div class="item-name">Accounts Payable Report</div>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-<!--                            <div class="col-sm-6 col-lg-3">
+                            <div class="col-sm-6 col-lg-3">
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a class="disabled" href="<c:url value="/report?type=indirect" />">
+                                            <a class="disabled" href="<c:url value="/report?type=profitLoss" />">
                                                 <div class="item-name">Profit & Loss Report</div>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>-->
-                        </div>
-
-                        <hr>
-
-                        <div class="row">
+                            </div>
                             <div class="col-sm-6 col-lg-3">
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a href="<c:url value="/entries?type=indirect" />">
-                                                <div class="item-name">ALL EXPENSES DETAILS</div>
+                                            <a class="disabled" href="<c:url value="/report?type=closingStock" />">
+                                                <div class="item-name">Closing Stock</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a class="disabled" href="<c:url value="/report?type=balanceSheet" />">
+                                                <div class="item-name">Balance Sheet</div>
                                             </a>
                                         </div>
                                     </div>
@@ -133,7 +145,20 @@
                             </div>
                         </div>
 
-
+                        <!--                        <hr>
+                                                <div class="row">
+                                                    <div class="col-sm-6 col-lg-3">
+                                                        <div class="brand-card item-summary">
+                                                            <div class="brand-card-header text-white">
+                                                                <div class="card-body">
+                                                                    <a href="<c:url value="/entries?type=indirect" />">
+                                                                        <div class="item-name">ALL EXPENSES DETAILS</div>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>-->
                     </div>
                 </div>
             </main>

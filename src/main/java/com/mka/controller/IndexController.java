@@ -47,16 +47,17 @@ public class IndexController {
                 && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
             User u = userService.getUser(auth.getName());
             totalPurchase = 0;
-            totalSale = 0;
             purchaseUnits = 0;
+            totalSale = 0;
             saleUnits = 0;
             totalStock = 0;
+            stockUnits = 0;
             List<StockTrace> stockTrace = ss.getStats();
             try {
                 stockTrace.parallelStream().filter((StockTrace e) -> {
-                    totalSale += e.getSalesAmount();
-                    totalPurchase += e.getPurchaseAmount();
-                    totalStock += e.getStockAmount();
+                    totalSale += e.getSalesAmount().intValue();
+                    totalPurchase += e.getPurchaseAmount().intValue();
+                    totalStock += e.getStockAmount().intValue();
 
                     saleUnits += e.getSalesUnit();
                     purchaseUnits += e.getPurchaseUnit();

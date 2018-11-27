@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,6 +35,14 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntriesIndirect.findAll", query = "SELECT e FROM EntriesIndirect e")})
 public class EntriesIndirect implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "amount")
+    private BigDecimal amount;
+    @Column(name = "advance")
+    private BigDecimal advance;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,12 +59,6 @@ public class EntriesIndirect implements Serializable {
     private String name;
     @Column(name = "description")
     private String description;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "amount")
-    private int amount;
-    @Column(name = "advance")
-    private Integer advance;
     @Column(name = "entry_date")
     @Temporal(TemporalType.DATE)
     private Date entryDate;
@@ -87,7 +90,7 @@ public class EntriesIndirect implements Serializable {
         this.id = id;
     }
 
-    public EntriesIndirect(Integer id, String name, String description, int amount, Date createdDate) {
+    public EntriesIndirect(Integer id, String name, String description, BigDecimal amount, Date createdDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -125,22 +128,6 @@ public class EntriesIndirect implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public Integer getAdvance() {
-        return advance;
-    }
-
-    public void setAdvance(Integer advance) {
-        this.advance = advance;
     }
 
     public Date getEntryDate() {
@@ -206,6 +193,22 @@ public class EntriesIndirect implements Serializable {
     @Override
     public String toString() {
         return "id=" + id + ", itemType=" + itemType + ", name=" + name + ", description=" + description + ", amount=" + amount + ", advance=" + advance + ", entryDate=" + entryDate + ", isActive=" + isActive + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public BigDecimal getAdvance() {
+        return advance;
+    }
+
+    public void setAdvance(BigDecimal advance) {
+        this.advance = advance;
     }
 
 }

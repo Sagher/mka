@@ -29,7 +29,7 @@ public interface StatsService {
 
     public MasterAccount getMasterAccount();
 
-    public boolean logCashTransaction(MasterAccountHistory mah);
+    public boolean logCashTransaction(MasterAccountHistory mah,String from);
 
     public boolean updateMasterAccount(MasterAccount ma);
 }

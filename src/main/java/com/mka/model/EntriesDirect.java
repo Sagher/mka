@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -37,6 +38,24 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "quantity")
+    private BigDecimal quantity;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "rate")
+    private BigDecimal rate;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "advance")
+    private BigDecimal advance;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "total_price")
+    private BigDecimal totalPrice;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
@@ -49,11 +68,6 @@ public class EntriesDirect implements Serializable {
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "advance")
-    private int advance;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -69,18 +83,6 @@ public class EntriesDirect implements Serializable {
     private String supplier;
     @Column(name = "project")
     private String project;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "quantity")
-    private int quantity;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "rate")
-    private int rate;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_price")
-    private int totalPrice;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_active")
@@ -112,7 +114,7 @@ public class EntriesDirect implements Serializable {
         this.id = id;
     }
 
-    public EntriesDirect(Integer id, String buyer, String supplier, String project, int quantity, int rate, int totalPrice, boolean isActive, Date createdDate) {
+    public EntriesDirect(Integer id, String buyer, String supplier, String project, BigDecimal quantity, BigDecimal rate, BigDecimal totalPrice, boolean isActive, Date createdDate) {
         this.id = id;
         this.buyer = buyer;
         this.supplier = supplier;
@@ -154,30 +156,6 @@ public class EntriesDirect implements Serializable {
 
     public void setProject(String project) {
         this.project = project;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getRate() {
-        return rate;
-    }
-
-    public void setRate(int rate) {
-        this.rate = rate;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public boolean getIsActive() {
@@ -245,14 +223,6 @@ public class EntriesDirect implements Serializable {
         return "id=" + id + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
-    public int getAdvance() {
-        return advance;
-    }
-
-    public void setAdvance(int advance) {
-        this.advance = advance;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -275,6 +245,38 @@ public class EntriesDirect implements Serializable {
 
     public void setEntriesDirectDetails(EntriesDirectDetails entriesDirectDetails) {
         this.entriesDirectDetails = entriesDirectDetails;
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getRate() {
+        return rate;
+    }
+
+    public void setRate(BigDecimal rate) {
+        this.rate = rate;
+    }
+
+    public BigDecimal getAdvance() {
+        return advance;
+    }
+
+    public void setAdvance(BigDecimal advance) {
+        this.advance = advance;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
 }

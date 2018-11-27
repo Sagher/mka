@@ -10,6 +10,7 @@ import com.mka.model.EmployeessPayments;
 import com.mka.model.EntriesIndirect;
 import com.mka.service.EmployeesService;
 import com.mka.service.EntriesService;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +63,9 @@ public class EmployeesServiceImpl implements EmployeesService {
         if (employees != null && !employees.isEmpty()) {
             for (Employees emp : employees) {
                 if (!emp.getCurrentMonthPayed() && !emp.getIsTerminated()) {
-                    totalAmount += emp.getSalary();
+                    totalAmount += emp.getSalary().intValue();
                     EmployeessPayments empPayment = new EmployeessPayments();
-                    empPayment.setAmountPayed(emp.getSalary());
+                    empPayment.setAmountPayed(emp.getSalary().longValue());
                     empPayment.setEmployees(emp);
                     empPayment.setPaymentDate(new Date());
                     paymentRecord.put(emp, empPayment);
@@ -80,8 +81,8 @@ public class EmployeesServiceImpl implements EmployeesService {
                     entry.setItem(entriesService.createNewEntryItem("Salaries"));
                     entry.setName("Employyes Salaries");
                     entry.setDescription("Employees Salaries Payed From Portal");
-                    entry.setAmount(totalAmount);
-                    entry.setAdvance(0);
+                    entry.setAmount(BigDecimal.valueOf(totalAmount));
+                    entry.setAdvance(BigDecimal.ZERO);
                     entry.setEntryDate(new Date());
                     entry.setIsActive(true);
 

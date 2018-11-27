@@ -8,7 +8,6 @@ package com.mka.controller;
 import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
-import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
@@ -24,6 +23,8 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -202,17 +203,17 @@ public class EntriesController {
                 }
                 entry.setName(iname);
                 entry.setDescription(idesc);
-                entry.setAmount(Integer.parseInt(icost));
-                entry.setAdvance(Integer.parseInt(iAdvance));
+                entry.setAmount(BigDecimal.valueOf(Long.parseLong(icost)));
+                entry.setAdvance(BigDecimal.valueOf(Long.parseLong(iAdvance)));
                 entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
                 entry.setIsActive(true);
 
                 MasterAccount ma = ss.getMasterAccount();
-                if (ma.getCashInHand() < entry.getAdvance()) {
+                if (ma.getCashInHand().intValue() < entry.getAdvance().intValue()) {
                     return ("01:Not Enough Cash In Hand to Log this Expense");
-                } else if (ma.getCashInHand() < entry.getAdvance() && payfrom.equals("1")) {
+                } else if (ma.getCashInHand().intValue() < entry.getAdvance().intValue() && payfrom.equals("1")) {
                     return ("01:Not Enough cash in hand to make this purchase");
-                } else if (ma.getTotalCash() < entry.getAdvance() && payfrom.equals("0")) {
+                } else if (ma.getTotalCash().intValue() < entry.getAdvance().intValue() && payfrom.equals("0")) {
                     return ("01:Not Enough cash in Main Account to make this purchase");
                 }
 
@@ -220,7 +221,8 @@ public class EntriesController {
                 if (!entryLogged) {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
-                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance());
+                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance().intValue());
+                    asyncUtil.updateIndirectAccountPayableReceivable(entry);
                     logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
                     return "00:Entry Logged Successfully";
                 }
@@ -299,10 +301,10 @@ public class EntriesController {
                 entry.setBuyer(ebuyer);
                 entry.setSupplier(esupplier);
                 entry.setProject(eproject);
-                entry.setQuantity(Integer.parseInt(equantity));
-                entry.setRate(Integer.parseInt(erate));
-                entry.setTotalPrice(Integer.parseInt(eamount));
-                entry.setAdvance(Integer.parseInt(eadvance));
+                entry.setQuantity(BigDecimal.valueOf(Long.parseLong(equantity)));
+                entry.setRate(BigDecimal.valueOf(Long.valueOf(erate)));
+                entry.setTotalPrice(BigDecimal.valueOf(Long.parseLong(eamount)));
+                entry.setAdvance(BigDecimal.valueOf(Long.valueOf(eadvance)));
             } else {
                 return ("01:Invalid Entry ID");
             }
@@ -360,8 +362,8 @@ public class EntriesController {
             if (entry != null) {
                 entry.setName(ename);
                 entry.setDescription(edesc);
-                entry.setAmount(Integer.parseInt(eamount));
-                entry.setAdvance(Integer.parseInt(eadvance));
+                entry.setAmount(BigDecimal.valueOf(Long.valueOf(eamount)));
+                entry.setAdvance(BigDecimal.valueOf(Long.valueOf(eadvance)));
             } else {
                 return ("01:Invalid Entry ID");
             }
@@ -445,6 +447,7 @@ public class EntriesController {
             String tamount = request.getParameter("tamount");
             String tdesc = request.getParameter("tdesc");
             String tpayer = request.getParameter("tpayer");
+            String payfrom = request.getParameter("payfrom");
 
             if (tpayer.equalsIgnoreCase("other")) {
                 tpayer = request.getParameter("tbuysupInput");
@@ -453,15 +456,17 @@ public class EntriesController {
 
             MasterAccountHistory mah = new MasterAccountHistory();
             mah.setType(ttype);
-            mah.setAmount(Integer.parseInt(tamount));
+            mah.setAmount(BigDecimal.valueOf(Long.valueOf(tamount)));
             mah.setDescription(tdesc);
             mah.setPayee(tpayer);
 
-            boolean transactionLogged = ss.logCashTransaction(mah);
+            boolean transactionLogged = ss.logCashTransaction(mah, payfrom);
             if (!transactionLogged) {
                 return ("01:Failed To Log Transaction. Make sure all field are filled in.");
             } else {
 //                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
+                asyncUtil.logCashTran(mah, Constants.RECEIVABLE);
+                asyncUtil.logCashTran(mah, Constants.PAYABLE);
                 return "00:Transaction Logged Successfully";
             }
         } catch (Exception e) {

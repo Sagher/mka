@@ -6,6 +6,7 @@
 package com.mka.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,16 +31,18 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "MasterAccount.findAll", query = "SELECT m FROM MasterAccount m")})
 public class MasterAccount implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "cash_in_hand")
+    private BigDecimal cashInHand;
+    @Column(name = "total_cash")
+    private BigDecimal totalCash;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "cash_in_hand")
-    private Integer cashInHand;
-    @Column(name = "total_cash")
-    private Integer totalCash;
     @Basic(optional = false)
     @NotNull
     @Column(name = "update_at")
@@ -64,22 +67,6 @@ public class MasterAccount implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getCashInHand() {
-        return cashInHand;
-    }
-
-    public void setCashInHand(Integer cashInHand) {
-        this.cashInHand = cashInHand;
-    }
-
-    public Integer getTotalCash() {
-        return totalCash;
-    }
-
-    public void setTotalCash(Integer totalCash) {
-        this.totalCash = totalCash;
     }
 
     public Date getUpdateAt() {
@@ -114,5 +101,21 @@ public class MasterAccount implements Serializable {
     public String toString() {
         return "com.mka.model.MasterAccount[ id=" + id + " ]";
     }
-    
+
+    public BigDecimal getCashInHand() {
+        return cashInHand;
+    }
+
+    public void setCashInHand(BigDecimal cashInHand) {
+        this.cashInHand = cashInHand;
+    }
+
+    public BigDecimal getTotalCash() {
+        return totalCash;
+    }
+
+    public void setTotalCash(BigDecimal totalCash) {
+        this.totalCash = totalCash;
+    }
+
 }

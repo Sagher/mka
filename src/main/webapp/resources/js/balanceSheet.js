@@ -9,56 +9,54 @@ var totalField = $("#totalField");
 var totalAmount = 0;
 //-------------------------------
 $(document).ready(function () {
-    table = $("#viewDatatable").DataTable({
-        "dom": 'T<"clear">Blfrtip',
-        "oLanguage": {
-            "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
-        },
-        "ajax": {
-            "url": "report/data?type=" + $("#type").val()
-        },
-        "columns": [
-            /*
-             <th>Date</th>
-             <th>Project</th>
-             <th>Name</th>
-             <th>Item</th>
-             <th>Amount</th>
-             <th>Quantity</th>
-             <th>Rate</th>
-             <th>Total Amount</th>
-             <th>Description</th>
-             */
-//            {"data": "id", "render": function (data, type, full, meta) {
-//                    var html = "<div class='id'>" + data + "</div>";
-//                    return html;
-//                }
-//            },
-            {"data": "createdDate"},
-            {"data": "project"},
-            {"data": "accountName"},
-            {"data": "itemType.itemName"},
-            {"data": "quantity"},
-            {"data": "rate"},
-            {"data": "totalAmount"},
-            {"data": "amount"},
-            {"data": "description"}
-        ],
-        "processing": true,
-        "serverSide": true,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50], ['10', '25', '50']],
-        "searching": false,
-        "ordering": true,
-        "info": true,
-        "stateSave": false,
-        "responsive": true,
-        "pagingType": "full_numbers",
-        "oLanguage": {
-            "sEmptyTable": "No Entries Found"
-        },
-
-    });
+//    table = $("#viewDatatable").DataTable({
+//        "dom": 'T<"clear">Blfrtip',
+//        "oLanguage": {
+//            "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
+//        },
+//        "ajax": {
+//            "url": "report/profitLoss"
+//        },
+//        "columns": [
+//            /*
+//             <th>Date</th>
+//             <th>Project</th>
+//             <th>Name</th>
+//             <th>Item</th>
+//             <th>Quantity</th>
+//             <th>Rate</th>
+//             <th>Total Amount</th>
+//             <th>Remaining</th>
+//             <th>Description</th>             */
+////            {"data": "id", "render": function (data, type, full, meta) {
+////                    var html = "<div class='id'>" + data + "</div>";
+////                    return html;
+////                }
+////            },
+//            {"data": "createdDate"},
+//            {"data": "project"},
+//            {"data": "accountName"},
+//            {"data": "itemType.itemName"},
+//            {"data": "quantity"},
+//            {"data": "rate"},
+//            {"data": "totalAmount"},
+//            {"data": "amount"},
+//            {"data": "description"}
+//        ],
+//        "processing": true,
+//        "serverSide": true,
+//        "pageLength": -1,
+//        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'All']],
+//        "searching": false,
+//        "ordering": true,
+//        "info": false,
+//        "stateSave": false,
+//        "responsive": true,
+//        "oLanguage": {
+//            "sEmptyTable": "No Entries Found"
+//        },
+//
+//    });
     $('.dataTables_filter input').attr("placeholder", "search by name");
 
 
@@ -101,7 +99,7 @@ $(document).ready(function () {
 function renderTotalAmount() {
     setTimeout(function () {
         $.ajax({
-            url: "report/total",
+            url: "report/profitLoss/total",
             dataType: "json",
             success: function (data) {
                 totalField.html(data);

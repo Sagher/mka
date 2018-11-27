@@ -6,6 +6,7 @@
 package com.mka.controller;
 
 import static com.mka.controller.UserController.log;
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntryItems;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
@@ -18,6 +19,8 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -62,6 +65,8 @@ public class ReportsController {
 
     @Autowired
     EntriesService entriesService;
+
+    private List<AccountPayableReceivable> dataList = null;
 
     /* 
      * 
@@ -110,6 +115,47 @@ public class ReportsController {
                 model.addObject("user", u);
                 if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                     model.addObject("type", Constants.PAYABLE);
+                } else if (type.equalsIgnoreCase("profitLoss")) {
+                    model.setViewName("subPages/profitLossReport");
+                    return model;
+                } else if (type.equalsIgnoreCase("closingStock")) {
+                    model.setViewName("subPages/closingStock");
+                    model.addObject("masterAccount", ss.getMasterAccount());
+                    return model;
+                } else if (type.equalsIgnoreCase("balanceSheet")) {
+
+                    model.setViewName("subPages/balanceSheet");
+
+                    int allReceivable = 0, allPayable = 0;
+                    dataList = accountsService.getAccountPayableReceivable(null, null, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
+
+                    if (dataList != null && !dataList.isEmpty()) {
+                        for (AccountPayableReceivable acc : dataList) {
+                            if (acc.getItemType().getId() != 18) {// don't include cash transaction
+                                if (acc.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                                    allReceivable += acc.getAmount().intValue();
+                                } else {
+                                    allPayable += acc.getAmount().intValue();
+                                }
+                            }
+                        }
+
+                    }
+
+                    int totalStockAmount = 0;
+                    List<StockTrace> stock = ss.getStats();
+                    if (stock != null && !stock.isEmpty()) {
+                        for (StockTrace s : stock) {
+                            totalStockAmount += s.getStockAmount().intValue();
+                        }
+                    }
+
+                    model.addObject("allReceivable", allReceivable);
+                    model.addObject("allPayable", allPayable);
+                    model.addObject("cashInHand", ss.getMasterAccount().getCashInHand().intValue());
+                    model.addObject("totalStockAmount", totalStockAmount);
+
+                    return model;
                 } else {
                     model.addObject("type", Constants.RECEIVABLE);
 
@@ -168,11 +214,133 @@ public class ReportsController {
             totalSize = accountsService.getAccountPayableReceivableCount(null, Constants.RECEIVABLE, startDate, endDate, buyerSupplier, project);
         }
 
+        dataList = (data != null) ? (List<AccountPayableReceivable>) data : null;
         resp.setData(data != null ? data : "");
         resp.setRecordsFiltered(totalSize);
         resp.setRecordsTotal(totalSize);
         resp.setDraw(draw);
 
         return resp;
+    }
+
+    @RequestMapping(value = "/report/total", method = RequestMethod.GET)
+    public @ResponseBody
+    int getTotal(HttpServletRequest request) {
+        int totalAmount = 0;
+        if (dataList != null && !dataList.isEmpty()) {
+            for (AccountPayableReceivable ac : dataList) {
+                totalAmount += ac.getAmount().intValue();
+            }
+        }
+        return totalAmount;
+    }
+
+    /*
+     *  PROFIT & LOSS
+     */
+    @RequestMapping(value = "/report/profitLoss", method = RequestMethod.GET)
+    public @ResponseBody
+    DataTableResp profitLoss(
+            HttpServletRequest request,
+            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
+            @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
+            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
+            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
+            @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
+            @RequestParam(value = "project", required = false, defaultValue = "") String project,
+            @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
+            @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
+            @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
+            @RequestParam(value = "toDate", required = false, defaultValue = "") String endDate,
+            @RequestParam(value = "search[value]", required = false) String search) {
+
+        DataTableResp resp = new DataTableResp();
+
+        int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
+        String orderBy = request.getParameter("order[0][dir]");
+        String sortby = request.getParameter("columns[" + order0Col + "][data]");
+        profitLossTotal = 0;
+        dataList = accountsService.getAccountPayableReceivable(null, null, 0, Integer.MAX_VALUE, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+
+        List<AccountPayableReceivable> toBeRemoved = new ArrayList<>();
+        if (dataList != null && !dataList.isEmpty()) {
+            for (AccountPayableReceivable acc : dataList) {
+                if (acc.getItemType().getId() == 18) {// don't include cash transaction
+                    toBeRemoved.add(acc);
+                    profitLossTotal = profitLossTotal - 0;
+                } else {
+                    if (acc.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                        profitLossTotal += acc.getAmount().intValue();
+                    } else {
+                        profitLossTotal = profitLossTotal - acc.getAmount().intValue();
+                    }
+                }
+            }
+
+            dataList.removeAll(toBeRemoved);
+            toBeRemoved.clear();
+        }
+        resp.setData(dataList != null ? dataList : "");
+        resp.setRecordsFiltered(dataList != null ? dataList.size() : 0);
+        resp.setRecordsTotal(dataList != null ? dataList.size() : 0);
+        resp.setDraw(draw);
+
+        return resp;
+    }
+
+    int profitLossTotal = 0;
+
+    @RequestMapping(value = "/report/profitLoss/total", method = RequestMethod.GET)
+    public @ResponseBody
+    int profitLossTotal(HttpServletRequest request) {
+        return profitLossTotal;
+    }
+
+    /*
+     *  Closing Stock
+     */
+    @RequestMapping(value = "/report/closingStock", method = RequestMethod.GET)
+    public @ResponseBody
+    DataTableResp closingStock(
+            HttpServletRequest request,
+            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
+            @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
+            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
+            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
+            @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
+            @RequestParam(value = "project", required = false, defaultValue = "") String project,
+            @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
+            @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
+            @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
+            @RequestParam(value = "toDate", required = false, defaultValue = "") String endDate,
+            @RequestParam(value = "search[value]", required = false) String search) {
+
+        DataTableResp resp = new DataTableResp();
+
+        int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
+        String orderBy = request.getParameter("order[0][dir]");
+        String sortby = request.getParameter("columns[" + order0Col + "][data]");
+
+        List<StockTrace> stock = ss.getStats();
+        resp.setData(stock);
+        resp.setRecordsFiltered(stock != null ? stock.size() : 0);
+        resp.setRecordsTotal(stock != null ? stock.size() : 0);
+        resp.setDraw(draw);
+
+        return resp;
+    }
+
+    @RequestMapping(value = "/report/closingStock/total", method = RequestMethod.GET)
+    public @ResponseBody
+    int cashInHandTotal(HttpServletRequest request) {
+        int totalStockAmount = 0;
+
+        List<StockTrace> stock = ss.getStats();
+        if (stock != null && !stock.isEmpty()) {
+            for (StockTrace s : stock) {
+                totalStockAmount += s.getStockAmount().intValue();
+            }
+        }
+        return totalStockAmount;
     }
 }

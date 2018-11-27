@@ -6,7 +6,7 @@
 package com.mka.model;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -34,6 +34,25 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "AccountPayableReceivable.findAll", query = "SELECT a FROM AccountPayableReceivable a")})
 public class AccountPayableReceivable implements Serializable {
 
+    @JoinColumn(name = "item_type", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private EntryItems itemType;
+
+    @Column(name = "quantity")
+    private Integer quantity;
+    @Column(name = "rate")
+    private BigDecimal rate;
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
+
+    @Size(max = 100)
+    @Column(name = "description")
+    private String description;
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "amount")
+    private BigDecimal amount;
+
     @Size(max = 50)
     @Column(name = "project")
     private String project;
@@ -49,8 +68,6 @@ public class AccountPayableReceivable implements Serializable {
     @Size(min = 1, max = 50)
     @Column(name = "account_name")
     private String accountName;
-    @Column(name = "amount")
-    private BigInteger amount;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 10)
@@ -69,9 +86,6 @@ public class AccountPayableReceivable implements Serializable {
     @Column(name = "created_date")
     @Temporal(TemporalType.DATE)
     private Date createdDate;
-    @JoinColumn(name = "item_type", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private EntryItems itemType;
 
     public AccountPayableReceivable() {
     }
@@ -103,14 +117,6 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setAccountName(String accountName) {
         this.accountName = accountName;
-    }
-
-    public BigInteger getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigInteger amount) {
-        this.amount = amount;
     }
 
     public String getType() {
@@ -145,14 +151,6 @@ public class AccountPayableReceivable implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public EntryItems getItemType() {
-        return itemType;
-    }
-
-    public void setItemType(EntryItems itemType) {
-        this.itemType = itemType;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -184,6 +182,54 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setProject(String project) {
         this.project = project;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getRate() {
+        return rate;
+    }
+
+    public void setRate(BigDecimal rate) {
+        this.rate = rate;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public EntryItems getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(EntryItems itemType) {
+        this.itemType = itemType;
     }
 
 }

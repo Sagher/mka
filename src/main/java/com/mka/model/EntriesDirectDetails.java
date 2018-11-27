@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +32,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntriesDirectDetails.findAll", query = "SELECT e FROM EntriesDirectDetails e")})
 public class EntriesDirectDetails implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "total_unloaded")
+    private BigDecimal totalUnloaded;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "unloading_cost")
+    private BigDecimal unloadingCost;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,14 +53,6 @@ public class EntriesDirectDetails implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "sub_type")
     private String subType;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_unloaded")
-    private int totalUnloaded;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "unloading_cost")
-    private int unloadingCost;
     @Column(name = "unloading_party")
     private String unloadingParty;
     @JoinColumn(name = "entry_id", referencedColumnName = "id")
@@ -64,7 +67,7 @@ public class EntriesDirectDetails implements Serializable {
         this.id = id;
     }
 
-    public EntriesDirectDetails(Integer id, String subType, int totalUnloaded, int unloadingCost, String unloadingParty) {
+    public EntriesDirectDetails(Integer id, String subType, BigDecimal totalUnloaded, BigDecimal unloadingCost, String unloadingParty) {
         this.id = id;
         this.subType = subType;
         this.totalUnloaded = totalUnloaded;
@@ -86,22 +89,6 @@ public class EntriesDirectDetails implements Serializable {
 
     public void setSubType(String subType) {
         this.subType = subType;
-    }
-
-    public int getTotalUnloaded() {
-        return totalUnloaded;
-    }
-
-    public void setTotalUnloaded(int totalUnloaded) {
-        this.totalUnloaded = totalUnloaded;
-    }
-
-    public int getUnloadingCost() {
-        return unloadingCost;
-    }
-
-    public void setUnloadingCost(int unloadingCost) {
-        this.unloadingCost = unloadingCost;
     }
 
     public String getUnloadingParty() {
@@ -143,6 +130,22 @@ public class EntriesDirectDetails implements Serializable {
     @Override
     public String toString() {
         return "com.mka.model.EntriesDirectDetails[ id=" + id + " ]";
+    }
+
+    public BigDecimal getTotalUnloaded() {
+        return totalUnloaded;
+    }
+
+    public void setTotalUnloaded(BigDecimal totalUnloaded) {
+        this.totalUnloaded = totalUnloaded;
+    }
+
+    public BigDecimal getUnloadingCost() {
+        return unloadingCost;
+    }
+
+    public void setUnloadingCost(BigDecimal unloadingCost) {
+        this.unloadingCost = unloadingCost;
     }
 
 }

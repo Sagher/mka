@@ -6,6 +6,7 @@
 package com.mka.configuration;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,14 @@ public class Filters implements HandlerInterceptor {
             HttpServletResponse response, Object handler) throws Exception {
         String userIp = request.getHeader("X-Real-IP");
         userIp = (userIp == null ? request.getRemoteAddr() : userIp);
+
+        if (request.getMethod().equalsIgnoreCase("POST")) {
+            Enumeration<String> params = request.getParameterNames();
+            while (params.hasMoreElements()) {
+                String paramName = params.nextElement();
+                log.info("Parameter: " + paramName + ", Value: " + request.getParameter(paramName));
+            }
+        }
         if (ips.contains(userIp)) {
             return true;
         } else {

@@ -15,7 +15,7 @@ $(document).ready(function () {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
         "ajax": {
-            "url": "report/data?type=" + $("#type").val()
+            "url": "report/profitLoss"
         },
         "columns": [
             /*
@@ -23,12 +23,11 @@ $(document).ready(function () {
              <th>Project</th>
              <th>Name</th>
              <th>Item</th>
-             <th>Amount</th>
              <th>Quantity</th>
              <th>Rate</th>
              <th>Total Amount</th>
-             <th>Description</th>
-             */
+             <th>Remaining</th>
+             <th>Description</th>             */
 //            {"data": "id", "render": function (data, type, full, meta) {
 //                    var html = "<div class='id'>" + data + "</div>";
 //                    return html;
@@ -46,14 +45,13 @@ $(document).ready(function () {
         ],
         "processing": true,
         "serverSide": true,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50], ['10', '25', '50']],
+        "pageLength": -1,
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'All']],
         "searching": false,
         "ordering": true,
-        "info": true,
+        "info": false,
         "stateSave": false,
         "responsive": true,
-        "pagingType": "full_numbers",
         "oLanguage": {
             "sEmptyTable": "No Entries Found"
         },
@@ -101,7 +99,7 @@ $(document).ready(function () {
 function renderTotalAmount() {
     setTimeout(function () {
         $.ajax({
-            url: "report/total",
+            url: "report/profitLoss/total",
             dataType: "json",
             success: function (data) {
                 totalField.html(data);

@@ -11,6 +11,7 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.UserActivity;
@@ -78,23 +79,38 @@ public class AsyncUtil {
             StockTrace st = ss.getStockTrace(entry.getItem().getId(),
                     entry.getEntriesDirectDetails() != null ? entry.getEntriesDirectDetails().getSubType() : null);
             if (entry.getSubEntryType().equals(Constants.SALE)) {
-                st.setSalesUnit(st.getSalesUnit() + entry.getQuantity());
-                st.setStockUnits(st.getStockUnits() - entry.getQuantity());
-                st.setSalesAmount(entry.getTotalPrice() + st.getSalesAmount());
-                st.setStockAmount(st.getStockAmount() - entry.getTotalPrice());
+                st.setSalesUnit(st.getSalesUnit() + entry.getQuantity().intValue());
+                st.setStockUnits(st.getStockUnits() - entry.getQuantity().intValue());
+
+                BigDecimal totalSaleAm = entry.getTotalPrice().add(st.getSalesAmount());
+                st.setSalesAmount(totalSaleAm);
+
+                BigDecimal remainingSrock = st.getStockAmount().subtract(entry.getTotalPrice());
+                st.setStockAmount(remainingSrock);
 
             } else if (entry.getSubEntryType().equals(Constants.PURCHASE)) {
-                st.setPurchaseUnit(st.getPurchaseUnit() + entry.getQuantity());
-                st.setStockUnits(st.getStockUnits() + entry.getQuantity());
-                st.setStockAmount(st.getStockAmount() + entry.getTotalPrice());
-                st.setPurchaseAmount(st.getPurchaseAmount() + entry.getTotalPrice());
+                st.setPurchaseUnit(st.getPurchaseUnit() + entry.getQuantity().intValue());
+                st.setStockUnits(st.getStockUnits() + entry.getQuantity().intValue());
+
+                BigDecimal stockAm = st.getStockAmount().add(entry.getTotalPrice());
+                st.setStockAmount(stockAm);
+
+                BigDecimal pAm = st.getPurchaseAmount().add(entry.getTotalPrice());
+                st.setPurchaseAmount(pAm);
 
             } else if (entry.getSubEntryType().equals(Constants.PRODUCE)) {
-                st.setStockUnits(st.getStockUnits() + entry.getQuantity());
+                st.setStockUnits(st.getStockUnits() + entry.getQuantity().intValue());
+
+            } else if (entry.getSubEntryType().equals(Constants.CONSUME)) {
+                st.setStockUnits(st.getStockUnits() - entry.getQuantity().intValue());
+
+                BigDecimal stockAm = st.getStockAmount().subtract(entry.getTotalPrice());
+                st.setStockAmount(stockAm);
             }
 
 //            st.setAverageUnitPrice(ss.getAveragePricePerUnit(entry.getItem().getId()));
-            st.setAverageUnitPrice(BigDecimal.valueOf((st.getStockAmount() / st.getStockUnits())));
+            int avgUnitPrice = st.getStockAmount().intValue() / st.getStockUnits();
+            st.setAverageUnitPrice(BigDecimal.valueOf(avgUnitPrice));
 
             ss.updateStockTrace(st);
         } catch (Exception e) {
@@ -127,13 +143,17 @@ public class AsyncUtil {
 //    public void addEntryDetail(EntriesDirectDetails entryDetail) {
 //        entriesService.addEntryDetail(entryDetail);
 //    }
+    @Async
     public void updateDirectAccountPayableReceivable(EntriesDirect entry) {
         try {
             if (entry.getSubEntryType().equalsIgnoreCase(Constants.SALE) && entry.getTotalPrice() != entry.getAdvance()) {
                 // receivable
                 AccountPayableReceivable receivable = new AccountPayableReceivable();
                 receivable.setAccountName(entry.getBuyer());
-                receivable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
+                receivable.setAmount(entry.getTotalPrice().subtract(entry.getAdvance()));
+                receivable.setQuantity(entry.getQuantity().intValue());
+                receivable.setRate(entry.getRate());
+                receivable.setTotalAmount(entry.getTotalPrice());
                 receivable.setEntryId(entry.getId());
                 receivable.setIsActive(true);
                 receivable.setProject(entry.getProject());
@@ -148,7 +168,10 @@ public class AsyncUtil {
                 //payable
                 AccountPayableReceivable payable = new AccountPayableReceivable();
                 payable.setAccountName(entry.getSupplier());
-                payable.setAmount(BigInteger.valueOf(entry.getTotalPrice() - entry.getAdvance()));
+                payable.setAmount(entry.getTotalPrice().subtract(entry.getAdvance()));
+                payable.setQuantity(entry.getQuantity().intValue());
+                payable.setRate(entry.getRate());
+                payable.setTotalAmount(entry.getTotalPrice());
                 payable.setEntryId(entry.getId());
                 payable.setIsActive(true);
                 payable.setProject(entry.getProject());
@@ -164,13 +187,17 @@ public class AsyncUtil {
         }
     }
 
+    @Async
     public void updateIndirectAccountPayableReceivable(EntriesIndirect entry) {
         try {
             if (entry.getAmount() != entry.getAdvance()) {
                 //payable
                 AccountPayableReceivable payable = new AccountPayableReceivable();
                 payable.setAccountName(entry.getName());
-                payable.setAmount(BigInteger.valueOf(entry.getAmount() - entry.getAdvance()));
+                payable.setAmount(entry.getAmount().subtract(entry.getAdvance()));
+                payable.setQuantity(0);
+                payable.setRate(BigDecimal.ZERO);
+                payable.setTotalAmount(entry.getAmount());
                 payable.setEntryId(entry.getId());
                 payable.setIsActive(true);
                 payable.setProject(entry.getName());
@@ -186,17 +213,23 @@ public class AsyncUtil {
         }
     }
 
-    public void logAmountPayable(BigInteger amount, String payableTo, int entryId, String project) {
+    @Async
+    public void logAmountPayable(BigDecimal amount, String payableTo, int entryId, String project, String description,
+            int quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem) {
         try {
             //payable
             AccountPayableReceivable payable = new AccountPayableReceivable();
             payable.setAccountName(payableTo);
             payable.setAmount(amount);
+            payable.setQuantity(quantity);
+            payable.setRate(rate);
+            payable.setTotalAmount(totalAmount);
             payable.setEntryId(entryId);
             payable.setIsActive(true);
             payable.setProject(project);
             payable.setType(Constants.PAYABLE);
-            payable.setItemType(new EntryItems(17));
+            payable.setItemType(eItem);
+            payable.setDescription(description);
 
             if (!accountsDao.logAccountPayableReceivable(payable)) {
                 log.warn("*** Account Payable not logged ***");
@@ -206,11 +239,43 @@ public class AsyncUtil {
         }
     }
 
+    @Async
+    public void logAmountReceivable(AccountPayableReceivable receivable) {
+        try {
+
+            if (!accountsDao.logAccountPayableReceivable(receivable)) {
+                log.warn("*** Account Receivable not logged ***");
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Async
+    public void logCashTran(MasterAccountHistory mah, String type) {
+        // log receivable
+        AccountPayableReceivable receivable = new AccountPayableReceivable();
+        receivable.setAccountName(mah.getPayee());
+        receivable.setAmount(BigDecimal.ZERO);
+        receivable.setQuantity(0);
+        receivable.setRate(BigDecimal.ZERO);
+        receivable.setTotalAmount(mah.getAmount());
+        receivable.setEntryId(mah.getId());
+        receivable.setIsActive(true);
+        receivable.setProject(null);
+        receivable.setType(type);
+        receivable.setItemType(new EntryItems(18));
+        receivable.setDescription(mah.getDescription());
+
+        logAmountReceivable(receivable);
+    }
+
+    @Async
     public void updateMasterAccount(MasterAccount masterAccount, String payfrom, int advance) {
         if (payfrom.equals("1")) {
-            masterAccount.setCashInHand(masterAccount.getCashInHand() - advance);
+            masterAccount.setCashInHand(masterAccount.getCashInHand().subtract(BigDecimal.valueOf(advance)));
         } else if (payfrom.equals("0")) {
-            masterAccount.setTotalCash(masterAccount.getTotalCash() - advance);
+            masterAccount.setTotalCash(masterAccount.getTotalCash().subtract(BigDecimal.valueOf(advance)));
         }
         ss.updateMasterAccount(masterAccount);
     }

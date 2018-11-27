@@ -5,19 +5,19 @@ package com.mka.service.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.EntriesDao;
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
-import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,39 +122,43 @@ public class EntriesServiceImpl implements EntriesService {
                         int newQuantity = totalUnloaded;
                         entryDetail = new EntriesDirectDetails();
                         entryDetail.setSubType(subItemType);
-                        entryDetail.setTotalUnloaded(totalUnloaded);
-                        entryDetail.setUnloadingCost(cAmount);
+                        entryDetail.setTotalUnloaded(BigDecimal.valueOf(totalUnloaded));
+                        entryDetail.setUnloadingCost(BigDecimal.valueOf(cAmount));
                         entryDetail.setUnloadingParty(unloadingParty);
 
-                        entry.setQuantity(newQuantity);
-                        entry.setRate(newRate);
+                        entry.setQuantity(BigDecimal.valueOf(newQuantity));
+                        entry.setRate(BigDecimal.valueOf(newRate));
+
                     } else {
                         entryDetail = new EntriesDirectDetails();
                         entryDetail.setSubType(subItemType);
-                        entryDetail.setTotalUnloaded(Integer.parseInt(quantity));
-                        entryDetail.setUnloadingCost(0);
+                        entryDetail.setTotalUnloaded(BigDecimal.valueOf(Integer.parseInt(quantity)));
+                        entryDetail.setUnloadingCost(BigDecimal.ZERO);
                         entryDetail.setUnloadingParty(null);
 
-                        entry.setQuantity(Integer.parseInt(quantity));
-                        entry.setRate(Integer.parseInt(rate));
+                        entry.setQuantity(BigDecimal.valueOf(Integer.parseInt(quantity)));
+                        entry.setRate(BigDecimal.valueOf(Integer.parseInt(rate)));
                     }
                 } else {
 
-                    entry.setQuantity(Integer.parseInt(quantity));
-                    entry.setRate(Integer.parseInt(rate));
+                    entry.setQuantity(BigDecimal.valueOf(Integer.parseInt(quantity)));
+                    entry.setRate(BigDecimal.valueOf(Integer.parseInt(rate)));
                 }
-                entry.setTotalPrice(Integer.parseInt(amount));
-                entry.setAdvance(Integer.parseInt(dadvance));
+                entry.setTotalPrice(BigDecimal.valueOf(Integer.parseInt(amount)));
+                entry.setAdvance(BigDecimal.valueOf(Integer.parseInt(dadvance)));
                 entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
                 entry.setIsActive(true);
 
-                if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity()
-                        && entryType.equalsIgnoreCase(Constants.SALE)) {
+                if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
+                        && (entryType.equalsIgnoreCase(Constants.SALE))) {
                     return ("01:Not Enough stock to make this sale");
-                } else if (ss.getMasterAccount().getCashInHand() < entry.getAdvance()
+                } else if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
+                        && (entryType.equalsIgnoreCase(Constants.CONSUME))) {
+                    return ("01:Not Enough stock to log this consumption");
+                } else if (ss.getMasterAccount().getCashInHand().intValue() < entry.getAdvance().intValue()
                         && entryType.equalsIgnoreCase(Constants.PURCHASE) && payfrom.equals("1")) {
                     return ("01:Not Enough cash in hand to make this purchase");
-                } else if (ss.getMasterAccount().getTotalCash() < entry.getAdvance()
+                } else if (ss.getMasterAccount().getTotalCash().intValue() < entry.getAdvance().intValue()
                         && entryType.equalsIgnoreCase(Constants.PURCHASE) && payfrom.equals("0")) {
                     return ("01:Not Enough cash in Main Account to make this purchase");
                 }
@@ -166,11 +170,15 @@ public class EntriesServiceImpl implements EntriesService {
                     if (entryDetail != null) {
                         entryDetail.setEntryId(entry);
                         addEntryDetail(entryDetail);
+                        asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty, entry.getId(), entry.getProject(),
+                                "Crush Carriage",
+                                entryDetail.getTotalUnloaded().intValue(), BigDecimal.valueOf(Long.valueOf(unloadingRate)),
+                                entryDetail.getUnloadingCost(), new EntryItems(19));
                     }
                     entry.setEntriesDirectDetails(entryDetail);
                     asyncUtil.updateStockTrace(entry);
                     asyncUtil.updateDirectAccountPayableReceivable(entry);
-                    asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance());
+                    asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance().intValue());
                     return entry;
                 }
 
@@ -272,10 +280,6 @@ public class EntriesServiceImpl implements EntriesService {
             String customerNew = request.getParameter("asCusInput");
             String asProj = request.getParameter("asProj");
             String asProjInput = request.getParameter("asProjInput");
-            String totalCostHQ = request.getParameter("totalCostHQ");
-            String costPerTon = request.getParameter("costPerTon");
-            String totalCostCustomer = request.getParameter("totalCostCustomer");
-            String advancePaid = request.getParameter("advancePaid");
 
             if (customer.equalsIgnoreCase("other")) {
                 customer = customerNew;
@@ -287,35 +291,68 @@ public class EntriesServiceImpl implements EntriesService {
             }
 
             for (StockTrace s : ss.getStats()) {
-                log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
-                        + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
+                if (s.getItemId() == 1 || s.getItemId() == 6) {
+                    log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
+                            + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
 
-                if (ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
-                        < Integer.parseInt(request.getParameter(s.getId() + "quantity"))) {
-                    return ("01:Not Enough " + s.getItemName() + (s.getSubType() != null ? s.getSubType() : "") + " to make this sale");
+                    if (ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
+                            < Integer.parseInt(request.getParameter(s.getId() + "quantity"))) {
+                        return ("01:Not Enough " + s.getItemName() + (s.getSubType() != null ? s.getSubType() : "") + " to make this sale");
+                    }
                 }
             }
+
+            String biltee = request.getParameter("biltee");
+            String vehicle = request.getParameter("vehicle");
+            String asstype = request.getParameter("asstype");
+            String expRate = request.getParameter("expRate");
+            String expCost = request.getParameter("expCost");
 
             AsphaltSales realAss = new AsphaltSales();
             realAss.setBuyer(customer);
             realAss.setProject(asProj);
+            realAss.setBiltee(Integer.parseInt(biltee));
+            realAss.setVehicle(vehicle);
+            realAss.setType(asstype);
+            realAss.setExPlantRate(BigDecimal.valueOf(Integer.parseInt(expRate)));
+            realAss.setExPlantCost(BigDecimal.valueOf(Integer.parseInt(expCost)));
+
             realAss.setQuantity(Integer.parseInt(totalAss));
-            realAss.setTotalSaleAmount(Integer.parseInt(totalCostHQ));
+            realAss.setTotalSaleAmount(BigDecimal.valueOf(Integer.parseInt(request.getParameter("assSaleCost"))));
 
             if (entriesDao.logAsphaltSale(realAss)) {
+                // log receivable
+                AccountPayableReceivable receivable = new AccountPayableReceivable();
+                receivable.setAccountName(customer);
+                receivable.setAmount(realAss.getTotalSaleAmount());
+                receivable.setQuantity(realAss.getQuantity());
+                receivable.setRate(BigDecimal.valueOf(Integer.parseInt(request.getParameter("assSaleRate"))));
+                receivable.setTotalAmount(realAss.getTotalSaleAmount());
+                receivable.setEntryId(realAss.getId());
+                receivable.setIsActive(true);
+                receivable.setProject(realAss.getProject());
+                receivable.setType(Constants.RECEIVABLE);
+                receivable.setItemType(new EntryItems(17));
+                receivable.setDescription(realAss.getDescription());
+
+                asyncUtil.logAmountReceivable(receivable);
+
                 List<AsphaltSaleConsumption> assConsumptions = new ArrayList<>();
                 for (StockTrace s : ss.getStats()) {
-                    log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
-                            + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
+                    if (s.getItemId() == 1 || s.getItemId() == 6) {
 
-                    AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
-                    ass.setItemName(s.getItemName() + (s.getSubType() != null ? s.getSubType() : ""));
-                    ass.setItemQuantity(Integer.parseInt(request.getParameter(s.getId() + "quantity")));
-                    ass.setItemRate(Integer.parseInt(request.getParameter(s.getId() + "rate")));
-                    ass.setItemAmount(Integer.parseInt(request.getParameter(s.getId() + "cost")));
-                    ass.setAsphlatSaleId(realAss);
+                        log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
+                                + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
 
-                    assConsumptions.add(ass);
+                        AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
+                        ass.setItemName(s.getItemName() + (s.getSubType() != null ? s.getSubType() : ""));
+                        ass.setItemQuantity(Integer.parseInt(request.getParameter(s.getId() + "quantity")));
+                        ass.setItemRate(Integer.parseInt(request.getParameter(s.getId() + "rate")));
+                        ass.setItemAmount(Integer.parseInt(request.getParameter(s.getId() + "cost")));
+                        ass.setAsphlatSaleId(realAss);
+
+                        assConsumptions.add(ass);
+                    }
                 }
 
                 String assLayer = request.getParameter("assLayer");
@@ -325,11 +362,24 @@ public class EntriesServiceImpl implements EntriesService {
 
                 AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
                 ass.setItemName("LAYED BY " + assLayer);
-                ass.setItemQuantity(0);
+                ass.setItemQuantity(realAss.getQuantity());
                 ass.setItemRate(Integer.parseInt(assLayingCostPerTon));
                 ass.setItemAmount(Integer.parseInt(totalAssLayingCost));
                 assConsumptions.add(ass);
                 ass.setAsphlatSaleId(realAss);
+
+                String assCarProvider = request.getParameter("assCarProvider");
+                String assCarCostPerTon = request.getParameter("assCarCostPerTon");
+                String totalAssCarCost = request.getParameter("totalAssCarCost");
+                String assCarAdvance = request.getParameter("assCarAdvance");
+
+                AsphaltSaleConsumption assCarriage = new AsphaltSaleConsumption();
+                assCarriage.setItemName("Carriage Provided By " + assCarProvider);
+                assCarriage.setItemQuantity(realAss.getQuantity());
+                assCarriage.setItemRate(Integer.parseInt(assCarCostPerTon));
+                assCarriage.setItemAmount(Integer.parseInt(totalAssCarCost));
+                assConsumptions.add(assCarriage);
+                assCarriage.setAsphlatSaleId(realAss);
 
                 boolean logged = entriesDao.logAsphaltSaleConsumptions(assConsumptions);
 
@@ -338,15 +388,28 @@ public class EntriesServiceImpl implements EntriesService {
                         // advance payable
                         int payableAmount = Integer.parseInt(totalAssLayingCost) - Integer.parseInt(assLayingAdvance);
                         String payableTo = assLayer;
-                        asyncUtil.logAmountPayable(BigInteger.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject());
+                        asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
+                                realAss.getProject(), "Asphalt Laying", ass.getItemQuantity(), BigDecimal.valueOf(ass.getItemRate()),
+                                BigDecimal.valueOf(ass.getItemAmount()), new EntryItems(20));
+                    }
+
+                    if (Integer.parseInt(assCarAdvance) != Integer.parseInt(totalAssCarCost)) {
+                        // advance payable
+                        int payableAmount = Integer.parseInt(totalAssCarCost) - Integer.parseInt(assCarAdvance);
+                        String payableTo = assCarProvider;
+                        asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), "Asphalt Carriage",
+                                assCarriage.getItemQuantity(), BigDecimal.valueOf(assCarriage.getItemRate()),
+                                BigDecimal.valueOf(assCarriage.getItemAmount()), new EntryItems(19));
                     }
                     // update stockTrace
                     for (StockTrace s : ss.getStats()) {
+                        if (s.getItemId() == 1 || s.getItemId() == 6) {
 
-                        s.setStockUnits(s.getStockUnits() - Integer.parseInt(request.getParameter(s.getId() + "quantity")));
-                        s.setStockAmount(s.getStockAmount() - Integer.parseInt(request.getParameter(s.getId() + "cost")));
+                            s.setStockUnits(s.getStockUnits() - Integer.parseInt(request.getParameter(s.getId() + "quantity")));
+                            s.setStockAmount(s.getStockAmount().subtract(BigDecimal.valueOf(Integer.parseInt(request.getParameter(s.getId() + "cost")))));
 
-                        asyncUtil.updateStockTrace(s);
+                            asyncUtil.updateStockTrace(s);
+                        }
                     }
                 }
             }

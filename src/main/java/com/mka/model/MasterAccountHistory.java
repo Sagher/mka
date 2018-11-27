@@ -6,6 +6,7 @@
 package com.mka.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -31,6 +32,12 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "MasterAccountHistory.findAll", query = "SELECT m FROM MasterAccountHistory m")})
 public class MasterAccountHistory implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "amount")
+    private BigDecimal amount;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "timestamp")
@@ -46,10 +53,6 @@ public class MasterAccountHistory implements Serializable {
     @Size(max = 50)
     @Column(name = "type")
     private String type;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "amount")
-    private int amount;
     @Size(max = 255)
     @Column(name = "description")
     private String description;
@@ -72,7 +75,7 @@ public class MasterAccountHistory implements Serializable {
         this.id = id;
     }
 
-    public MasterAccountHistory(Integer id, int amount) {
+    public MasterAccountHistory(Integer id, BigDecimal amount) {
         this.id = id;
         this.amount = amount;
     }
@@ -93,13 +96,6 @@ public class MasterAccountHistory implements Serializable {
         this.type = type;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
 
     public String getDescription() {
         return description;
@@ -140,6 +136,14 @@ public class MasterAccountHistory implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
 }

@@ -35,6 +35,20 @@ public class StockTrace implements Serializable {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
+    @Column(name = "sales_amount")
+    private BigDecimal salesAmount;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "purchase_amount")
+    private BigDecimal purchaseAmount;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "stock_amount")
+    private BigDecimal stockAmount;
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "average_unit_price")
     private BigDecimal averageUnitPrice;
 
@@ -59,24 +73,12 @@ public class StockTrace implements Serializable {
     private int salesUnit;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "sales_amount")
-    private int salesAmount;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "purchase_unit")
     private int purchaseUnit;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "purchase_amount")
-    private int purchaseAmount;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "stock_units")
     private int stockUnits;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "stock_amount")
-    private int stockAmount;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 15)
@@ -130,28 +132,12 @@ public class StockTrace implements Serializable {
         this.salesUnit = salesUnit;
     }
 
-    public int getSalesAmount() {
-        return salesAmount;
-    }
-
-    public void setSalesAmount(int salesAmount) {
-        this.salesAmount = salesAmount;
-    }
-
     public int getPurchaseUnit() {
         return purchaseUnit;
     }
 
     public void setPurchaseUnit(int purchaseUnit) {
         this.purchaseUnit = purchaseUnit;
-    }
-
-    public int getPurchaseAmount() {
-        return purchaseAmount;
-    }
-
-    public void setPurchaseAmount(int purchaseAmount) {
-        this.purchaseAmount = purchaseAmount;
     }
 
     public int getStockUnits() {
@@ -161,15 +147,6 @@ public class StockTrace implements Serializable {
     public void setStockUnits(int stockUnits) {
         this.stockUnits = stockUnits;
     }
-
-    public int getStockAmount() {
-        return stockAmount;
-    }
-
-    public void setStockAmount(int stockAmount) {
-        this.stockAmount = stockAmount;
-    }
-
 
     public String getDivBgThemeClass() {
         return divBgThemeClass;
@@ -226,6 +203,30 @@ public class StockTrace implements Serializable {
 
     public void setAverageUnitPrice(BigDecimal averageUnitPrice) {
         this.averageUnitPrice = averageUnitPrice;
+    }
+
+    public BigDecimal getSalesAmount() {
+        return salesAmount;
+    }
+
+    public void setSalesAmount(BigDecimal salesAmount) {
+        this.salesAmount = salesAmount;
+    }
+
+    public BigDecimal getPurchaseAmount() {
+        return purchaseAmount;
+    }
+
+    public void setPurchaseAmount(BigDecimal purchaseAmount) {
+        this.purchaseAmount = purchaseAmount;
+    }
+
+    public BigDecimal getStockAmount() {
+        return stockAmount;
+    }
+
+    public void setStockAmount(BigDecimal stockAmount) {
+        this.stockAmount = stockAmount;
     }
 
 }

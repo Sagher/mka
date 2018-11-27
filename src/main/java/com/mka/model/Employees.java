@@ -8,6 +8,7 @@ package com.mka.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -35,6 +36,12 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Employees.findAll", query = "SELECT e FROM Employees e")})
 public class Employees implements Serializable {
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "salary")
+    private BigDecimal salary;
 
     @Basic(optional = false)
     @NotNull
@@ -84,10 +91,6 @@ public class Employees implements Serializable {
     private String phone;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "salary")
-    private int salary;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "role")
     private String role;
@@ -119,7 +122,7 @@ public class Employees implements Serializable {
         this.id = id;
     }
 
-    public Employees(Integer id, String name, int salary, String role, String joiningDate, boolean isActive, Date createdDate) {
+    public Employees(Integer id, String name, BigDecimal salary, String role, String joiningDate, boolean isActive, Date createdDate) {
         this.id = id;
         this.name = name;
         this.salary = salary;
@@ -159,14 +162,6 @@ public class Employees implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public int getSalary() {
-        return salary;
-    }
-
-    public void setSalary(int salary) {
-        this.salary = salary;
     }
 
     public String getRole() {
@@ -234,7 +229,7 @@ public class Employees implements Serializable {
         return "id=" + id + ", name=" + name + ", phone=" + phone + ", salary=" + salary + ", role=" + role + ", joiningDate=" + joiningDate + ", isActive=" + isActive;
     }
 
-    public Employees(Integer id, String name, int salary, String role) {
+    public Employees(Integer id, String name, BigDecimal salary, String role) {
         this.id = id;
         this.name = name;
         this.salary = salary;
@@ -287,6 +282,14 @@ public class Employees implements Serializable {
 
     public void setEmployeessPaymentsList(List<EmployeessPayments> employeessPaymentsList) {
         this.employeessPaymentsList = employeessPaymentsList;
+    }
+
+    public BigDecimal getSalary() {
+        return salary;
+    }
+
+    public void setSalary(BigDecimal salary) {
+        this.salary = salary;
     }
 
 }

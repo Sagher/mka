@@ -13,6 +13,7 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -105,7 +106,7 @@ public class EmployeesController {
                 emp.setEmail(!email.isEmpty() ? email : emp.getEmail());
                 emp.setCnic(cnic);
                 emp.setPhone(phone);
-                emp.setSalary(Integer.parseInt(salary));
+                emp.setSalary(BigDecimal.valueOf(Long.parseLong(salary)));
                 emp.setRole(role);
                 emp.setJoiningDate(doj);
                 emp.setAddress(!address.isEmpty() ? address : emp.getAddress());
@@ -145,7 +146,7 @@ public class EmployeesController {
             emp.setPhone(phone);
             emp.setCnic(cnic);
             emp.setAddress(!address.isEmpty() ? address : null);
-            emp.setSalary(Integer.parseInt(salary));
+            emp.setSalary(BigDecimal.valueOf(Long.parseLong(salary)));
             emp.setRole(role);
             emp.setJoiningDate(doj);
             emp.setCreatedDate(new Date());

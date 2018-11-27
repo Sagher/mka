@@ -6,12 +6,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Entries</title>
+        <title>Profit & Loss</title>
 
         <c:import url="../fragments/global-css.jsp" />
 
     </head>
-    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed">
         <!-- top navigation bar -->
         <c:import url="../fragments/fragment-header.jsp" />
 
@@ -38,11 +38,11 @@
                                         <div class="card">
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
-                                                <span>${type} Accounts</span>
+                                                <span>Profit & Loss</span>
                                                 <input value="${type}" id="type" hidden="true">
                                             </div>
                                             <div class="card-body">
-                                                <div id="filtersDiv">
+<!--                                                <div id="filtersDiv">
                                                     <div class="form-group row">
                                                         <div class="col-sm-3">
                                                             <label>From</label>
@@ -84,7 +84,7 @@
                                                             <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>-->
                                                 <hr>
 
                                                 <table id="viewDatatable"
@@ -98,7 +98,7 @@
                                                             <th>Quantity</th>
                                                             <th>Rate</th>
                                                             <th>Total Amount</th>
-                                                            <th>${type}</th>
+                                                            <th>Remaining</th>
                                                             <th>Description</th>
                                                         </tr>
                                                     </thead>
@@ -145,7 +145,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
-    <script src="<c:url value="/resources/js/report.js"/>"></script>
+    <script src="<c:url value="/resources/js/profitLossReport.js"/>"></script>
 
 </html>
 

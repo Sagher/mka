@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:directive.page session="true" />
 <html>
     <head>
@@ -163,16 +164,21 @@
                                                 </div>
                                                 <div class="item-name">${item.itemName} <small>${item.subType}</small></div>
                                                 <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
-                                                <div>Total Sales Amount: ${item.salesAmount} PKR</div>
+                                                <div>Total Sales Amount: 
+                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.salesAmount}"/>
+                                                    PKR</div>
                                             </div>
                                         </div>
                                         <div class="brand-card-body">
                                             <div>
-                                                <div class="text-value">${item.stockUnits} ${item.itemUnit}</div>
+                                                <div class="text-value small">${item.stockUnits} ${item.itemUnit}</div>
                                                 <div class="text-uppercase text-muted small">In Stock</div>
                                             </div>
                                             <div>
-                                                <div class="text-value">${item.stockAmount} PKR</div>
+                                                <div class="text-value small">
+                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.stockAmount}"/>
+                                                    PKR
+                                                </div>
                                                 <div class="text-uppercase text-muted small">Stock Value</div>
                                             </div>
                                         </div>

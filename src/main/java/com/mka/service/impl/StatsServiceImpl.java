@@ -6,6 +6,8 @@
 package com.mka.service.impl;
 
 import com.mka.dao.StatsDao;
+import com.mka.model.AccountPayableReceivable;
+import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
@@ -82,19 +84,24 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public boolean logCashTransaction(MasterAccountHistory mah) {
+    public boolean logCashTransaction(MasterAccountHistory mah, String from) {
         MasterAccount ma = getMasterAccount();
         if (mah.getType().equals("+")) {
             mah.setType("IN");
-            ma.setTotalCash(ma.getTotalCash() + mah.getAmount());
+            ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
         } else if (mah.getType().equals("-")) {
             mah.setType("OUT");
-            ma.setTotalCash(ma.getTotalCash() - mah.getAmount());
+            ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
 
-        } else {
-            mah.setType("HQ-OUT-SELF");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
-            ma.setTotalCash(ma.getTotalCash() - mah.getAmount());
-            ma.setCashInHand(ma.getCashInHand() + mah.getAmount());
+        } else if (mah.getType().equals("-+")) {
+            if (from.equals("1")) {
+                mah.setType("HeadOffice To Cash In Hand");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
+                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+                ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
+            } else {
+                mah.setType("Person To Cash In Hand");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
+                ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
+            }
         }
         boolean tranLogged = statsDao.logCashTransaction(mah);
         if (tranLogged) {
@@ -102,7 +109,6 @@ public class StatsServiceImpl implements StatsService {
             masterAccount = null;
             return tranLogged;
         }
-
         return false;
     }
 

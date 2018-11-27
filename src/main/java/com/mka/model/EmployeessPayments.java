@@ -32,6 +32,11 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "EmployeessPayments.findAll", query = "SELECT e FROM EmployeessPayments e")})
 public class EmployeessPayments implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "amount_payed")
+    private long amountPayed;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +48,6 @@ public class EmployeessPayments implements Serializable {
     @Column(name = "payment_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date paymentDate;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "amount_payed")
-    private int amountPayed;
     @JoinColumn(name = "emp_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Employees employees;
@@ -78,14 +79,6 @@ public class EmployeessPayments implements Serializable {
 
     public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
-    }
-
-    public int getAmountPayed() {
-        return amountPayed;
-    }
-
-    public void setAmountPayed(int amountPayed) {
-        this.amountPayed = amountPayed;
     }
 
     public Employees getEmployees() {
@@ -120,5 +113,13 @@ public class EmployeessPayments implements Serializable {
     public String toString() {
         return "com.mka.model.EmployeessPayments[ id=" + id + " ]";
     }
-    
+
+    public long getAmountPayed() {
+        return amountPayed;
+    }
+
+    public void setAmountPayed(long amountPayed) {
+        this.amountPayed = amountPayed;
+    }
+
 }

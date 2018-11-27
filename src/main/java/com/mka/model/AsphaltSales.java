@@ -6,6 +6,7 @@
 package com.mka.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -35,6 +36,36 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "AsphaltSales.findAll", query = "SELECT a FROM AsphaltSales a")})
 public class AsphaltSales implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "biltee")
+    private int biltee;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "vehicle")
+    private String vehicle;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "type")
+    private String type;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ex_plant_rate")
+    private BigDecimal exPlantRate;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "ex_plant_cost")
+    private BigDecimal exPlantCost;
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "total_sale_amount")
+    private BigDecimal totalSaleAmount;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,10 +86,6 @@ public class AsphaltSales implements Serializable {
     @Size(max = 65535)
     @Column(name = "description")
     private String description;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "total_sale_amount")
-    private int totalSaleAmount;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_active")
@@ -84,7 +111,7 @@ public class AsphaltSales implements Serializable {
         this.id = id;
     }
 
-    public AsphaltSales(Integer id, int quantity, int totalSaleAmount, boolean isActive, Date createdDate) {
+    public AsphaltSales(Integer id, int quantity, BigDecimal totalSaleAmount, boolean isActive, Date createdDate) {
         this.id = id;
         this.quantity = quantity;
         this.totalSaleAmount = totalSaleAmount;
@@ -130,14 +157,6 @@ public class AsphaltSales implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getTotalSaleAmount() {
-        return totalSaleAmount;
-    }
-
-    public void setTotalSaleAmount(int totalSaleAmount) {
-        this.totalSaleAmount = totalSaleAmount;
     }
 
     public boolean getIsActive() {
@@ -203,6 +222,54 @@ public class AsphaltSales implements Serializable {
     @Override
     public String toString() {
         return "AsphaltSales{" + "id=" + id + ", quantity=" + quantity + ", buyer=" + buyer + ", project=" + project + ", totalSaleAmount=" + totalSaleAmount + ", entryDate=" + entryDate + '}';
+    }
+
+    public BigDecimal getTotalSaleAmount() {
+        return totalSaleAmount;
+    }
+
+    public void setTotalSaleAmount(BigDecimal totalSaleAmount) {
+        this.totalSaleAmount = totalSaleAmount;
+    }
+
+    public int getBiltee() {
+        return biltee;
+    }
+
+    public void setBiltee(int biltee) {
+        this.biltee = biltee;
+    }
+
+    public String getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(String vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public BigDecimal getExPlantRate() {
+        return exPlantRate;
+    }
+
+    public void setExPlantRate(BigDecimal exPlantRate) {
+        this.exPlantRate = exPlantRate;
+    }
+
+    public BigDecimal getExPlantCost() {
+        return exPlantCost;
+    }
+
+    public void setExPlantCost(BigDecimal exPlantCost) {
+        this.exPlantCost = exPlantCost;
     }
 
 }

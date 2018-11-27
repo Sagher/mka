@@ -76,7 +76,10 @@ public class AccountsDaoImpl implements AccountsDao {
             Criteria criteria = session.createCriteria(AccountPayableReceivable.class);
 
             criteria.add(Restrictions.eq("isActive", true));
-            criteria.add(Restrictions.eq("type", type));
+
+            if (type != null) {
+                criteria.add(Restrictions.eq("type", type));
+            }
 
             if (entryItem != null) {
             }
@@ -89,9 +92,9 @@ public class AccountsDaoImpl implements AccountsDao {
             if (!buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
             }
-//            if (!project.isEmpty()) {
-//                criteria.add(Restrictions.eq("project", project));
-//            }
+            if (!project.isEmpty()) {
+                criteria.add(Restrictions.eq("project", project));
+            }
 
             criteria.setFirstResult(startIndex);
             criteria.setMaxResults(fetchSize);
@@ -141,9 +144,9 @@ public class AccountsDaoImpl implements AccountsDao {
             if (!buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
             }
-//            if (!project.isEmpty()) {
-//                criteria.add(Restrictions.eq("project", project));
-//            }
+            if (!project.isEmpty()) {
+                criteria.add(Restrictions.eq("project", project));
+            }
 
             return (((Number) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue());
         } catch (Exception e) {

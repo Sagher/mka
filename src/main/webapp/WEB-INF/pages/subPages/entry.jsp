@@ -212,11 +212,15 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row" style="display: none">
-                                                        <label class="col-md-3 col-form-label" for="doe">Date of Entry</label>
-                                                        <div class="col-md-9">
-                                                            <input class="form-control" id="doe" type="date" name="doe" required="true">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Date of Entry</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="doe" type="date" name="doe" required="true">
+                                                            </div>
                                                         </div>
+                                                        <label class="col-md-2"></label>
                                                     </div>
                                                     <br>
                                                     <!--<hr>-->
@@ -296,7 +300,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <div class="brand-card item-summary">
-                                                                <div class="brand-card-header text-white bg-primary">
+                                                                <div class="text-white bg-primary">
                                                                     <div class="card-body">
                                                                         <div class="item-name">
                                                                             <strong>Head Office Account</strong></div>
@@ -347,7 +351,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Description</span>
-                                                            <input class="form-control" id="idesc" type="text" name="idesc">
+                                                            <input class="form-control" id="idesc" type="text" name="idesc" required="true">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -395,10 +399,13 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row" style="display: none">
+                                                    <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <input class="form-control" id="idoe" type="date" name="idoe" required="true">
+                                                            <span class="help-block">Date of Entry</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="idoe" type="date" name="idoe" required="true">
+                                                            </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -437,7 +444,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <div class="brand-card item-summary">
-                                                                <div class="brand-card-header text-white bg-primary">
+                                                                <div class="text-white bg-primary">
                                                                     <div class="card-body">
                                                                         <div class="item-name">
                                                                             <strong>Head Office Account</strong></div>
@@ -456,15 +463,33 @@
                                                             <span class="help-block">Transaction Type</span>
                                                             <select class="form-control" id="ttype" name="ttype">
                                                                 <option value="+">
-                                                                    To Headquarter Account
+                                                                    To Head Office Account
                                                                 </option>
                                                                 <option value="-">
-                                                                    From Headquarter Account
+                                                                    From Head Office Account
                                                                 </option>
                                                                 <option value="-+">
                                                                     Cash In Hand
                                                                 </option>
                                                             </select>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row" id="cashInHandOptionsDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">From</span>
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" onchange="changeCashTranCusLabel(1)" id="inline-radio1" type="radio" value="1" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio1">From Head Office</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom"  onchange="changeCashTranCusLabel(0)">
+                                                                    <label class="form-check-label" for="inline-radio0">From Customer</label>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -483,10 +508,10 @@
 
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
-                                                        <div class="col-md-8">
-                                                            <span class="help-block">Payee</span>
+                                                        <div class="col-md-8" id="cashTranPayeeDiv">
+                                                            <span class="help-block" id="tPayeeLabel">Payee</span>
                                                             <select class="form-control" id="tbuysupSelect" name="tpayer" required="true">
-                                                                <option selected value="">-- Please select A Payer/Receiver --</option>
+                                                                <option selected value="">-- Please select An Option --</option>
                                                             </select>
                                                             <br>
                                                             <input hidden="true" class="form-control" id="tbuysupInput" type="text" 
@@ -512,6 +537,17 @@
                                                         <div class="col-md-8">
                                                             <span class="help-block">Description</span>
                                                             <input class="form-control" type="text" name="tdesc">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Date of Entry</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="cdoe" type="date" name="cdoe" required="true">
+                                                            </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -585,34 +621,11 @@
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <c:forEach items="${stockTrace}" var="item">
-                                                        <div class="form-group row">
-                                                            <label class="col-md-2"></label>
-                                                            <div class="col-md-8">
-                                                                <h6>${item.itemName} ${item.subType}</h6>
-
-                                                                <span class="help-block">${item.itemUnit} / Ton</span>
-                                                                <input class="form-control" id="${item.id}rate" type="number" 
-                                                                       name="${item.id}rate" value="0" 
-                                                                       onchange="updateAssRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
-                                                                <br>                                                                
-                                                                <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
-                                                                <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"
-                                                                       name="${item.id}quantity" value="0" >
-                                                                <br>                                                                
-                                                                <span class="help-block">Total ${item.itemName} ${item.subType} Cost (Total Quantity x Avg Rate i.e, ${item.averageUnitPrice})</span>
-                                                                <input tabindex="-1" class="form-control" id="${item.id}cost" type="number" readonly="readonly"
-                                                                       name="${item.id}cost" value="0">
-                                                            </div>
-                                                            <label class="col-md-2"></label>
-                                                        </div>
-                                                    </c:forEach>
-
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Laying Cost Per Ton</span>
-                                                            <input class="form-control" id="alcCost" onchange="addLayingCostToTotalCost(this.value)" type="number" name="alcCost" value="0">
+                                                            <span class="help-block">Biltee Number</span>
+                                                            <input class="form-control" id="biltee" type="number" name="biltee">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -620,9 +633,8 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Rate / Ton</span>
-                                                            <input class="form-control" id="costPerTon" type="number"  readonly="readonly"
-                                                                   name="costPerTon" value="0">
+                                                            <span class="help-block">Vehicle Number</span>
+                                                            <input class="form-control" id="vehicle" type="text" name="vehicle">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -630,73 +642,113 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Sale Rate</span>
-                                                            <div class="help-block">
-                                                                <div class="form-check form-check-inline mr-1">
-                                                                    <input checked="true" class="form-check-input" onclick="changeTotalCost(1)" id="inline-radio1" type="radio" value="1" name="pricePoint">
-                                                                    <label class="form-check-label" for="inline-radio1">Direct</label>
-                                                                </div>
-                                                                <label class="col-md-1"></label>
-                                                                <div class="form-check form-check-inline mr-1">
-                                                                    <input class="form-check-input" onclick="changeTotalCost(0)" id="inline-radio0" type="radio" value="0" name="pricePoint">
-                                                                    <label class="form-check-label" for="inline-radio0">In-Direct</label>
-                                                                </div>
-                                                            </div>
+                                                            <span class="help-block">Type</span>
+                                                            <select name="asstype" class="form-control">
+                                                                <option value="awc" selected="selected">AWC</option>
+                                                                <option value="alc">ALC</option>
+                                                            </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <div class="form-group row" id="mixRateDiv" hidden="true">
+                                                    <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Mixture Rate / Ton</span>
-                                                            <input class="form-control" id="mixtureRate" type="number" onchange="addMixtureCost(this.value)"
-                                                                   name="totalSaleAmount" value="0">
+                                                            <span class="help-block">Ex-Plant Rate / Ton</span>
+                                                            <input class="form-control" id="expRate" type="number" name="expRate">
+                                                            <span class="help-block">Ex-Plant Total Cost</span>
+                                                            <input class="form-control" id="expCost" type="number" name="expCost" tabindex="-1" readonly="true" value="0">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <div class="form-group row" id="">
+                                                    <div class="form-group row" id="assCarriageCost">
                                                         <br>
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Total Cost Head Office</span>
-                                                            <input class="form-control" id="totalCostHQ" name="totalCostHQ" type="number" value="0" readonly="readonly">
-                                                            <span class="help-block">Total Cost For Customer/Buyer</span>
-                                                            <input class="form-control" id="totalCostCustomer" name="totalCostCustomer" type="number" value="0" readonly="readonly">
-                                                            <span class="help-block">Advance Paid</span>
-                                                            <input class="form-control" id="advancePaid" name="advancePaid" type="number" value="0">
+                                                            <h5>Carriage</h5>
+                                                            <span class="help-block">Provider</span>
+                                                            <input class="form-control" id="assCarProvider" name="assCarProvider" type="text" placeholder="">
+                                                            <span class="help-block">Per Ton Cost</span>
+                                                            <input class="form-control" id="assCarCostPerTon" name="assCarCostPerTon" type="number" value="0">
+                                                            <span class="help-block">Total Cost</span>
+                                                            <input class="form-control" id="totalAssCarCost" name="totalAssCarCost" value="0" type="number" readonly="true" tabindex="-1">
+                                                            <span class="help-block">Advance</span>
+                                                            <input class="form-control" id="assCarAdvance" name="assCarAdvance" type="number" value="0">
                                                         </div>    
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <div class="form-group row" hidden="true" id="assLayingCost">
+                                                    <div class="form-group row" id="assLayingCost">
                                                         <br>
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <h5>Laying Charges</h5>
-                                                            <span class="help-block">Name</span>
+                                                            <span class="help-block">Provider</span>
                                                             <input class="form-control" id="assLayer" name="assLayer" type="text" placeholder="">
                                                             <span class="help-block">Per Ton Cost</span>
                                                             <input class="form-control" id="assLayingCostPerTon" name="assLayingCostPerTon" type="number" value="0">
                                                             <span class="help-block">Total Cost</span>
-                                                            <input class="form-control" id="totalAssLayingCost" name="totalAssLayingCost" value="0" type="number">
+                                                            <input class="form-control" id="totalAssLayingCost" name="totalAssLayingCost" value="0" type="number" readonly="true" tabindex="-1">
                                                             <span class="help-block">Advance</span>
                                                             <input class="form-control" id="assLayingAdvance" name="assLayingAdvance" type="number" value="0">
                                                         </div>    
                                                         <label class="col-md-2"></label>
                                                     </div>
+
+                                                    <c:forEach items="${stockTrace}" var="item">
+                                                        <c:if test = "${item.itemId == 1 || item.itemId == 6}">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-2"></label>
+                                                                <div class="col-md-8">
+                                                                    <h6>${item.itemName} ${item.subType}</h6>
+
+                                                                    <span class="help-block">${item.itemUnit} / Ton</span>
+                                                                    <input class="form-control" id="${item.id}rate" type="number" 
+                                                                           name="${item.id}rate" value="0" 
+                                                                           onchange="updateAssRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
+                                                                    <br>                                                                
+                                                                    <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
+                                                                    <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"
+                                                                           name="${item.id}quantity" value="0" >
+                                                                    <br>                                                                
+                                                                    <span class="help-block">Total ${item.itemName} ${item.subType} Cost (Total Quantity x Avg Rate i.e, ${item.averageUnitPrice})</span>
+                                                                    <input tabindex="-1" class="form-control" id="${item.id}cost" type="number" readonly="readonly"
+                                                                           name="${item.id}cost" value="0">
+                                                                </div>
+                                                                <label class="col-md-2"></label>
+                                                            </div>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                    <br>           
+                                                    <br>
                                                     <br>
 
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <div  class="pull-left" id="addCarriageDiv">
-                                                                <button class="btn btn-default" type="button"
-                                                                        id="addAssLayingBtn" onclick="addLayingCost()">
-                                                                    <i class="fa fa-plus"></i> Add Laying Cost
-                                                                </button>
-                                                            </div>
+                                                            <span class="help-block">Total Sale Cost</span>
+                                                            <input class="form-control" id="assSaleCost" type="number"  readonly="readonly"
+                                                                   name="assSaleCost" value="0">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Per Ton Sale Rate</span>
+                                                            <input class="form-control" id="assSaleRate" type="number"  readonly="readonly"
+                                                                   name="assSaleRate" value="0">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+
+                                                    <br>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <div class="pull-right">
                                                                 <button class="btn btn-lg btn-danger" type="reset">
                                                                     <i class="fa fa-ban"></i> Reset</button>
