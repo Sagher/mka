@@ -84,13 +84,13 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public boolean logCashTransaction(MasterAccountHistory mah, String from) {
+    public String logCashTransaction(MasterAccountHistory mah, String from) {
         MasterAccount ma = getMasterAccount();
         if (mah.getType().equals("+")) {
-            mah.setType("IN");
+            mah.setType("To Head Office");
             ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
         } else if (mah.getType().equals("-")) {
-            mah.setType("OUT");
+            mah.setType("From Head Office");
             ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
 
         } else if (mah.getType().equals("-+")) {
@@ -107,9 +107,9 @@ public class StatsServiceImpl implements StatsService {
         if (tranLogged) {
             updateMasterAccount(ma);
             masterAccount = null;
-            return tranLogged;
+            return mah.getType();
         }
-        return false;
+        return null;
     }
 
     @Override

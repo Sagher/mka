@@ -17,7 +17,7 @@ public interface AccountsDao {
 
     public boolean logAccountPayableReceivable(AccountPayableReceivable accountPayableReceivable);
 
-    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type,
+    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type, String subType,
             int startIndex, int fetchSize,
             String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project);
 

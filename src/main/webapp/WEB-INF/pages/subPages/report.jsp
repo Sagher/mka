@@ -6,12 +6,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Entries</title>
+        <title>${type} Accounts</title>
 
         <c:import url="../fragments/global-css.jsp" />
 
     </head>
-    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed">
         <!-- top navigation bar -->
         <c:import url="../fragments/fragment-header.jsp" />
 
@@ -72,12 +72,12 @@
                                                                 <option selected value="">All</option>
                                                             </select>
                                                         </div>
-                                                        <div class="col-sm-3">
+<!--                                                        <div class="col-sm-3">
                                                             <label>Project</label>
                                                             <select class="form-control" id="proj" name="proj">
                                                                 <option selected value="">All</option>
                                                             </select>
-                                                        </div>
+                                                        </div>-->
                                                     </div>
                                                     <div class="form-group row">
                                                         <div class="col-sm-12">
@@ -95,9 +95,11 @@
                                                             <th>Project</th>
                                                             <th>Name</th>
                                                             <th>Item</th>
+                                                            <th>Type</th>
                                                             <th>Quantity</th>
                                                             <th>Rate</th>
                                                             <th>Total Amount</th>
+                                                            <th>Advance</th>
                                                             <th>${type}</th>
                                                             <th>Description</th>
                                                         </tr>
@@ -105,7 +107,7 @@
                                                     <tbody>
                                                     </tbody>
                                                 </table>
-                                                <div>
+<!--                                                <div>
                                                     <hr>
                                                     <h4>Summary</h4>
                                                     <br>
@@ -114,7 +116,7 @@
 
                                                         </text>
                                                     </h5>
-                                                </div>
+                                                </div>-->
                                             </div>
                                         </div>
                                     </div>

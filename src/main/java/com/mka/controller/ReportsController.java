@@ -5,7 +5,6 @@
  */
 package com.mka.controller;
 
-import static com.mka.controller.UserController.log;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntryItems;
 import com.mka.model.StockTrace;
@@ -19,9 +18,10 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -115,19 +115,42 @@ public class ReportsController {
                 model.addObject("user", u);
                 if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                     model.addObject("type", Constants.PAYABLE);
+
                 } else if (type.equalsIgnoreCase("profitLoss")) {
+                    model.addObject("stockTrace", ss.getStats());
+
+                    List<AccountPayableReceivable> indirectExpenses = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, Constants.EXPENSE, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
+                    Map<String, Integer> indirectExpMap = new HashMap<>();
+
+                    if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
+                        for (AccountPayableReceivable acc : indirectExpenses) {
+                            
+                            if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
+                                Integer val = indirectExpMap.get(acc.getItemType().getItemName());
+                                val = val + acc.getAmount().intValue();
+                                indirectExpMap.put(acc.getItemType().getItemName(), val);
+                            } else {
+                                indirectExpMap.put(acc.getItemType().getItemName(), acc.getAmount().intValue());
+                            }
+                        }
+                    }
+
+                    model.addObject("indirectExpenses", indirectExpMap);
+
                     model.setViewName("subPages/profitLossReport");
                     return model;
+
                 } else if (type.equalsIgnoreCase("closingStock")) {
                     model.setViewName("subPages/closingStock");
                     model.addObject("masterAccount", ss.getMasterAccount());
                     return model;
+
                 } else if (type.equalsIgnoreCase("balanceSheet")) {
 
                     model.setViewName("subPages/balanceSheet");
 
                     int allReceivable = 0, allPayable = 0;
-                    dataList = accountsService.getAccountPayableReceivable(null, null, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
+                    dataList = accountsService.getAccountPayableReceivable(null, null, null, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
 
                     if (dataList != null && !dataList.isEmpty()) {
                         for (AccountPayableReceivable acc : dataList) {
@@ -142,17 +165,19 @@ public class ReportsController {
 
                     }
 
-                    int totalStockAmount = 0;
+                    int totalStockAmount = 0, totalSale = 0;
                     List<StockTrace> stock = ss.getStats();
                     if (stock != null && !stock.isEmpty()) {
                         for (StockTrace s : stock) {
                             totalStockAmount += s.getStockAmount().intValue();
+                            totalSale += s.getSalesAmount().intValue();
+
                         }
                     }
 
                     model.addObject("allReceivable", allReceivable);
                     model.addObject("allPayable", allPayable);
-                    model.addObject("cashInHand", ss.getMasterAccount().getCashInHand().intValue());
+                    model.addObject("totalSalesProfit", totalSale);
                     model.addObject("totalStockAmount", totalStockAmount);
 
                     return model;
@@ -203,19 +228,23 @@ public class ReportsController {
         if (type.equalsIgnoreCase(Constants.PAYABLE)) {
             if (itemTypeId > 0) {
                 EntryItems entryItem = entriesService.getEntryItemById(itemTypeId);
-                data = accountsService.getAccountPayableReceivable(entryItem, Constants.PAYABLE, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                data = accountsService.getAccountPayableReceivable(entryItem, Constants.PAYABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
                 totalSize = accountsService.getAccountPayableReceivableCount(entryItem, Constants.PAYABLE, startDate, endDate, buyerSupplier, project);
             } else {
-                data = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                data = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
                 totalSize = accountsService.getAccountPayableReceivableCount(null, Constants.PAYABLE, startDate, endDate, buyerSupplier, project);
             }
         } else {
-            data = accountsService.getAccountPayableReceivable(null, Constants.RECEIVABLE, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+            data = accountsService.getAccountPayableReceivable(null, Constants.RECEIVABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
             totalSize = accountsService.getAccountPayableReceivableCount(null, Constants.RECEIVABLE, startDate, endDate, buyerSupplier, project);
         }
 
         dataList = (data != null) ? (List<AccountPayableReceivable>) data : null;
-        resp.setData(data != null ? data : "");
+        if (dataList != null && !dataList.isEmpty()) {
+            int tAmount = getTotalAmount(type);
+            dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, null, tAmount));
+        }
+        resp.setData(dataList != null ? dataList : "");
         resp.setRecordsFiltered(totalSize);
         resp.setRecordsTotal(totalSize);
         resp.setDraw(draw);
@@ -223,14 +252,41 @@ public class ReportsController {
         return resp;
     }
 
-    @RequestMapping(value = "/report/total", method = RequestMethod.GET)
-    public @ResponseBody
-    int getTotal(HttpServletRequest request) {
+//    @RequestMapping(value = "/report/total", method = RequestMethod.GET)
+//    public @ResponseBody
+//    int getTotal(HttpServletRequest request,
+//            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type) {
+//        return getTotalAmount(type);
+//    }
+    private int getTotalAmount(String type) {
         int totalAmount = 0;
         if (dataList != null && !dataList.isEmpty()) {
-            for (AccountPayableReceivable ac : dataList) {
-                totalAmount += ac.getAmount().intValue();
+            if (type.equalsIgnoreCase(Constants.PAYABLE)) {
+                for (AccountPayableReceivable ac : dataList) {
+                    if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("from head office")) {
+                        totalAmount -= (ac.getTotalAmount().intValue());
+                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
+                        totalAmount += (ac.getTotalAmount().intValue());
+                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
+                        totalAmount += (ac.getTotalAmount().intValue());
+                    } else {
+                        totalAmount += ac.getAmount().intValue();
+                    }
+                }
+            } else {
+                for (AccountPayableReceivable ac : dataList) {
+                    if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("from head office")) {
+                        totalAmount += (ac.getTotalAmount().intValue());
+                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
+                        totalAmount -= (ac.getTotalAmount().intValue());
+                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
+                        totalAmount -= (ac.getTotalAmount().intValue());
+                    } else {
+                        totalAmount += ac.getAmount().intValue();
+                    }
+                }
             }
+
         }
         return totalAmount;
     }
@@ -260,7 +316,7 @@ public class ReportsController {
         String orderBy = request.getParameter("order[0][dir]");
         String sortby = request.getParameter("columns[" + order0Col + "][data]");
         profitLossTotal = 0;
-        dataList = accountsService.getAccountPayableReceivable(null, null, 0, Integer.MAX_VALUE, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+        dataList = accountsService.getAccountPayableReceivable(null, null, null, 0, Integer.MAX_VALUE, orderBy, sortby, startDate, endDate, buyerSupplier, project);
 
         List<AccountPayableReceivable> toBeRemoved = new ArrayList<>();
         if (dataList != null && !dataList.isEmpty()) {

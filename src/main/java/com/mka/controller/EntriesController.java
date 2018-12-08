@@ -460,13 +460,13 @@ public class EntriesController {
             mah.setDescription(tdesc);
             mah.setPayee(tpayer);
 
-            boolean transactionLogged = ss.logCashTransaction(mah, payfrom);
-            if (!transactionLogged) {
+            String transactionLogged = ss.logCashTransaction(mah, payfrom);
+            if (transactionLogged == null) {
                 return ("01:Failed To Log Transaction. Make sure all field are filled in.");
             } else {
 //                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
-                asyncUtil.logCashTran(mah, Constants.RECEIVABLE);
-                asyncUtil.logCashTran(mah, Constants.PAYABLE);
+                asyncUtil.logCashTran(mah, Constants.RECEIVABLE, transactionLogged);
+                asyncUtil.logCashTran(mah, Constants.PAYABLE, transactionLogged);
                 return "00:Transaction Logged Successfully";
             }
         } catch (Exception e) {

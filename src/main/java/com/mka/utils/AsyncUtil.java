@@ -121,8 +121,8 @@ public class AsyncUtil {
     @Async
     public void updateStockTrace(StockTrace st) {
         try {
-
-            st.setAverageUnitPrice(ss.getAveragePricePerUnit(st.getItemId()));
+            int avgUnitPrice = st.getStockAmount().intValue() / st.getStockUnits();
+            st.setAverageUnitPrice(BigDecimal.valueOf(avgUnitPrice));
             ss.updateStockTrace(st);
         } catch (Exception e) {
             log.error("Exception in updateStockTrace: ", e);
@@ -158,6 +158,7 @@ public class AsyncUtil {
                 receivable.setIsActive(true);
                 receivable.setProject(entry.getProject());
                 receivable.setType(Constants.RECEIVABLE);
+                receivable.setSubType(Constants.SALE);
                 receivable.setItemType(entry.getItem());
 
                 if (!accountsDao.logAccountPayableReceivable(receivable)) {
@@ -176,6 +177,7 @@ public class AsyncUtil {
                 payable.setIsActive(true);
                 payable.setProject(entry.getProject());
                 payable.setType(Constants.PAYABLE);
+                payable.setSubType(Constants.PURCHASE);
                 payable.setItemType(entry.getItem());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
@@ -202,6 +204,7 @@ public class AsyncUtil {
                 payable.setIsActive(true);
                 payable.setProject(entry.getName());
                 payable.setType(Constants.PAYABLE);
+                payable.setSubType(Constants.EXPENSE);
                 payable.setItemType(entry.getItem());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
@@ -215,7 +218,7 @@ public class AsyncUtil {
 
     @Async
     public void logAmountPayable(BigDecimal amount, String payableTo, int entryId, String project, String description,
-            int quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem) {
+            int quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem, String subType) {
         try {
             //payable
             AccountPayableReceivable payable = new AccountPayableReceivable();
@@ -228,6 +231,7 @@ public class AsyncUtil {
             payable.setIsActive(true);
             payable.setProject(project);
             payable.setType(Constants.PAYABLE);
+            payable.setSubType(subType);
             payable.setItemType(eItem);
             payable.setDescription(description);
 
@@ -252,7 +256,7 @@ public class AsyncUtil {
     }
 
     @Async
-    public void logCashTran(MasterAccountHistory mah, String type) {
+    public void logCashTran(MasterAccountHistory mah, String type, String subType) {
         // log receivable
         AccountPayableReceivable receivable = new AccountPayableReceivable();
         receivable.setAccountName(mah.getPayee());
@@ -264,6 +268,7 @@ public class AsyncUtil {
         receivable.setIsActive(true);
         receivable.setProject(null);
         receivable.setType(type);
+        receivable.setSubType(subType);
         receivable.setItemType(new EntryItems(18));
         receivable.setDescription(mah.getDescription());
 

@@ -114,6 +114,7 @@ public class UserServiceImpl implements UserService {
         if (customersAndBuyers == null || customersAndBuyers.isEmpty() || !customersAndBuyers.contains(cusBuy)) {
             if (userDao.addCustomerAndBuyer(cusBuy)) {
                 customersAndBuyers = null;
+                getCustomersAndBuyers();
             }
             return true;
         }

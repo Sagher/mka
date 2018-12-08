@@ -42,10 +42,10 @@ public class AccountsServiceImpl implements AccountsService {
     }
 
     @Override
-    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type,
+    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type, String subType,
             int startIndex, int fetchSize, String orderBy, String sortBy, String startDate,
             String endDate, String buyerSupplier, String project) {
-        return accountsDao.getAccountPayableReceivable(entryItem, type, startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier, project);
+        return accountsDao.getAccountPayableReceivable(entryItem, type, subType, startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier, project);
     }
 
     @Override

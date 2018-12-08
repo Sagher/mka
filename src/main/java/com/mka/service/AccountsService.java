@@ -18,7 +18,7 @@ public interface AccountsService {
     public boolean logAccountPayableReceivable(AccountPayableReceivable accountPayableReceivable);
 
     public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem,
-            String type, int startIndex, int fetchSize,
+            String type, String subType, int startIndex, int fetchSize,
             String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project);
 
     public int getAccountPayableReceivableCount(EntryItems entryItem, String type, String startDate, String endDate,

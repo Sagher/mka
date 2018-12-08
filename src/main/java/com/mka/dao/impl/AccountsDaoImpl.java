@@ -17,6 +17,8 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -67,7 +69,7 @@ public class AccountsDaoImpl implements AccountsDao {
     }
 
     @Override
-    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type,
+    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type, String subType,
             int startIndex, int fetchSize, String orderBy, String sortBy, String startDate,
             String endDate, String buyerSupplier, String project) {
         Session session = null;
@@ -79,6 +81,13 @@ public class AccountsDaoImpl implements AccountsDao {
 
             if (type != null) {
                 criteria.add(Restrictions.eq("type", type));
+            }
+
+            if (subType != null) {
+                Criterion rest1 = Restrictions.eq("subType", subType);
+                Criterion rest2 = Restrictions.like("subType", "aw", MatchMode.START);
+                criteria.add(Restrictions.or(rest1, rest2));
+//                criteria.add(Restrictions.eq("subType", subType));
             }
 
             if (entryItem != null) {

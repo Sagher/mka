@@ -34,6 +34,10 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "AccountPayableReceivable.findAll", query = "SELECT a FROM AccountPayableReceivable a")})
 public class AccountPayableReceivable implements Serializable {
 
+    @Size(max = 50)
+    @Column(name = "sub_type")
+    private String subType;
+
     @JoinColumn(name = "item_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private EntryItems itemType;
@@ -94,13 +98,15 @@ public class AccountPayableReceivable implements Serializable {
         this.id = id;
     }
 
-    public AccountPayableReceivable(Integer id, String accountName, String type, int entryId, boolean isActive, Date createdDate) {
+    public AccountPayableReceivable(Integer id, String accountName, String type, int entryId, boolean isActive, Date createdDate, int amount) {
         this.id = id;
         this.accountName = accountName;
         this.type = type;
         this.entryId = entryId;
         this.isActive = isActive;
         this.createdDate = createdDate;
+        this.amount = BigDecimal.valueOf(amount);
+
     }
 
     public Integer getId() {
@@ -230,6 +236,14 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setItemType(EntryItems itemType) {
         this.itemType = itemType;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
 }

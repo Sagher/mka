@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Profit & Loss</title>
+        <title>Balance Sheet</title>
 
         <c:import url="../fragments/global-css.jsp" />
 
@@ -42,111 +42,63 @@
                                                 <input value="${type}" id="type" hidden="true">
                                             </div>
                                             <div class="card-body">
-                                                <!--                                                <div id="filtersDiv">
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>From</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        From
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>To</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        To
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="to" type="date" name="to" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Buyer/Supplier</label>
-                                                                                                            <select class="form-control" id="buySup" name="buySup">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Project</label>
-                                                                                                            <select class="form-control" id="proj" name="proj">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-12">
-                                                                                                            <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>-->
-                                                <!--                                                <hr>
-                                                
-                                                <table id="viewDatatable"
-                                                                                                       class="table table-responsive-sm table-bordered table-striped table-sm">
-                                                                                                    <thead>
-                                                                                                        <tr>
-                                                                                                            <th>Date</th>
-                                                                                                            <th>Project</th>
-                                                                                                            <th>Name</th>
-                                                                                                            <th>Item</th>
-                                                                                                            <th>Quantity</th>
-                                                                                                            <th>Rate</th>
-                                                                                                            <th>Total Amount</th>
-                                                                                                            <th>Remaining</th>
-                                                                                                            <th>Description</th>
-                                                                                                        </tr>
-                                                                                                    </thead>
-                                                                                                    <tbody>
-                                                                                                    </tbody>
-                                                                                                </table>-->
                                                 <div>
                                                     <br>
                                                     <table id="table" class="table table-responsive-sm table-bordered table-striped table-sm">
                                                         <thead>
-                                                        <th colspan="2">
-                                                        <center>Balance Sheet</center>
+                                                        <th>
+                                                        <center>ASSETS</center>
+                                                        </th>
+                                                        <th>
+                                                        <center>AMOUNT</center>
+                                                        </th>
+                                                        <th>
+                                                        <center>LIABILITIES</center>
+                                                        </th>
+                                                        <th>
+                                                        <center>AMOUNT</center>
                                                         </th>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <th>Total Receivable Amount </th>
+                                                                <th>Accounts Receivable </th>
                                                                 <td>
                                                                     ${allReceivable}
                                                                 </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Total Payable Amount </th>
+                                                                <th>Accounts Payable </th>
                                                                 <td>
                                                                     ${allPayable}
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <th>Total Cash In Hand </th>
-                                                                <td>
-                                                                    ${cashInHand}
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Total Stock Amount </th>
+                                                                <th>Stock Available </th>
                                                                 <td>
                                                                     ${totalStockAmount}
+                                                                </td>
+                                                                <th>Net Profit </th>
+                                                                <td>
+                                                                    ${totalSalesProfit}
+                                                                </td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                </td>                                                                
+                                                                <td>
+                                                                </td>
+                                                                <td>
+                                                                </td>
+                                                                <td>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <th> </th>
                                                                 <td>
+                                                                    ${allReceivable+totalStockAmount}
                                                                 </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th>Total </th>
+                                                                <th> </th>
                                                                 <td>
-                                                                    ${allReceivable+cashInHand+totalStockAmount-allPayable}
+                                                                    ${totalSalesProfit+allPayable}
                                                                 </td>
                                                             </tr>   
                                                         </tbody>

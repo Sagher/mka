@@ -18,6 +18,8 @@ var customerBuyerSelect = $("#dbuysupSelect");
 var projectSelect = $("#projSelect");
 var customerBuyerInput = $("#dbuysupInput");
 var projectInput = $("#dproject");
+var dcPartySelect = $("#dcParty");
+var dcPartyInput = $("#dcPartyInput");
 var quantity = $("#dquantity");
 var rate = $("#drate");
 var amount = $("#damount");
@@ -56,12 +58,18 @@ $(document).ready(function () {
                 tCustomerBuyerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 iname.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 asCusSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                dcPartySelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                assCarProviderSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                assLayerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
 
             }
             customerBuyerSelect.append($("<option />").val('Other').text('Other'));
             tCustomerBuyerSelect.append($("<option />").val('Other').text('Other'));
             iname.append($("<option />").val('Other').text('Other'));
             asCusSelect.append($("<option />").val('Other').text('Other'));
+            dcPartySelect.append($("<option />").val('Other').text('Other'));
+            assCarProviderSelect.append($("<option />").val('Other').text('Other'));
+            assLayerSelect.append($("<option />").val('Other').text('Other'));
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -275,6 +283,17 @@ $("#unloadedCrush, #unloadingCost").change(function () {
 
     }
 });
+//attach change event to carriage contractor in direct entry
+dcPartySelect.change(function () {
+    if ($('#dcParty option:selected').text() == "Other") {
+        dcPartyInput.removeAttr("hidden");
+        dcPartyInput.attr("required", "true");
+    } else {
+        dcPartyInput.attr("hidden", "true");
+        dcPartyInput.removeAttr("required");
+    }
+});
+
 //attach change event to customer/buyer and supplier select
 customerBuyerSelect.change(function () {
     if ($('#dbuysupSelect option:selected').text() == "Other") {
@@ -543,6 +562,10 @@ var asCusSelect = $("#asCusSelect");
 var asCusInput = $("#asCusInput");
 var asProjSelect = $("#asProjSelect");
 var asProjInput = $("#asProjInput");
+var assCarProviderSelect = $("#assCarProvider");
+var assCarProviderInput = $("#assCarProviderInput");
+var assLayerSelect = $("#assLayer");
+var assLayerInput = $("#assLayerInput");
 
 //attach change event to customer/buyer and supplier select
 asCusSelect.change(function () {
@@ -564,7 +587,24 @@ asProjSelect.change(function () {
         asProjInput.attr("hidden", "true");
     }
 });
-
+assCarProviderSelect.change(function () {
+    if ($('#assCarProvider option:selected').text() == "Other") {
+        assCarProviderInput.removeAttr("hidden");
+        assCarProviderInput.attr("required", "true");
+    } else {
+        assCarProviderInput.attr("hidden", "true");
+        assCarProviderInput.removeAttr("required");
+    }
+});
+assLayerSelect.change(function () {
+    if ($('#assLayer option:selected').text() == "Other") {
+        assLayerInput.removeAttr("hidden");
+        assLayerInput.attr("required", "true");
+    } else {
+        assLayerInput.attr("hidden", "true");
+        assLayerInput.removeAttr("required");
+    }
+});
 $("#assLayingCostPerTon").change(function () {
     if ($("#assLayingCostPerTon").val().length > 0) {
         var am = $("#assLayingCostPerTon").val() * $("#tass").val();
@@ -603,6 +643,18 @@ function updateTotalAssCostAndPerTonAssRate() {
 function updateAssRate(itemName, value, avgRate) {
     console.log(itemName + ", " + value + ", " + avgRate);
     var item = itemName.split("~")[0];
+    var totalQuantity = parseInt($("#tass").val()) * value;
+    var qId = "#" + item + "quantity";
+    $(qId).val(totalQuantity);
+    var costId = "#" + item + "cost";
+    var itemCost = totalQuantity * Math.ceil(avgRate);
+    $(costId).val(itemCost);
+}
+
+function updateAssBitRate(itemName, value, avgRate) {
+    console.log(itemName + ", " + value + ", " + avgRate);
+    var item = itemName.split("~")[0];
+    value = value / 1000;
     var totalQuantity = parseInt($("#tass").val()) * value;
     var qId = "#" + item + "quantity";
     $(qId).val(totalQuantity);

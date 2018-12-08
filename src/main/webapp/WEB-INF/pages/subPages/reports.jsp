@@ -49,39 +49,41 @@
                     <div class="animated fadeIn">
                         <div class="row">
                             <c:forEach items="${stockTrace}" var="item">
-                                <div class="col-sm-6 col-lg-3">
-                                    <div class="brand-card item-summary">
-                                        <div class="brand-card-header text-white ${item.divBgThemeClass}">
-                                            <div class="card-body">
-                                                <div class="btn-group float-right">
-                                                    <a href="<c:url value="/entries?type=direct&eitem=${item.itemId}" />">
-                                                        <button class="btn btn-transparent dropdown-toggle p-0" type="button">
-                                                            More
-                                                        </button>
-                                                    </a>
+                                <c:if test = "${item.itemId != 17}">
+                                    <div class="col-sm-6 col-lg-3">
+                                        <div class="brand-card item-summary">
+                                            <div class="brand-card-header text-white ${item.divBgThemeClass}">
+                                                <div class="card-body">
+                                                    <div class="btn-group float-right">
+                                                        <a href="<c:url value="/entries?type=direct&eitem=${item.itemId}" />">
+                                                            <button class="btn btn-transparent dropdown-toggle p-0" type="button">
+                                                                More
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    <div class="item-name">${item.itemName} <small>${item.subType}</small></div>
+                                                    <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
+                                                    <div>Total Sales Amount: 
+                                                        <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.salesAmount}"/>
+                                                        PKR</div>
                                                 </div>
-                                                <div class="item-name">${item.itemName} <small>${item.subType}</small></div>
-                                                <div>Total Sales: ${item.salesUnit} ${item.itemUnit}</div>
-                                                <div>Total Sales Amount: 
-                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.salesAmount}"/>
-                                                    PKR</div>
                                             </div>
-                                        </div>
-                                        <div class="brand-card-body">
-                                            <div>
-                                                <div class="text-value small">${item.stockUnits} ${item.itemUnit}</div>
-                                                <div class="text-uppercase text-muted small">In Stock</div>
-                                            </div>
-                                            <div>
-                                                <div class="text-value small">
-                                                    <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.stockAmount}"/>
-                                                    PKR
+                                            <div class="brand-card-body">
+                                                <div>
+                                                    <div class="text-value small">${item.stockUnits} ${item.itemUnit}</div>
+                                                    <div class="text-uppercase text-muted small">In Stock</div>
                                                 </div>
-                                                <div class="text-uppercase text-muted small">Stock Value</div>
+                                                <div>
+                                                    <div class="text-value small">
+                                                        <fmt:formatNumber type="number" maxFractionDigits="0" minFractionDigits="0" value="${item.stockAmount}"/>
+                                                        PKR
+                                                    </div>
+                                                    <div class="text-uppercase text-muted small">Stock Value</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </c:if>
                             </c:forEach>
                         </div>
 

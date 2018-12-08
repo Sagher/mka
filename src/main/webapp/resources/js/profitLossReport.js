@@ -9,65 +9,73 @@ var totalField = $("#totalField");
 var totalAmount = 0;
 //-------------------------------
 $(document).ready(function () {
-    table = $("#viewDatatable").DataTable({
-        "dom": 'T<"clear">Blfrtip',
-        "oLanguage": {
-            "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
-        },
-        "ajax": {
-            "url": "report/profitLoss"
-        },
-        "columns": [
-            /*
-             <th>Date</th>
-             <th>Project</th>
-             <th>Name</th>
-             <th>Item</th>
-             <th>Quantity</th>
-             <th>Rate</th>
-             <th>Total Amount</th>
-             <th>Remaining</th>
-             <th>Description</th>             */
-//            {"data": "id", "render": function (data, type, full, meta) {
-//                    var html = "<div class='id'>" + data + "</div>";
-//                    return html;
+//    table = $("#viewDatatable").DataTable({
+//        "dom": 'T<"clear">Blfrtip',
+//        "oLanguage": {
+//            "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
+//        },
+//        "ajax": {
+//            "url": "report/profitLoss"
+//        },
+//        "columns": [
+//            /*
+//             <th>Date</th>
+//             <th>Project</th>
+//             <th>Name</th>
+//             <th>Item</th>
+//             <th>Quantity</th>
+//             <th>Rate</th>
+//             <th>Total Amount</th>
+//             <th>Advance</th>
+//             <th>Remaining</th>
+//             <th>Description</th>             */
+////            {"data": "id", "render": function (data, type, full, meta) {
+////                    var html = "<div class='id'>" + data + "</div>";
+////                    return html;
+////                }
+////            },
+//            {"data": "createdDate"},
+//            {"data": "project"},
+//            {"data": "accountName"},
+//            {"data": "itemType.itemName"},
+//            {"data": "quantity"},
+//            {"data": "rate"},
+//            {"data": "totalAmount"},
+//            {"data": "rate", "render": function (data, type, full, meta) {
+//                    if (full.itemType.id == 18) {
+//                        return 0;
+//                    } else {
+//                        return (parseInt(full.totalAmount, 10) - parseInt(full.amount, 10));
+//                    }
 //                }
-//            },
-            {"data": "createdDate"},
-            {"data": "project"},
-            {"data": "accountName"},
-            {"data": "itemType.itemName"},
-            {"data": "quantity"},
-            {"data": "rate"},
-            {"data": "totalAmount"},
-            {"data": "amount"},
-            {"data": "description"}
-        ],
-        "processing": true,
-        "serverSide": true,
-        "pageLength": -1,
-        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'All']],
-        "searching": false,
-        "ordering": true,
-        "info": false,
-        "stateSave": false,
-        "responsive": true,
-        "oLanguage": {
-            "sEmptyTable": "No Entries Found"
-        },
-
-    });
-    $('.dataTables_filter input').attr("placeholder", "search by name");
-
-
-    $('#viewDatatable tbody').on('click', 'tr', function () {
-        clickedRow = [];
-        $("td", this).each(function (j) {
-//            console.log("".concat(" col[", j, "] = ", $(this).text()));
-            clickedRow.push($(this).text());
-        });
-//        console.log(clickedRow)
-    });
+//            }, {"data": "amount"},
+//            {"data": "description"}
+//        ],
+//        "processing": true,
+//        "serverSide": true,
+//        "pageLength": -1,
+//        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'All']],
+//        "searching": false,
+//        "ordering": true,
+//        "info": false,
+//        "stateSave": false,
+//        "responsive": true,
+//        "oLanguage": {
+//            "sEmptyTable": "No Entries Found"
+//        },
+//
+//    });
+//    $('.dataTables_filter input').attr("placeholder", "search by name");
+//
+//
+//    $('#viewDatatable tbody').on('click', 'tr', function () {
+//        clickedRow = [];
+//        $("td", this).each(function (j) {
+////            console.log("".concat(" col[", j, "] = ", $(this).text()));
+//            clickedRow.push($(this).text());
+//        });
+////        console.log(clickedRow)
+//    });
 
     $.ajax({
         url: "customersAndBuyers",

@@ -98,9 +98,6 @@
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
-                                                        <input style="display: none" name="unloadedCrush" class="unloadedCrush">
-                                                        <input style="display: none" name="unloadingCost" class="unloadingCost">
-                                                        <input style="display: none" name="unloadingParty" class="unloadingParty">
                                                     </div>
 
                                                     <div id="stockDetailDiv" class="animated fadeIn form-group row" hidden="true">
@@ -265,8 +262,13 @@
                                                                 <div class="row">
                                                                     <div class="col-sm-12">
                                                                         <div class="form-group">
-                                                                            <label for="unloadingParty">Carriage Provided By</label>
-                                                                            <input class="form-control" id="unloadingParty" name="unloadingParty" type="text" placeholder="Carriage Provided By">
+                                                                            <label for="unloadingParty">Carriage Contractor</label>
+                                                                            <select class="form-control dcParty" id="dcParty" name="unloadingParty">
+                                                                                <option selected value="">-- Please select A Carriage Contractor --</option>
+                                                                            </select>
+                                                                            <br>
+                                                                            <input hidden="true" class="form-control" id="dcPartyInput" type="text" 
+                                                                                   name="dcPartyInput" placeholder="Custom Contractor">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -645,7 +647,7 @@
                                                             <span class="help-block">Type</span>
                                                             <select name="asstype" class="form-control">
                                                                 <option value="awc" selected="selected">AWC</option>
-                                                                <option value="alc">ALC</option>
+                                                                <option value="abc">ABC</option>
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
@@ -667,8 +669,13 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <h5>Carriage</h5>
-                                                            <span class="help-block">Provider</span>
-                                                            <input class="form-control" id="assCarProvider" name="assCarProvider" type="text" placeholder="">
+                                                            <span class="help-block">Contractor</span>
+                                                            <select class="form-control" id="assCarProvider" name="assCarProvider">
+                                                                <option selected value="">-- Please select A Carriage Contractor --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="assCarProviderInput" type="text" 
+                                                                   name="assCarProviderInput" placeholder="Custom Contractor">
                                                             <span class="help-block">Per Ton Cost</span>
                                                             <input class="form-control" id="assCarCostPerTon" name="assCarCostPerTon" type="number" value="0">
                                                             <span class="help-block">Total Cost</span>
@@ -684,8 +691,13 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <h5>Laying Charges</h5>
-                                                            <span class="help-block">Provider</span>
-                                                            <input class="form-control" id="assLayer" name="assLayer" type="text" placeholder="">
+                                                            <span class="help-block">Contractor</span>
+                                                            <select class="form-control" id="assLayer" name="assLayer">
+                                                                <option selected value="">-- Please select A Laying Contractor --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="assLayerInput" type="text" 
+                                                                   name="assLayerInput" placeholder="Custom Contractor">
                                                             <span class="help-block">Per Ton Cost</span>
                                                             <input class="form-control" id="assLayingCostPerTon" name="assLayingCostPerTon" type="number" value="0">
                                                             <span class="help-block">Total Cost</span>
@@ -697,7 +709,29 @@
                                                     </div>
 
                                                     <c:forEach items="${stockTrace}" var="item">
-                                                        <c:if test = "${item.itemId == 1 || item.itemId == 6}">
+                                                        <c:if test = "${item.itemId == 1}">
+                                                            <div class="form-group row">
+                                                                <label class="col-md-2"></label>
+                                                                <div class="col-md-8">
+                                                                    <h6>${item.itemName} ${item.subType}</h6>
+
+                                                                    <span class="help-block">Kg / Ton</span>
+                                                                    <input class="form-control" id="${item.id}rate" type="number" 
+                                                                           name="${item.id}rate" value="0" 
+                                                                           onchange="updateAssBitRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
+                                                                    <br>                                                                
+                                                                    <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
+                                                                    <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"
+                                                                           name="${item.id}quantity" value="0" >
+                                                                    <br>                                                                
+                                                                    <span class="help-block">Total ${item.itemName} ${item.subType} Cost (Total Quantity x Avg Rate i.e, ${item.averageUnitPrice})</span>
+                                                                    <input tabindex="-1" class="form-control" id="${item.id}cost" type="number" readonly="readonly"
+                                                                           name="${item.id}cost" value="0">
+                                                                </div>
+                                                                <label class="col-md-2"></label>
+                                                            </div>
+                                                        </c:if>
+                                                        <c:if test = "${item.itemId == 6}">
                                                             <div class="form-group row">
                                                                 <label class="col-md-2"></label>
                                                                 <div class="col-md-8">
@@ -724,7 +758,7 @@
                                                     <br>
                                                     <br>
 
-                                                    <div class="form-group row">
+                                                    <div class="form-group row" style="display : none;">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Total Sale Cost</span>
@@ -733,7 +767,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row">
+                                                    <div class="form-group row" style="display : none;">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Per Ton Sale Rate</span>

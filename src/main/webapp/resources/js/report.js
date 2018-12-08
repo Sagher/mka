@@ -23,10 +23,12 @@ $(document).ready(function () {
              <th>Project</th>
              <th>Name</th>
              <th>Item</th>
-             <th>Amount</th>
+             <th>Type</th>
              <th>Quantity</th>
              <th>Rate</th>
              <th>Total Amount</th>
+             <th>Advance</th>
+             <th>${type}</th>
              <th>Description</th>
              */
 //            {"data": "id", "render": function (data, type, full, meta) {
@@ -37,17 +39,38 @@ $(document).ready(function () {
             {"data": "createdDate"},
             {"data": "project"},
             {"data": "accountName"},
-            {"data": "itemType.itemName"},
+            {"data": "accountName", "render": function (data, type, full, meta) {
+                    if (full.itemType != null) {
+                        return full.itemType.itemName;
+                    } else {
+                        return '';
+                    }
+                }
+            },
+            {"data": "subType"},
             {"data": "quantity"},
             {"data": "rate"},
             {"data": "totalAmount"},
+            {"data": "rate", "render": function (data, type, full, meta) {
+                    if (full.itemType != null && full.itemType.id == 18) {
+                        return 0;
+                    } else if (full.itemType != null) {
+                        return (parseInt(full.totalAmount, 10) - parseInt(full.amount, 10));
+                    } else {
+                        return '';
+
+                    }
+                }
+            },
             {"data": "amount"},
             {"data": "description"}
         ],
         "processing": true,
         "serverSide": true,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50], ['10', '25', '50']],
+//        "pageLength": 10,
+//        "lengthMenu": [[10, 25, 50], ['10', '25', '50']],
+        "pageLength": -1,
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'All']],
         "searching": false,
         "ordering": true,
         "info": true,
@@ -83,35 +106,35 @@ $(document).ready(function () {
             console.log(textStatus);
         }
     });
-    $.ajax({
-        url: "projects",
-        dataType: "json",
-        success: function (data) {
-            for (var i in data) {
-                $("#proj").append($("<option />").val(data[i].name).text(data[i].name));
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(textStatus);
-        }
-    });
+//    $.ajax({
+//        url: "projects",
+//        dataType: "json",
+//        success: function (data) {
+//            for (var i in data) {
+//                $("#proj").append($("<option />").val(data[i].name).text(data[i].name));
+//            }
+//        },
+//        error: function (jqXHR, textStatus, errorThrown) {
+//            console.log(textStatus);
+//        }
+//    });
     renderTotalAmount();
 });
 
 function renderTotalAmount() {
-    setTimeout(function () {
-        $.ajax({
-            url: "report/total",
-            dataType: "json",
-            success: function (data) {
-                totalField.html(data);
-
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(textStatus);
-            }
-        });
-    }, 500);
+//    setTimeout(function () {
+//        $.ajax({
+//            url: "report/total?type=" + $("#type").val(),
+//            dataType: "json",
+//            success: function (data) {
+//                totalField.html(data);
+//
+//            },
+//            error: function (jqXHR, textStatus, errorThrown) {
+//                console.log(textStatus);
+//            }
+//        });
+//    }, 500);
 
 }
 
@@ -119,20 +142,18 @@ function advanceSearch() {
     var fromDate = $('#from').val();
     var toDate = $('#to').val();
     var buySup = $("#buySup").val();
-    var proj = $("#proj").val();
     var type = $("#type").val();
 
 
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
     console.log("buySup:" + buySup);
-    console.log("proj:" + toDate);
 
     totalAmount = 0;
     totalField.html(0);
 
     table.ajax.url("report/data?type=" + type + "&fromDate=" + fromDate + "&toDate=" + toDate
-            + "&buyerSupplier=" + buySup + "&project=" + proj);
+            + "&buyerSupplier=" + buySup);
     table.ajax.reload();
     renderTotalAmount();
 

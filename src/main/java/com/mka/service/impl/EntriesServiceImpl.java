@@ -106,19 +106,29 @@ public class EntriesServiceImpl implements EntriesService {
                 String totalUnloadedCrush = request.getParameter("unloadedCrush");
                 String unloadingRate = request.getParameter("unloadingCost");
                 String totalUnloadingCost = request.getParameter("totalUnloadingCost");
+
                 String unloadingParty = request.getParameter("unloadingParty");
+                if (unloadingParty.equalsIgnoreCase("other")) {
+                    unloadingParty = request.getParameter("dcPartyInput");
+                    asyncUtil.addToCustomersAndBuyersList(unloadingParty);
+                }
 
                 if (item.getItemName().equalsIgnoreCase("CRUSH")) {
 
-                    if (!totalUnloadedCrush.isEmpty() || totalUnloadedCrush.equals("0")
-                            || !unloadingRate.isEmpty() || unloadingRate.equals("0")
-                            || !unloadingParty.isEmpty() || unloadingParty.equals("0")) {
-                        int cRate = Integer.parseInt(unloadingRate);
+                    if (!totalUnloadedCrush.isEmpty() && !totalUnloadedCrush.equals("0")
+                            && !unloadingRate.isEmpty() && !unloadingRate.equals("0")
+                            && !unloadingParty.isEmpty() && !unloadingParty.equals("0")) {
+                        //Carriage =((10*700) + (800*5))/800
+                        int c1 = Integer.parseInt(unloadingRate) * Integer.parseInt(totalUnloadedCrush);
+                        int c2 = Integer.parseInt(rate) * Integer.parseInt(quantity);
+                        int c3 = c1 + c2 / Integer.parseInt(totalUnloadedCrush);
+
                         int cAmount = Integer.parseInt(totalUnloadingCost);
                         int tCost = Integer.parseInt(amount);
                         int totalUnloaded = Integer.parseInt(totalUnloadedCrush);
 
-                        int newRate = (cAmount + tCost) / totalUnloaded;
+                        amount = String.valueOf(c1 + c2);
+
                         int newQuantity = totalUnloaded;
                         entryDetail = new EntriesDirectDetails();
                         entryDetail.setSubType(subItemType);
@@ -127,7 +137,7 @@ public class EntriesServiceImpl implements EntriesService {
                         entryDetail.setUnloadingParty(unloadingParty);
 
                         entry.setQuantity(BigDecimal.valueOf(newQuantity));
-                        entry.setRate(BigDecimal.valueOf(newRate));
+                        entry.setRate(BigDecimal.valueOf(c3));
 
                     } else {
                         entryDetail = new EntriesDirectDetails();
@@ -170,10 +180,14 @@ public class EntriesServiceImpl implements EntriesService {
                     if (entryDetail != null) {
                         entryDetail.setEntryId(entry);
                         addEntryDetail(entryDetail);
-                        asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty, entry.getId(), entry.getProject(),
-                                "Crush Carriage",
-                                entryDetail.getTotalUnloaded().intValue(), BigDecimal.valueOf(Long.valueOf(unloadingRate)),
-                                entryDetail.getUnloadingCost(), new EntryItems(19));
+                        if (unloadingParty != null && !unloadingParty.isEmpty()) {
+                            asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty, entry.getId(), entry.getProject(),
+                                    entry.getDescription(),
+                                    entry.getQuantity().intValue(), entry.getRate(),
+                                    entryDetail.getUnloadingCost(), new EntryItems(19), "");
+                            asyncUtil.addToCustomersAndBuyersList(unloadingParty);
+
+                        }
                     }
                     entry.setEntriesDirectDetails(entryDetail);
                     asyncUtil.updateStockTrace(entry);
@@ -296,7 +310,7 @@ public class EntriesServiceImpl implements EntriesService {
                             + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
 
                     if (ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
-                            < Integer.parseInt(request.getParameter(s.getId() + "quantity"))) {
+                            < Float.parseFloat(request.getParameter(s.getId() + "quantity"))) {
                         return ("01:Not Enough " + s.getItemName() + (s.getSubType() != null ? s.getSubType() : "") + " to make this sale");
                     }
                 }
@@ -346,9 +360,9 @@ public class EntriesServiceImpl implements EntriesService {
 
                         AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
                         ass.setItemName(s.getItemName() + (s.getSubType() != null ? s.getSubType() : ""));
-                        ass.setItemQuantity(Integer.parseInt(request.getParameter(s.getId() + "quantity")));
-                        ass.setItemRate(Integer.parseInt(request.getParameter(s.getId() + "rate")));
-                        ass.setItemAmount(Integer.parseInt(request.getParameter(s.getId() + "cost")));
+                        ass.setItemQuantity(Math.round(Float.parseFloat(request.getParameter(s.getId() + "quantity"))));
+                        ass.setItemRate(Math.round(Float.parseFloat(request.getParameter(s.getId() + "rate"))));
+                        ass.setItemAmount(Math.round(Float.parseFloat(request.getParameter(s.getId() + "cost"))));
                         ass.setAsphlatSaleId(realAss);
 
                         assConsumptions.add(ass);
@@ -356,57 +370,79 @@ public class EntriesServiceImpl implements EntriesService {
                 }
 
                 String assLayer = request.getParameter("assLayer");
+                if (assLayer.equalsIgnoreCase("other")) {
+                    assLayer = request.getParameter("assLayerInput");
+                    asyncUtil.addToCustomersAndBuyersList(assLayer);
+                }
                 String assLayingCostPerTon = request.getParameter("assLayingCostPerTon");
                 String totalAssLayingCost = request.getParameter("totalAssLayingCost");
                 String assLayingAdvance = request.getParameter("assLayingAdvance");
 
-                AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
-                ass.setItemName("LAYED BY " + assLayer);
-                ass.setItemQuantity(realAss.getQuantity());
-                ass.setItemRate(Integer.parseInt(assLayingCostPerTon));
-                ass.setItemAmount(Integer.parseInt(totalAssLayingCost));
-                assConsumptions.add(ass);
-                ass.setAsphlatSaleId(realAss);
+                try {
+                    if (Integer.parseInt(assLayingCostPerTon) > 0 && Integer.parseInt(totalAssLayingCost) > 0) {
+                        AsphaltSaleConsumption ass = new AsphaltSaleConsumption();
+                        ass.setItemName("LAYED BY " + assLayer);
+                        ass.setItemQuantity(realAss.getQuantity());
+                        ass.setItemRate(Integer.parseInt(assLayingCostPerTon));
+                        ass.setItemAmount(Integer.parseInt(totalAssLayingCost));
+                        assConsumptions.add(ass);
+                        ass.setAsphlatSaleId(realAss);
+
+                        if (Integer.parseInt(assLayingAdvance) != Integer.parseInt(totalAssLayingCost)) {
+                            // advance payable
+                            int payableAmount = Integer.parseInt(totalAssLayingCost) - Integer.parseInt(assLayingAdvance);
+                            String payableTo = assLayer;
+                            asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
+                                    realAss.getProject(), realAss.getDescription(), ass.getItemQuantity(), BigDecimal.valueOf(ass.getItemRate()),
+                                    BigDecimal.valueOf(ass.getItemAmount()), new EntryItems(20), realAss.getType());
+                        }
+
+                    }
+                } catch (Exception e) {
+
+                }
 
                 String assCarProvider = request.getParameter("assCarProvider");
+                if (assCarProvider.equalsIgnoreCase("other")) {
+                    assCarProvider = request.getParameter("assCarProviderInput");
+                    asyncUtil.addToCustomersAndBuyersList(assCarProvider);
+                }
                 String assCarCostPerTon = request.getParameter("assCarCostPerTon");
                 String totalAssCarCost = request.getParameter("totalAssCarCost");
                 String assCarAdvance = request.getParameter("assCarAdvance");
 
-                AsphaltSaleConsumption assCarriage = new AsphaltSaleConsumption();
-                assCarriage.setItemName("Carriage Provided By " + assCarProvider);
-                assCarriage.setItemQuantity(realAss.getQuantity());
-                assCarriage.setItemRate(Integer.parseInt(assCarCostPerTon));
-                assCarriage.setItemAmount(Integer.parseInt(totalAssCarCost));
-                assConsumptions.add(assCarriage);
-                assCarriage.setAsphlatSaleId(realAss);
+                try {
+                    if (Integer.parseInt(assCarCostPerTon) > 0 && Integer.parseInt(totalAssCarCost) > 0) {
+                        AsphaltSaleConsumption assCarriage = new AsphaltSaleConsumption();
+                        assCarriage.setItemName("Carriage Provided By " + assCarProvider);
+                        assCarriage.setItemQuantity(realAss.getQuantity());
+                        assCarriage.setItemRate(Integer.parseInt(assCarCostPerTon));
+                        assCarriage.setItemAmount(Integer.parseInt(totalAssCarCost));
+                        assConsumptions.add(assCarriage);
+                        assCarriage.setAsphlatSaleId(realAss);
 
+                        if (Integer.parseInt(assCarAdvance) != Integer.parseInt(totalAssCarCost)) {
+                            // advance payable
+                            int payableAmount = Integer.parseInt(totalAssCarCost) - Integer.parseInt(assCarAdvance);
+                            String payableTo = assCarProvider;
+                            asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), realAss.getDescription(),
+                                    assCarriage.getItemQuantity(), BigDecimal.valueOf(assCarriage.getItemRate()),
+                                    BigDecimal.valueOf(assCarriage.getItemAmount()), new EntryItems(21), realAss.getType());
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
                 boolean logged = entriesDao.logAsphaltSaleConsumptions(assConsumptions);
 
                 if (logged) {
-                    if (Integer.parseInt(assLayingAdvance) != Integer.parseInt(totalAssLayingCost)) {
-                        // advance payable
-                        int payableAmount = Integer.parseInt(totalAssLayingCost) - Integer.parseInt(assLayingAdvance);
-                        String payableTo = assLayer;
-                        asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
-                                realAss.getProject(), "Asphalt Laying", ass.getItemQuantity(), BigDecimal.valueOf(ass.getItemRate()),
-                                BigDecimal.valueOf(ass.getItemAmount()), new EntryItems(20));
-                    }
 
-                    if (Integer.parseInt(assCarAdvance) != Integer.parseInt(totalAssCarCost)) {
-                        // advance payable
-                        int payableAmount = Integer.parseInt(totalAssCarCost) - Integer.parseInt(assCarAdvance);
-                        String payableTo = assCarProvider;
-                        asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), "Asphalt Carriage",
-                                assCarriage.getItemQuantity(), BigDecimal.valueOf(assCarriage.getItemRate()),
-                                BigDecimal.valueOf(assCarriage.getItemAmount()), new EntryItems(19));
-                    }
                     // update stockTrace
                     for (StockTrace s : ss.getStats()) {
                         if (s.getItemId() == 1 || s.getItemId() == 6) {
 
-                            s.setStockUnits(s.getStockUnits() - Integer.parseInt(request.getParameter(s.getId() + "quantity")));
-                            s.setStockAmount(s.getStockAmount().subtract(BigDecimal.valueOf(Integer.parseInt(request.getParameter(s.getId() + "cost")))));
+                            s.setStockUnits(s.getStockUnits() - Math.round(Float.parseFloat(request.getParameter(s.getId() + "quantity"))));
+                            s.setStockAmount(s.getStockAmount().subtract(BigDecimal.valueOf(Math.round(Float.parseFloat(request.getParameter(s.getId() + "cost"))))));
 
                             asyncUtil.updateStockTrace(s);
                         }
