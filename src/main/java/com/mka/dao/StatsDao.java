@@ -5,6 +5,8 @@
  */
 package com.mka.dao;
 
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
@@ -30,4 +32,12 @@ public interface StatsDao {
     public boolean logCashTransaction(MasterAccountHistory mah);
 
     public boolean updateMasterAccount(MasterAccount ma);
+
+    public Object getCashTransactions(int startIndex, int fetchSize, String orderBy, String sortby, String startDate, String endDate, String buyerSupplier);
+
+    public int getCashTransactionsCount(String startDate, String endDate, String buyerSupplier);
+
+    public AsphaltSales getAsphaltSale(String buyerSupplier, String project);
+
+    public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass);
 }

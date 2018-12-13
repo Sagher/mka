@@ -64,8 +64,8 @@ $(document).ready(function () {
         ],
         "processing": true,
         "serverSide": true,
-        "pageLength": 10,
-        "lengthMenu": [[10, 25, 50], ['10', '25', '50']],
+        "pageLength": 25,
+        "lengthMenu": [[10, 25, 50, -1], ['10', '25', '50', 'ALL']],
         "searching": false,
         "ordering": true,
         "info": true,
@@ -91,6 +91,9 @@ $(document).ready(function () {
 
     if (itemTypeId > 0) {
         console.log(itemTypeId);
+        $("#subEntryType").html('');
+        $("#subEntryType").append($("<option />").val('').text("ALL"));
+
         $.ajax({
             url: "getEntryItem?id=" + itemTypeId,
             dataType: "json",

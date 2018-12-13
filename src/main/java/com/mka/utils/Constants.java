@@ -24,7 +24,7 @@ public class Constants {
     public static final String ROLE_MANAGER = "MANAGER";
     public static final String ROLE_READONLY = "READONLY";
 
-    public static final String DIRECT = "DIRECT", INDIRECT = "INDIRECT";
+    public static final String DIRECT = "DIRECT", INDIRECT = "INDIRECT", CASH_TRANSACTIONS = "cashTransactions", CUSTOMERS_BUYERS = "customersBuyers";
     public static final String SALE = "SALE", PURCHASE = "PURCHASE", PRODUCE = "PRODUCE", EXPENSE = "EXPENSE", CONSUME = "CONSUME";
     public static final String RECEIVABLE = "RECEIVABLE";
     public static final String PAYABLE = "PAYABLE";

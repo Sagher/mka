@@ -44,7 +44,8 @@
                                                 <div id="filtersDiv">
                                                     <div class="form-group row">
 
-                                                        <div class="col-sm-5">
+                                                        <div class="col-sm-4">
+                                                            <label>From</label>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">
@@ -54,7 +55,8 @@
                                                                 <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-5">
+                                                        <div class="col-sm-4">
+                                                            <label>To</label>
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text">
@@ -65,9 +67,17 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-2">
-                                                            <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>
+                                                            <label>Buyer/Supplier</label>
+                                                            <select class="form-control" id="buySup" name="buySup">
+                                                                <option selected value="">All</option>
+                                                            </select>
                                                         </div>
+                                                        <div class="col-sm-2">
+
+                                                            <button class="btn btn-primary pull-right" style="margin-top: 30px"
+                                                                    onclick="advanceSearch()" type="button">Apply</button>                                                        </div>
                                                     </div>
+
                                                 </div>
                                                 <hr>
 

@@ -13,34 +13,26 @@ $(document).ready(function () {
             "sProcessing": "<i class='fa fa-cogs fa-spin fa-5x'></i>"
         },
         "ajax": {
-            "url": "entries/data?type=indirect"
+            "url": "entries/data?type=cashTransactions"
         },
         "columns": [
             /*
-             <th>ID</th>
-             <th>Entry Date</th>
-             <th>Item</th>
+             <th>Date</th>
              <th>Type</th>
-             <th>Buyer</th>
-             <th>Supplier</th>
-             <th>Quantity</th>
-             <th>Rate</th>
+             <th>Payee</th>
+             <th>Description</th>
              <th>Amount</th>
-             <th>Advance</th>
-             <th>Action</th>
              */
 //            {"data": "id", "render": function (data, type, full, meta) {
 //                    var html = "<div class='id'>" + data + "</div>";
 //                    return html;
 //                }
 //            },
-            {"data": "entryDate"},
-            {"data": "itemName"},
-//            {"data": "itemType"},
-            {"data": "name"},
+            {"data": "timestamp"},
+            {"data": "type"},
+            {"data": "payee"},
             {"data": "description"},
             {"data": "amount"},
-            {"data": "advance"},
 //            {"data": "", "render": function (data, type, full, meta) {
 //                    var html = "";
 ////                    html += "<button id='edit-" + full.id + "' style='margin-left:3px' class=\"btn btn-warning\" onclick=\"edit(" + full.id + ")\"><i class=\"fa fa-edit\"></i></button>";

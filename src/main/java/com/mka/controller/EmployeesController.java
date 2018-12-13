@@ -243,7 +243,7 @@ public class EmployeesController {
                 if (!employeesService.payAllEmployees()) {
                     return ("01:EMPLOYEES SALARIES HAVE ALREADY BEEN PAYED IN THIS MONTH");
                 } else {
-                    logActivity(request, auth.getName(), "PAY EMPLOYEES ", "Employees Salaries Have been Successfully Payed");
+                    logActivity(request, auth.getName(), "PAY EMPLOYEES", "Employees Salaries Have been Successfully Payed");
                     return "00:Employees Salaries Have been Successfully Payed";
                 }
             } else {

@@ -4,6 +4,7 @@ package com.mka.service.impl;
  *
  * @author Sagher Mehmood
  */
+import static com.mka.controller.EntriesController.log;
 import com.mka.dao.EntriesDao;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
@@ -12,6 +13,7 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
@@ -121,7 +123,7 @@ public class EntriesServiceImpl implements EntriesService {
                         //Carriage =((10*700) + (800*5))/800
                         int c1 = Integer.parseInt(unloadingRate) * Integer.parseInt(totalUnloadedCrush);
                         int c2 = Integer.parseInt(rate) * Integer.parseInt(quantity);
-                        int c3 = c1 + c2 / Integer.parseInt(totalUnloadedCrush);
+                        int c3 = (c1 + c2) / Integer.parseInt(totalUnloadedCrush);
 
                         int cAmount = Integer.parseInt(totalUnloadingCost);
                         int tCost = Integer.parseInt(amount);
@@ -159,10 +161,10 @@ public class EntriesServiceImpl implements EntriesService {
                 entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
                 entry.setIsActive(true);
 
-                if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
+                if (item.getId() != 1 && ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
                         && (entryType.equalsIgnoreCase(Constants.SALE))) {
                     return ("01:Not Enough stock to make this sale");
-                } else if (ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
+                } else if (item.getId() != 1 && ss.getStockTrace(item.getId(), subItemType).getStockUnits() < entry.getQuantity().intValue()
                         && (entryType.equalsIgnoreCase(Constants.CONSUME))) {
                     return ("01:Not Enough stock to log this consumption");
                 } else if (ss.getMasterAccount().getCashInHand().intValue() < entry.getAdvance().intValue()
@@ -178,20 +180,22 @@ public class EntriesServiceImpl implements EntriesService {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
                     if (entryDetail != null) {
+                        // crush carriage only
                         entryDetail.setEntryId(entry);
                         addEntryDetail(entryDetail);
                         if (unloadingParty != null && !unloadingParty.isEmpty()) {
-                            asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty, entry.getId(), entry.getProject(),
-                                    entry.getDescription(),
+                            asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty,
+                                    entry.getId(), entry.getProject(), entry.getDescription(),
                                     entry.getQuantity().intValue(), entry.getRate(),
                                     entryDetail.getUnloadingCost(), new EntryItems(19), "");
+
                             asyncUtil.addToCustomersAndBuyersList(unloadingParty);
 
                         }
                     }
                     entry.setEntriesDirectDetails(entryDetail);
                     asyncUtil.updateStockTrace(entry);
-                    asyncUtil.updateDirectAccountPayableReceivable(entry);
+                    asyncUtil.logDirectAccountPayableReceivable(entry);
                     asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance().intValue());
                     return entry;
                 }
@@ -229,19 +233,78 @@ public class EntriesServiceImpl implements EntriesService {
     }
 
     @Override
-    public boolean logInDirectEntry(EntriesIndirect entry) {
-        boolean logged = entriesDao.logInDirectEntry(entry);
-        return logged;
+    public Object logInDirectEntry(HttpServletRequest request) {
+        try {
+            EntryItems item;
+
+            String iItemType = request.getParameter("iItemType");
+            if (iItemType.equalsIgnoreCase("other")) {
+                item = createNewEntryItem(request.getParameter("iItemTypeInput"));
+            } else {
+                item = getEntryItemById(Integer.parseInt(iItemType));
+            }
+            String iItemSubType = request.getParameter("iItemSubType");
+            String iname = request.getParameter("iname");
+            if (iname.equalsIgnoreCase("other")) {
+                iname = request.getParameter("ibuysupInput");
+                asyncUtil.addToCustomersAndBuyersList(iname);
+            }
+
+            String idesc = request.getParameter("idesc");
+            String icost = request.getParameter("icost");
+            String iAdvance = request.getParameter("iadvance");
+            String dateOfEntry = request.getParameter("idoe");
+            String payfrom = request.getParameter("payfrom");
+
+            if (item != null) {
+                EntriesIndirect entry = new EntriesIndirect();
+                entry.setItem(item);
+                if (item.getItemType() != null) {
+                    entry.setItemType(iItemSubType);
+                } else {
+                    entry.setItemType(null);
+                }
+                entry.setName(iname);
+                entry.setDescription(idesc);
+                entry.setAmount(BigDecimal.valueOf(Long.parseLong(icost)));
+                entry.setAdvance(BigDecimal.valueOf(Long.parseLong(iAdvance)));
+                entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
+                entry.setIsActive(true);
+
+                MasterAccount ma = ss.getMasterAccount();
+                if (ma.getCashInHand().intValue() < entry.getAdvance().intValue()) {
+                    return ("01:Not Enough Cash In Hand to Log this Expense");
+                } else if (ma.getCashInHand().intValue() < entry.getAdvance().intValue() && payfrom.equals("1")) {
+                    return ("01:Not Enough cash in hand to make this purchase");
+                } else if (ma.getTotalCash().intValue() < entry.getAdvance().intValue() && payfrom.equals("0")) {
+                    return ("01:Not Enough cash in Main Account to make this purchase");
+                }
+
+                boolean entryLogged = entriesDao.logInDirectEntry(entry);
+                if (!entryLogged) {
+                    return ("01:Failed To Log Entry. Make sure all field are filled in.");
+                } else {
+                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance().intValue());
+                    asyncUtil.updateIndirectAccountPayableReceivable(entry);
+                    return entry;
+                }
+            } else {
+                return ("01:Invalid Item Type");
+            }
+        } catch (Exception e) {
+            log.error("Exception while logging Entry:", e);
+            return ("01:Invalid Values");
+        }
     }
 
     @Override
-    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
-        return entriesDao.getInDirectEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate);
+    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier) {
+        return entriesDao.getInDirectEntries(startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier);
     }
 
     @Override
-    public int getInDirectEntriesCount(String startDate, String endDate) {
-        return entriesDao.getInDirectEntriesCount(startDate, endDate);
+    public int getInDirectEntriesCount(String startDate, String endDate, String buyerSupplier) {
+        return entriesDao.getInDirectEntriesCount(startDate, endDate, buyerSupplier);
     }
 
     @Override
@@ -309,7 +372,7 @@ public class EntriesServiceImpl implements EntriesService {
                     log.info(s.getItemName() + ", " + s.getSubType() + " rate:" + request.getParameter(s.getId() + "rate") + ", quantity:"
                             + request.getParameter(s.getId() + "quantity") + ", cost: " + request.getParameter(s.getId() + "cost"));
 
-                    if (ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
+                    if (s.getItemId() != 1 && ss.getStockTrace(s.getItemId(), s.getSubType()).getStockUnits()
                             < Float.parseFloat(request.getParameter(s.getId() + "quantity"))) {
                         return ("01:Not Enough " + s.getItemName() + (s.getSubType() != null ? s.getSubType() : "") + " to make this sale");
                     }
@@ -444,6 +507,9 @@ public class EntriesServiceImpl implements EntriesService {
                             s.setStockUnits(s.getStockUnits() - Math.round(Float.parseFloat(request.getParameter(s.getId() + "quantity"))));
                             s.setStockAmount(s.getStockAmount().subtract(BigDecimal.valueOf(Math.round(Float.parseFloat(request.getParameter(s.getId() + "cost"))))));
 
+                            s.setConsumeUnit(s.getConsumeUnit() + Math.round(Float.parseFloat(request.getParameter(s.getId() + "quantity"))));
+                            s.setConsumeAmount(s.getConsumeAmount().add(BigDecimal.valueOf(Math.round(Float.parseFloat(request.getParameter(s.getId() + "cost"))))));
+
                             asyncUtil.updateStockTrace(s);
                         }
                     }
@@ -455,5 +521,14 @@ public class EntriesServiceImpl implements EntriesService {
             log.error("Exception while logging Entry:", e);
             return ("01:Failed To Log Entry. Make sure all field are filled in.");
         }
+    }
+
+    @Override
+    public boolean logInDirectEntry(EntriesIndirect entry) {
+        boolean entryLogged = entriesDao.logInDirectEntry(entry);
+        if (entryLogged) {
+            asyncUtil.updateIndirectAccountPayableReceivable(entry);
+        }
+        return true;
     }
 }

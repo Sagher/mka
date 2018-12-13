@@ -7,6 +7,8 @@ package com.mka.service.impl;
 
 import com.mka.dao.StatsDao;
 import com.mka.model.AccountPayableReceivable;
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
@@ -90,8 +92,14 @@ public class StatsServiceImpl implements StatsService {
             mah.setType("To Head Office");
             ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
         } else if (mah.getType().equals("-")) {
-            mah.setType("From Head Office");
             ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+            if (from.equals("0")) {
+                mah.setType("From Head Office (Cash In Hand)");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
+                ma.setCashInHand(ma.getCashInHand().subtract(mah.getAmount()));
+            } else {
+                mah.setType("From Head Office (Main Account)");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
+                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+            }
 
         } else if (mah.getType().equals("-+")) {
             if (from.equals("1")) {
@@ -136,6 +144,26 @@ public class StatsServiceImpl implements StatsService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Object getCashTransactions(int startIndex, int fetchSize, String orderBy, String sortby, String startDate, String endDate, String buyerSupplier) {
+        return statsDao.getCashTransactions(startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
+    }
+
+    @Override
+    public int getCashTransactionsCount(String startDate, String endDate, String buyerSupplier) {
+        return statsDao.getCashTransactionsCount(startDate, endDate, buyerSupplier);
+    }
+
+    @Override
+    public AsphaltSales getAsphaltSale(String buyerSupplier, String project) {
+        return statsDao.getAsphaltSale(buyerSupplier, project);
+    }
+
+    @Override
+    public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass) {
+        return statsDao.getAsphaltSaleConsumptions(ass);
     }
 
 }

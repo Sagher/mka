@@ -27,7 +27,11 @@ public interface UserService {
 
     public List<CustomersBuyers> getCustomersAndBuyers();
 
+    public CustomersBuyers getCustomerAndBuyer(String name);
+
     public boolean addCustomerAndBuyer(String cusBuy);
+
+    public boolean updateCustomerAndBuyer(CustomersBuyers cusBuy);
 
     public List<Projects> getProjects();
 

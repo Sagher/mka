@@ -7,6 +7,7 @@ package com.mka.utils;
 
 import com.mka.dao.AccountsDao;
 import com.mka.model.AccountPayableReceivable;
+import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
@@ -106,6 +107,9 @@ public class AsyncUtil {
 
                 BigDecimal stockAm = st.getStockAmount().subtract(entry.getTotalPrice());
                 st.setStockAmount(stockAm);
+
+                st.setConsumeUnit(st.getConsumeUnit() + entry.getQuantity().intValue());
+                st.setConsumeAmount(st.getConsumeAmount().add(entry.getTotalPrice()));
             }
 
 //            st.setAverageUnitPrice(ss.getAveragePricePerUnit(entry.getItem().getId()));
@@ -144,7 +148,7 @@ public class AsyncUtil {
 //        entriesService.addEntryDetail(entryDetail);
 //    }
     @Async
-    public void updateDirectAccountPayableReceivable(EntriesDirect entry) {
+    public void logDirectAccountPayableReceivable(EntriesDirect entry) {
         try {
             if (entry.getSubEntryType().equalsIgnoreCase(Constants.SALE) && entry.getTotalPrice() != entry.getAdvance()) {
                 // receivable
@@ -163,6 +167,9 @@ public class AsyncUtil {
 
                 if (!accountsDao.logAccountPayableReceivable(receivable)) {
                     log.warn("*** Account Recevaible not logged ***");
+                } else {
+                    // update users account
+                    updateAccount(receivable);
                 }
 
             } else if (entry.getSubEntryType().equalsIgnoreCase(Constants.PURCHASE) && entry.getTotalPrice() != entry.getAdvance()) {
@@ -182,6 +189,9 @@ public class AsyncUtil {
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");
+                } else {
+                    // update users account
+                    updateAccount(payable);
                 }
             }
         } catch (Exception e) {
@@ -209,6 +219,9 @@ public class AsyncUtil {
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");
+                } else {
+                    // update users account
+                    updateAccount(payable);
                 }
             }
         } catch (Exception e) {
@@ -237,6 +250,9 @@ public class AsyncUtil {
 
             if (!accountsDao.logAccountPayableReceivable(payable)) {
                 log.warn("*** Account Payable not logged ***");
+            } else {
+                // update users account
+                updateAccount(payable);
             }
         } catch (Exception e) {
 
@@ -249,6 +265,9 @@ public class AsyncUtil {
 
             if (!accountsDao.logAccountPayableReceivable(receivable)) {
                 log.warn("*** Account Receivable not logged ***");
+            } else {
+                // update users account
+                updateAccount(receivable);
             }
         } catch (Exception e) {
 
@@ -256,7 +275,7 @@ public class AsyncUtil {
     }
 
     @Async
-    public void logCashTran(MasterAccountHistory mah, String type, String subType) {
+    public void logCashTran(MasterAccountHistory mah, String subType) {
         // log receivable
         AccountPayableReceivable receivable = new AccountPayableReceivable();
         receivable.setAccountName(mah.getPayee());
@@ -267,7 +286,7 @@ public class AsyncUtil {
         receivable.setEntryId(mah.getId());
         receivable.setIsActive(true);
         receivable.setProject(null);
-        receivable.setType(type);
+        receivable.setType("NA");
         receivable.setSubType(subType);
         receivable.setItemType(new EntryItems(18));
         receivable.setDescription(mah.getDescription());
@@ -283,6 +302,60 @@ public class AsyncUtil {
             masterAccount.setTotalCash(masterAccount.getTotalCash().subtract(BigDecimal.valueOf(advance)));
         }
         ss.updateMasterAccount(masterAccount);
+    }
+
+    @Async
+    public void updateAccount(AccountPayableReceivable account) {
+        CustomersBuyers cusBuy = userService.getCustomerAndBuyer(account.getAccountName());
+        if (cusBuy != null) {
+            String type = account.getType();
+            BigDecimal amount = account.getAmount();
+            BigDecimal payable = cusBuy.getPayable();
+            BigDecimal receivable = cusBuy.getReceivable();
+
+            if (account.getItemType().getId() == 18) {
+                // cash tran
+                amount = account.getTotalAmount();
+                if (account.getSubType().startsWith("From") || account.getSubType().startsWith("from")) {
+                    type = Constants.RECEIVABLE;
+                } else if (account.getSubType().equalsIgnoreCase("to head office")) {
+                    type = Constants.PAYABLE;
+                } else if (account.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
+                    type = Constants.PAYABLE;
+                }
+            }
+
+            if (type.equalsIgnoreCase(Constants.RECEIVABLE)) {
+
+                if ((payable.compareTo(amount) >= 0)) {
+                    cusBuy.setPayable(payable.subtract(amount));
+                    cusBuy.setReceivable(BigDecimal.ZERO);
+
+                } else if ((payable.compareTo(amount) < 0)) {
+                    cusBuy.setReceivable(receivable.add(payable.subtract(amount).negate()));
+                    cusBuy.setPayable(BigDecimal.ZERO);
+
+                } else {
+                    cusBuy.setReceivable(receivable.add(amount));
+                }
+
+            } else if (type.equalsIgnoreCase(Constants.PAYABLE)) {
+                // payable
+                if ((receivable.compareTo(amount) >= 0)) {
+                    cusBuy.setReceivable(receivable.subtract(amount).negate());
+//                    cusBuy.setPayable(BigDecimal.ZERO);
+
+                } else if ((receivable.compareTo(amount) < 0)) {
+                    cusBuy.setPayable(payable.add(receivable.subtract(amount).negate()));
+                    cusBuy.setReceivable(BigDecimal.ZERO);
+
+                } else {
+                    cusBuy.setPayable(cusBuy.getPayable().add(amount));
+                }
+            }
+
+            userService.updateCustomerAndBuyer(cusBuy);
+        }
     }
 
 }

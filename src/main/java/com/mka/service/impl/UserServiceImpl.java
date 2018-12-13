@@ -108,6 +108,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CustomersBuyers getCustomerAndBuyer(String name) {
+        return userDao.getCustomerAndBuyer(name);
+    }
+
+    @Override
     public boolean addCustomerAndBuyer(String name) {
         CustomersBuyers cusBuy = new CustomersBuyers();
         cusBuy.setName(name);
@@ -137,6 +142,16 @@ public class UserServiceImpl implements UserService {
             if (userDao.addProject(proj)) {
                 projects = null;
             }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateCustomerAndBuyer(CustomersBuyers cusBuy) {
+        if (userDao.updateCustomerAndBuyer(cusBuy)) {
+            customersAndBuyers = null;
+            getCustomersAndBuyers();
             return true;
         }
         return false;

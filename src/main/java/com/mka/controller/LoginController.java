@@ -4,11 +4,9 @@ package com.mka.controller;
  *
  * @author Sagher Mehmood
  */
-import static com.mka.controller.EmployeesController.log;
 import com.mka.model.User;
 import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
-import com.mka.utils.Constants;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

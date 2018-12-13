@@ -32,6 +32,15 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "StockTrace.findAll", query = "SELECT s FROM StockTrace s")})
 public class StockTrace implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "consume_unit")
+    private int consumeUnit;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "consume_amount")
+    private BigDecimal consumeAmount;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
@@ -227,6 +236,22 @@ public class StockTrace implements Serializable {
 
     public void setStockAmount(BigDecimal stockAmount) {
         this.stockAmount = stockAmount;
+    }
+
+    public int getConsumeUnit() {
+        return consumeUnit;
+    }
+
+    public void setConsumeUnit(int consumeUnit) {
+        this.consumeUnit = consumeUnit;
+    }
+
+    public BigDecimal getConsumeAmount() {
+        return consumeAmount;
+    }
+
+    public void setConsumeAmount(BigDecimal consumeAmount) {
+        this.consumeAmount = consumeAmount;
     }
 
 }

@@ -25,9 +25,13 @@ public interface UserDao {
 
     public List<CustomersBuyers> getCustomersAndBuyers();
 
+    public CustomersBuyers getCustomerAndBuyer(String name);
+
     public boolean addCustomerAndBuyer(CustomersBuyers cusBuy);
-    
-     public List<Projects> getProjects();
+
+    public boolean updateCustomerAndBuyer(CustomersBuyers cusBuy);
+
+    public List<Projects> getProjects();
 
     public boolean addProject(Projects proj);
 

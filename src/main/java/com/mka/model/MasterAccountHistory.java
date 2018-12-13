@@ -5,6 +5,7 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -42,6 +43,7 @@ public class MasterAccountHistory implements Serializable {
     @NotNull
     @Column(name = "timestamp")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date timestamp;
 
     private static final long serialVersionUID = 1L;
@@ -95,7 +97,6 @@ public class MasterAccountHistory implements Serializable {
     public void setType(String type) {
         this.type = type;
     }
-
 
     public String getDescription() {
         return description;

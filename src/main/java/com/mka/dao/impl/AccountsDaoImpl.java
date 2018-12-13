@@ -80,7 +80,9 @@ public class AccountsDaoImpl implements AccountsDao {
             criteria.add(Restrictions.eq("isActive", true));
 
             if (type != null) {
-                criteria.add(Restrictions.eq("type", type));
+                Criterion rest1 = Restrictions.eq("type", type);
+                Criterion rest2 = Restrictions.eq("type", "NA");
+                criteria.add(Restrictions.or(rest1, rest2));
             }
 
             if (subType != null) {
@@ -139,7 +141,12 @@ public class AccountsDaoImpl implements AccountsDao {
             Criteria criteria = session.createCriteria(AccountPayableReceivable.class);
 
             criteria.add(Restrictions.eq("isActive", true));
-            criteria.add(Restrictions.eq("type", type));
+
+            if (type != null) {
+                Criterion rest1 = Restrictions.eq("type", type);
+                Criterion rest2 = Restrictions.eq("type", "NA");
+                criteria.add(Restrictions.or(rest1, rest2));
+            }
 
             if (entryItem != null) {
                 criteria.add(Restrictions.eq("itemType", entryItem));

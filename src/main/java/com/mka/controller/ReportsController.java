@@ -124,7 +124,7 @@ public class ReportsController {
 
                     if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
                         for (AccountPayableReceivable acc : indirectExpenses) {
-                            
+
                             if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
                                 Integer val = indirectExpMap.get(acc.getItemType().getItemName());
                                 val = val + acc.getAmount().intValue();
@@ -243,6 +243,18 @@ public class ReportsController {
         if (dataList != null && !dataList.isEmpty()) {
             int tAmount = getTotalAmount(type);
             dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, null, tAmount));
+
+            if (!buyerSupplier.isEmpty()) {
+                if (type.equalsIgnoreCase(Constants.PAYABLE)
+                        && userService.getCustomerAndBuyer(buyerSupplier).getPayable().intValue() > 0) {
+
+                } else if (type.equalsIgnoreCase(Constants.RECEIVABLE)
+                        && userService.getCustomerAndBuyer(buyerSupplier).getReceivable().intValue() > 0) {
+
+                } else {
+                    dataList = null;
+                }
+            }
         }
         resp.setData(dataList != null ? dataList : "");
         resp.setRecordsFiltered(totalSize);
@@ -263,7 +275,7 @@ public class ReportsController {
         if (dataList != null && !dataList.isEmpty()) {
             if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                 for (AccountPayableReceivable ac : dataList) {
-                    if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("from head office")) {
+                    if (ac.getItemType().getId() == 18 && ac.getSubType().startsWith("From")) {
                         totalAmount -= (ac.getTotalAmount().intValue());
                     } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
                         totalAmount += (ac.getTotalAmount().intValue());
@@ -275,7 +287,7 @@ public class ReportsController {
                 }
             } else {
                 for (AccountPayableReceivable ac : dataList) {
-                    if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("from head office")) {
+                    if (ac.getItemType().getId() == 18 && ac.getSubType().startsWith("From")) {
                         totalAmount += (ac.getTotalAmount().intValue());
                     } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
                         totalAmount -= (ac.getTotalAmount().intValue());

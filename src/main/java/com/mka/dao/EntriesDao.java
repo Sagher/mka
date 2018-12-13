@@ -30,9 +30,9 @@ public interface EntriesDao {
 
     public boolean logInDirectEntry(EntriesIndirect entry);
 
-    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate);
+    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier);
 
-    public int getInDirectEntriesCount(String startDate, String endDate);
+    public int getInDirectEntriesCount(String startDate, String endDate, String buyerSupplier);
 
     public EntriesIndirect getInDirectEntry(int id);
 

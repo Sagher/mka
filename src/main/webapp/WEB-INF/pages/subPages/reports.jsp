@@ -147,20 +147,42 @@
                             </div>
                         </div>
 
-                        <!--                        <hr>
-                                                <div class="row">
-                                                    <div class="col-sm-6 col-lg-3">
-                                                        <div class="brand-card item-summary">
-                                                            <div class="brand-card-header text-white">
-                                                                <div class="card-body">
-                                                                    <a href="<c:url value="/entries?type=indirect" />">
-                                                                        <div class="item-name">ALL EXPENSES DETAILS</div>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>-->
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/entries?type=direct" />">
+                                                <div class="item-name">ALL DIRECT ENTRIES</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/entries?type=indirect" />">
+                                                <div class="item-name">ALL IN-DIRECT ENTRIES</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/entries?type=cashtransactions" />">
+                                                <div class="item-name">ALL Cash Transactions</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

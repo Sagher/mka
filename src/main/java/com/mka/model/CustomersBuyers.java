@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +29,16 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "CustomersBuyers.findAll", query = "SELECT c FROM CustomersBuyers c")})
 public class CustomersBuyers implements Serializable {
+
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "payable")
+    private BigDecimal payable;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "receivable")
+    private BigDecimal receivable;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -109,6 +120,22 @@ public class CustomersBuyers implements Serializable {
     @Override
     public String toString() {
         return "com.mka.model.CustomersBuyers[ id=" + id + " ]";
+    }
+
+    public BigDecimal getPayable() {
+        return payable;
+    }
+
+    public void setPayable(BigDecimal payable) {
+        this.payable = payable;
+    }
+
+    public BigDecimal getReceivable() {
+        return receivable;
+    }
+
+    public void setReceivable(BigDecimal receivable) {
+        this.receivable = receivable;
     }
 
 }

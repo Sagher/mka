@@ -5,6 +5,11 @@
  */
 package com.mka.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
 import com.mka.model.EntriesDirect;
@@ -124,8 +129,18 @@ public class EntriesController {
                         model.addObject("stockTrace", st);
                     }
                     model.setViewName("subPages/directEntries");
-                } else {
+                } else if (type.equalsIgnoreCase("indirect")) {
                     model.setViewName("subPages/indirectEntries");
+
+                } else if (type.equalsIgnoreCase(Constants.CASH_TRANSACTIONS)) {
+                    model.setViewName("subPages/cashTransactions");
+
+                } else if (type.equalsIgnoreCase(Constants.CUSTOMERS_BUYERS)) {
+                    model.setViewName("subPages/customersBuyers");
+
+                } else {
+                    model.setViewName("redirect:/");
+
                 }
             } else {
                 model.addObject("errorCode", "401");
@@ -171,67 +186,14 @@ public class EntriesController {
     public @ResponseBody
     String logInDirectEntry(HttpServletRequest request, HttpSession httpSession) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        try {
-            EntryItems item;
 
-            String iItemType = request.getParameter("iItemType");
-            if (iItemType.equalsIgnoreCase("other")) {
-                item = entriesService.createNewEntryItem(request.getParameter("iItemTypeInput"));
-            } else {
-                item = entriesService.getEntryItemById(Integer.parseInt(iItemType));
-            }
-            String iItemSubType = request.getParameter("iItemSubType");
-            String iname = request.getParameter("iname");
-            if (iname.equalsIgnoreCase("other")) {
-                iname = request.getParameter("ibuysupInput");
-                asyncUtil.addToCustomersAndBuyersList(iname);
-            }
+        Object entryLogged = entriesService.logInDirectEntry(request);
+        if (entryLogged instanceof EntriesIndirect) {
+            logActivity(request, auth.getName(), "ADDED ENTRY", entryLogged.toString());
+            return "00:Entry Logged Successfully";
+        } else {
+            return ("01:Failed To Log Entry. Make sure all field are filled in.");
 
-            String idesc = request.getParameter("idesc");
-            String icost = request.getParameter("icost");
-            String iAdvance = request.getParameter("iadvance");
-            String dateOfEntry = request.getParameter("idoe");
-            String payfrom = request.getParameter("payfrom");
-
-            if (item != null) {
-                EntriesIndirect entry = new EntriesIndirect();
-                entry.setItem(item);
-                if (item.getItemType() != null) {
-                    entry.setItemType(iItemSubType);
-                } else {
-                    entry.setItemType(null);
-                }
-                entry.setName(iname);
-                entry.setDescription(idesc);
-                entry.setAmount(BigDecimal.valueOf(Long.parseLong(icost)));
-                entry.setAdvance(BigDecimal.valueOf(Long.parseLong(iAdvance)));
-                entry.setEntryDate(Constants.DATE_FORMAT.parse(dateOfEntry));
-                entry.setIsActive(true);
-
-                MasterAccount ma = ss.getMasterAccount();
-                if (ma.getCashInHand().intValue() < entry.getAdvance().intValue()) {
-                    return ("01:Not Enough Cash In Hand to Log this Expense");
-                } else if (ma.getCashInHand().intValue() < entry.getAdvance().intValue() && payfrom.equals("1")) {
-                    return ("01:Not Enough cash in hand to make this purchase");
-                } else if (ma.getTotalCash().intValue() < entry.getAdvance().intValue() && payfrom.equals("0")) {
-                    return ("01:Not Enough cash in Main Account to make this purchase");
-                }
-
-                boolean entryLogged = entriesService.logInDirectEntry(entry);
-                if (!entryLogged) {
-                    return ("01:Failed To Log Entry. Make sure all field are filled in.");
-                } else {
-                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance().intValue());
-                    asyncUtil.updateIndirectAccountPayableReceivable(entry);
-                    logActivity(request, auth.getName(), "ADDED ENTRY", entry.toString());
-                    return "00:Entry Logged Successfully";
-                }
-            } else {
-                return ("01:Invalid Item Type");
-            }
-        } catch (Exception e) {
-            log.error("Exception while logging Entry:", e);
-            return ("01:Invalid Values");
         }
     }
 
@@ -253,12 +215,13 @@ public class EntriesController {
 
         DataTableResp resp = new DataTableResp();
 
-        int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
-        String orderBy = request.getParameter("order[0][dir]");
+        int order0Col = Integer.parseInt(request.getParameter("order[0][column]") != null
+                ? request.getParameter("order[0][column]") : "0");
+        String orderBy = request.getParameter("order[0][dir]") != null ? request.getParameter("order[0][dir]") : "";
         String sortby = request.getParameter("columns[" + order0Col + "][data]");
 
-        Object data;
-        int totalSize;
+        Object data = null;
+        int totalSize = 0;
         if (type.equalsIgnoreCase(Constants.DIRECT)) {
             if (itemTypeId > 0) {
                 EntryItems entryItem = entriesService.getEntryItemById(itemTypeId);
@@ -269,9 +232,24 @@ public class EntriesController {
                 data = entriesService.getDirectEntries(null, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
                 totalSize = entriesService.getDirectEntriesCount(null, subEntryType, startDate, endDate, buyerSupplier, project);
             }
-        } else {
-            data = entriesService.getInDirectEntries(startIndex, fetchSize, orderBy, sortby, startDate, endDate);
-            totalSize = entriesService.getInDirectEntriesCount(startDate, endDate);
+
+        } else if (type.equalsIgnoreCase(Constants.INDIRECT)) {
+            data = entriesService.getInDirectEntries(startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
+            totalSize = entriesService.getInDirectEntriesCount(startDate, endDate, buyerSupplier);
+
+        } else if (type.equalsIgnoreCase(Constants.CASH_TRANSACTIONS)) {
+            // cash transactions
+            data = ss.getCashTransactions(startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
+            totalSize = ss.getCashTransactionsCount(startDate, endDate, buyerSupplier);
+
+        } else if (type.equalsIgnoreCase(Constants.CUSTOMERS_BUYERS)) {
+            // customersBuyers
+            try {
+                data = userService.getCustomersAndBuyers();
+                totalSize = ((List<CustomersBuyers>) data).size();
+            } catch (Exception e) {
+
+            }
         }
 
         resp.setData(data != null ? data : "");
@@ -465,8 +443,7 @@ public class EntriesController {
                 return ("01:Failed To Log Transaction. Make sure all field are filled in.");
             } else {
 //                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
-                asyncUtil.logCashTran(mah, Constants.RECEIVABLE, transactionLogged);
-                asyncUtil.logCashTran(mah, Constants.PAYABLE, transactionLogged);
+                asyncUtil.logCashTran(mah, transactionLogged);
                 return "00:Transaction Logged Successfully";
             }
         } catch (Exception e) {
@@ -487,6 +464,24 @@ public class EntriesController {
             return ((String) entryLogged);
         }
         return ("01:Invalid Values");
+    }
+
+    @RequestMapping(value = "/previousAssValues", method = RequestMethod.GET)
+    public @ResponseBody
+    Object config(
+            HttpServletRequest request,
+            @RequestParam String buyerSupplier,
+            @RequestParam String project) {
+
+        AsphaltSales ass = ss.getAsphaltSale(buyerSupplier, project);
+        List<AsphaltSaleConsumption> cons = ss.getAsphaltSaleConsumptions(ass);
+        AsphaltSaleConsumption assVals = new AsphaltSaleConsumption(0, ass.getVehicle(), ass.getBiltee(), ass.getExPlantRate().intValue(), ass.getExPlantCost().intValue());
+
+        if (cons == null) {
+            cons = new ArrayList<>();
+        }
+        cons.add(assVals);
+        return cons;
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

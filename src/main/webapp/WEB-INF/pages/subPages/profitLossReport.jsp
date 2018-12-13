@@ -106,7 +106,7 @@
 
                                                         <c:forEach items="${stockTrace}" var="item">
                                                             <c:set var="totalSales" value="${totalSales + item.salesAmount}" scope="page"/>
-                                                            <c:set var="directGrossProfit" value="${directGrossProfit + item.salesAmount}" scope="page"/>
+                                                            <c:set var="directGrossProfit" value="${directGrossProfit + item.consumeAmount}" scope="page"/>
 
                                                         </c:forEach>
                                                         <tr>
@@ -131,7 +131,7 @@
                                                         </tr>
                                                         <c:forEach items="${stockTrace}" var="item">
                                                             <c:if test = "${item.itemId == 6}">
-                                                                <c:set var="totalCrushSales" value="${totalCrushSales+item.salesAmount}" scope="page" />
+                                                                <c:set var="totalCrushSales" value="${totalCrushSales+item.consumeAmount}" scope="page" />
                                                             </c:if>
                                                             <c:if test = "${item.itemId != 6 && item.itemId !=17}">
                                                                 <tr>
@@ -139,7 +139,7 @@
                                                                         ${item.itemName} ${item.subType}
                                                                     </td>
                                                                     <td>
-                                                                        ${item.salesAmount}
+                                                                        ${item.consumeAmount}
                                                                     </td>
                                                                     <td></td>
                                                                 </tr>

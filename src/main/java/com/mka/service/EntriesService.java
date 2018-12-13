@@ -29,11 +29,11 @@ public interface EntriesService {
 
     public boolean updateDirectEntry(EntriesDirect entry);
 
-    public boolean logInDirectEntry(EntriesIndirect entry);
+    public Object logInDirectEntry(HttpServletRequest request);
 
-    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate);
+    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier);
 
-    public int getInDirectEntriesCount(String startDate, String endDate);
+    public int getInDirectEntriesCount(String startDate, String endDate, String buyerSupplier);
 
     public EntriesIndirect getInDirectEntry(int id);
 
@@ -44,4 +44,6 @@ public interface EntriesService {
     public void addEntryDetail(EntriesDirectDetails entryDetail);
 
     public Object logAsphaltSale(HttpServletRequest request);
+
+    public boolean logInDirectEntry(EntriesIndirect entry);
 }

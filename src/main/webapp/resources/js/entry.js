@@ -173,7 +173,35 @@ ditemTypeSelection.change(function () {
                 } else {
                     html += ('<strong>' + data.itemName + '</strong></div>');
                 }
-                html += ('<div>Total Sales: ' + data.salesUnit + ' ' + data.itemUnit + '</div>\n\
+
+                if (data.itemId == 4 || data.itemId == 5) {
+                    // prime coat tack coat drums
+                    html += ('<div>Total Sales: ' + data.salesUnit + ' ' + data.itemUnit + '</div>\n\
+                    <div>Total Sales Amount: ' + data.salesAmount + ' PKR</div>\n\
+                    </div></div>\n\
+                    <div class="brand-card-body"><div>');
+
+                    if (data.stockUnits > 0) {
+                        html += ('<div class="text-value">' + data.stockUnits + ' ' + data.itemUnit
+                                + ' <small>[ ' + parseFloat((parseInt(data.stockUnits) / 218)).toFixed(2) + ' Drum(s) ]</small></div>');
+                    } else {
+                        html += ('<div class="text-value">' + data.stockUnits + ' ' + data.itemUnit + '</div>');
+
+                    }
+
+                    html += ('<div class="text-uppercase text-muted small">In Stock</div>\n\
+                    </div>\n\
+                    <div>\n\
+                    <div class="text-value">' + data.stockAmount + ' PKR</div>\n\
+                    <div class="text-uppercase text-muted small">Total Stock Price</div>\n\
+                    </div>\n\
+                    <div>\n\
+                    <div class="text-value">' + data.averageUnitPrice + ' PKR</div>\n\
+                    <div class="text-uppercase text-muted small">Average Per ' + ' ' + data.itemUnit + ' Price</div>\n\
+                    </div>\n\
+                    </div>');
+                } else {
+                    html += ('<div>Total Sales: ' + data.salesUnit + ' ' + data.itemUnit + '</div>\n\
                     <div>Total Sales Amount: ' + data.salesAmount + ' PKR</div>\n\
                     </div></div>\n\
                     <div class="brand-card-body"><div>\n\
@@ -189,7 +217,7 @@ ditemTypeSelection.change(function () {
                     <div class="text-uppercase text-muted small">Average Per ' + ' ' + data.itemUnit + ' Price</div>\n\
                     </div>\n\
                     </div>');
-
+                }
                 $("#pup").html("Per " + data.itemUnit + " Price");
                 $("#stockDetail").html(html);
             }
@@ -493,10 +521,16 @@ tCustomerBuyerSelect.change(function () {
 //attach change event to project select
 ttype.change(function () {
     if ($('#ttype option:selected').val() == "-+") {
+        $("#fromHeadOfficeOptionsDiv").attr("hidden", "true");
         cashInHandOptionsDiv.removeAttr("hidden");
         changeCashTranCusLabel(1);
+    } else if ($('#ttype option:selected').val() == "-") {
+        $("#fromHeadOfficeOptionsDiv").removeAttr("hidden");
+        cashInHandOptionsDiv.attr("hidden", "true");
+        changeCashTranCusLabel(0);
     } else {
         cashInHandOptionsDiv.attr("hidden", "true");
+        $("#fromHeadOfficeOptionsDiv").attr("hidden", "true");
         changeCashTranCusLabel(0);
 
     }
@@ -661,6 +695,70 @@ function updateAssBitRate(itemName, value, avgRate) {
     var costId = "#" + item + "cost";
     var itemCost = totalQuantity * Math.ceil(avgRate);
     $(costId).val(itemCost);
+
+}
+
+function getAutoFillValues() {
+    var ass = $("#asCusSelect").val();
+    var proj = $("#asProjSelect").val();
+    console.log(ass)
+    console.log(proj)
+
+    if (ass != '' && proj != '') {
+        getAutoFillers(ass, proj);
+    }
+}
+
+function getAutoFillers(cusBuy, proj) {
+    $.ajax({
+        url: "previousAssValues?buyerSupplier=" + cusBuy + "&project=" + proj,
+        dataType: "json",
+        success: function (data) {
+            for (var i in data) {
+//                console.log(data[i]);
+                if (data[i].id === 0) {
+                    console.log(data[i]);
+                    var vehicle = data[i].itemName;
+                    var biltee = data[i].itemQuantity;
+                    var explantRate = data[i].itemRate;
+
+                    $("#biltee").val(biltee);
+                    $("#vehicle").val(vehicle);
+                    $("#expRate").val(explantRate).trigger('change');
+                }
+                if (data[i].itemName === 'BITUMEN') {
+                    var bitumenRateDynamicId = $("#bitumenRateDynamicId").val();
+                    $("#" + bitumenRateDynamicId).val(data[i].itemRate).trigger('change');
+                }
+                if (data[i].itemName.startsWith('LAYED BY ')) {
+                    var layer = data[i].itemName.substring(9, data[i].itemName.length);
+                    $("#assLayer").val(layer);
+                    $("#assLayingCostPerTon").val(data[i].itemRate).trigger('change');
+                    ;
+
+                }
+                if (data[i].itemName.startsWith('Carriage Provided By ')) {
+                    var layer = data[i].itemName.substring(21, data[i].itemName.length);
+                    $("#assCarProvider").val(layer);
+                    $("#assCarCostPerTon").val(data[i].itemRate).trigger('change');
+                    ;
+                }
+            }
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(textStatus);
+        }
+    });
+}
+
+function triggerAllChanges() {
+    $("#assCarCostPerTon").trigger('change');
+    $("#assLayingCostPerTon").trigger('change');
+    $("#expRate").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
 
 }
 

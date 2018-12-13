@@ -276,7 +276,7 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
-    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate) {
+    public List<EntriesIndirect> getInDirectEntries(int startIndex, int fetchSize, String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -287,6 +287,11 @@ public class EntriesDaoImpl implements EntriesDao {
             }
             if (!endDate.isEmpty()) {
                 criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
+            }
+            if (!buyerSupplier.isEmpty()) {
+                Criterion c1 = Restrictions.eq("name", buyerSupplier);
+                Criterion c2 = Restrictions.eq("name", buyerSupplier);
+                criteria.add(Restrictions.or(c1, c2));
             }
             criteria.setFirstResult(startIndex);
             criteria.setMaxResults(fetchSize);
@@ -315,7 +320,7 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
-    public int getInDirectEntriesCount(String startDate, String endDate) {
+    public int getInDirectEntriesCount(String startDate, String endDate, String buyerSupplier) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -326,6 +331,11 @@ public class EntriesDaoImpl implements EntriesDao {
             }
             if (!endDate.isEmpty()) {
                 criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
+            }
+            if (!buyerSupplier.isEmpty()) {
+                Criterion c1 = Restrictions.eq("name", buyerSupplier);
+                Criterion c2 = Restrictions.eq("name", buyerSupplier);
+                criteria.add(Restrictions.or(c1, c2));
             }
             return (((Number) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue());
         } catch (Exception e) {

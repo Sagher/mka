@@ -471,12 +471,30 @@
                                                                     From Head Office Account
                                                                 </option>
                                                                 <option value="-+">
-                                                                    Cash In Hand
+                                                                    To Cash In Hand
                                                                 </option>
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
+                                                    <div class="form-group row" id="fromHeadOfficeOptionsDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" type="radio" value="1" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio1">From Main Account</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" type="radio" value="0" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio0">From Cash In Hand</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
                                                     <div class="form-group row" id="cashInHandOptionsDiv" hidden="true">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -580,7 +598,8 @@
                                 
                                             -->
                                             <div class="tab-pane fade" id="asphaltsaletab" role="tabpanel" aria-labelledby="asphalt-tab">
-                                                <form id="asphaltSaleForm" class="form-horizontal" action="<c:url value="/logAsphaltSale"/>"
+                                                <form id="asphaltSaleForm" class="form-horizontal" 
+                                                      action="<c:url value="/logAsphaltSale"/>"  autocomplete="on"
                                                       method="post" enctype="multipart/form-data">
                                                     <br>
                                                     <div class="form-group row">
@@ -591,7 +610,7 @@
                                                                         this.value = '0';
                                                                     }" onfocus="if (this.value == '0') {
                                                                                 this.value = '';
-                                                                            }">
+                                                                                }" onchange="triggerAllChanges()">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -600,7 +619,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Customer</span>
-                                                            <select class="form-control" id="asCusSelect" name="asCus" required="true">
+                                                            <select class="form-control" id="asCusSelect" name="asCus" required="true" onchange="getAutoFillValues()">
                                                                 <option selected value="">-- Please select A Customer --</option>
                                                             </select>
                                                             <br>
@@ -613,7 +632,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Project</span>
-                                                            <select class="form-control" id="asProjSelect" name="asProj" required="true">
+                                                            <select class="form-control" id="asProjSelect" name="asProj" required="true" onchange="getAutoFillValues()">
                                                                 <option selected value="">-- Please select A Project --</option>
                                                             </select>
                                                             <br>
@@ -719,6 +738,7 @@
                                                                     <input class="form-control" id="${item.id}rate" type="number" 
                                                                            name="${item.id}rate" value="0" 
                                                                            onchange="updateAssBitRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
+                                                                    <input hidden="true" id="bitumenRateDynamicId" value="${item.id}rate">
                                                                     <br>                                                                
                                                                     <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
                                                                     <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"

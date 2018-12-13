@@ -6,6 +6,9 @@
 package com.mka.dao.impl;
 
 import com.mka.dao.StatsDao;
+import com.mka.model.AsphaltSaleConsumption;
+import com.mka.model.AsphaltSales;
+import com.mka.model.EntriesDirect;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
@@ -21,6 +24,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -229,5 +235,138 @@ public class StatsDaoImpl implements StatsDao {
             }
         }
         return response;
+    }
+
+    @Override
+    public Object getCashTransactions(int startIndex, int fetchSize, String orderBy, String sortby, String startDate, String endDate, String buyerSupplier) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(MasterAccountHistory.class);
+
+            if (!startDate.isEmpty()) {
+                criteria.add(Restrictions.ge("timestamp", Constants.DATE_FORMAT.parse(startDate)));
+            }
+            if (!endDate.isEmpty()) {
+                criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
+            }
+            if (!buyerSupplier.isEmpty()) {
+                criteria.add(Restrictions.eq("payee", buyerSupplier));
+            }
+
+            criteria.setFirstResult(startIndex);
+            criteria.setMaxResults(fetchSize);
+
+            if (orderBy.equalsIgnoreCase("asc")) {
+                criteria.addOrder(Order.asc(sortby));
+            } else if (!sortby.isEmpty()) {
+                criteria.addOrder(Order.desc(sortby));
+            } else {
+                criteria.addOrder(Order.desc("timestamp"));
+            }
+            List<MasterAccountHistory> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getCashTransactions() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public int getCashTransactionsCount(String startDate, String endDate, String buyerSupplier) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(MasterAccountHistory.class);
+
+            if (!startDate.isEmpty()) {
+                criteria.add(Restrictions.ge("timestamp", Constants.DATE_FORMAT.parse(startDate)));
+            }
+            if (!endDate.isEmpty()) {
+                criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
+            }
+            if (!buyerSupplier.isEmpty()) {
+                criteria.add(Restrictions.eq("payee", buyerSupplier));
+            }
+
+            return (((Number) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue());
+        } catch (Exception e) {
+            log.error("Exception in getCashTransactionsCount() : ", e);
+            return 0;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    public AsphaltSales getAsphaltSale(String buyerSupplier, String project) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AsphaltSales.class);
+
+            if (!buyerSupplier.isEmpty()) {
+                criteria.add(Restrictions.eq("buyer", buyerSupplier));
+            }
+            if (!project.isEmpty()) {
+                criteria.add(Restrictions.eq("project", project));
+            }
+
+            criteria.setFirstResult(0);
+            criteria.setMaxResults(1);
+
+            criteria.addOrder(Order.desc("id"));
+
+            List<AsphaltSales> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getAsphaltSale() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AsphaltSaleConsumption.class);
+
+            criteria.add(Restrictions.eq("asphlatSaleId", ass));
+
+            List<AsphaltSaleConsumption> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getAsphaltSaleConsumptions() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
     }
 }
