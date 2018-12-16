@@ -85,7 +85,7 @@ public class EmployeesServiceImpl implements EmployeesService {
                 if (!emp.getCurrentMonthPayed() && !emp.getIsTerminated()) {
                     totalAmount += emp.getSalary().intValue();
                     EmployeessPayments empPayment = new EmployeessPayments();
-                    empPayment.setAmountPayed(emp.getSalary().longValue());
+                    empPayment.setAmountPayed(emp.getSalary());
                     empPayment.setEmployees(emp);
                     empPayment.setPaymentDate(new Date());
                     paymentRecord.put(emp, empPayment);
@@ -93,7 +93,7 @@ public class EmployeesServiceImpl implements EmployeesService {
                     AccountPayableReceivable payable = new AccountPayableReceivable();
                     payable.setAccountName(emp.getName());
                     payable.setAmount(emp.getSalary());
-                    payable.setQuantity(0);
+                    payable.setQuantity(BigDecimal.ZERO);
                     payable.setRate(BigDecimal.ZERO);
                     payable.setTotalAmount(emp.getSalary());
                     payable.setEntryId(0);

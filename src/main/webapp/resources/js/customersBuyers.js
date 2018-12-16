@@ -24,6 +24,11 @@ $(document).ready(function () {
             {"data": "name"},
             {"data": "payable"},
             {"data": "receivable"},
+            {"data": "id", "render": function (data, type, full, meta) {
+                    var html = "<a class='btn btn-primary' href=\"" + ctx + "/entries/" + data + "/detail\"'>View All Transactions</a>";
+                    return html;
+                }
+            }
         ],
         "processing": true,
         "serverSide": true,
@@ -37,5 +42,9 @@ $(document).ready(function () {
 
     });
 });
+
+function viewAllTransactions(id) {
+    console.log(id)
+}
 
 

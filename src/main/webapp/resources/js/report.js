@@ -36,7 +36,7 @@ $(document).ready(function () {
 //                    return html;
 //                }
 //            },
-            {"data": "createdDate"},
+            {"data": "timestamp"},
             {"data": "project"},
             {"data": "accountName"},
             {"data": "accountName", "render": function (data, type, full, meta) {

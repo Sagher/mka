@@ -9,7 +9,6 @@ import com.mka.dao.AccountsDao;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntryItems;
 import com.mka.utils.Constants;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -47,7 +46,6 @@ public class AccountsDaoImpl implements AccountsDao {
             tx = session.beginTransaction();
             session.setFlushMode(FlushMode.COMMIT);
             session.evict(accountPayableReceivable);
-            accountPayableReceivable.setCreatedDate(new Date());
             session.save(accountPayableReceivable);
 
             tx.commit();
@@ -95,10 +93,10 @@ public class AccountsDaoImpl implements AccountsDao {
             if (entryItem != null) {
             }
             if (!startDate.isEmpty()) {
-                criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(startDate)));
+                criteria.add(Restrictions.ge("timestamp", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
-                criteria.add(Restrictions.le("createdDate", Constants.DATE_FORMAT.parse(endDate)));
+                criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
             }
             if (!buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
@@ -152,10 +150,10 @@ public class AccountsDaoImpl implements AccountsDao {
                 criteria.add(Restrictions.eq("itemType", entryItem));
             }
             if (!startDate.isEmpty()) {
-                criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(startDate)));
+                criteria.add(Restrictions.ge("timestamp", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
-                criteria.add(Restrictions.le("createdDate", Constants.DATE_FORMAT.parse(endDate)));
+                criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
             }
             if (!buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
@@ -176,4 +174,44 @@ public class AccountsDaoImpl implements AccountsDao {
         }
     }
 
+    @Override
+    public Object getAllTransactions(String orderBy, String sortby, String startDate, String endDate, String buyerSupplier) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AccountPayableReceivable.class);
+
+            criteria.add(Restrictions.eq("isActive", true));
+
+            if (!startDate.isEmpty()) {
+                criteria.add(Restrictions.ge("timestamp", Constants.DATE_FORMAT.parse(startDate)));
+            }
+            if (!endDate.isEmpty()) {
+                criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
+            }
+            criteria.add(Restrictions.eq("accountName", buyerSupplier));
+
+            if (orderBy.equalsIgnoreCase("asc")) {
+                criteria.addOrder(Order.asc(sortby));
+            } else if (!sortby.isEmpty()) {
+                criteria.addOrder(Order.desc(sortby));
+            } else {
+                criteria.addOrder(Order.desc("id"));
+            }
+            List<AccountPayableReceivable> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getAllTransactions() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
 }

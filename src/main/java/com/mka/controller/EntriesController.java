@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
@@ -21,6 +22,7 @@ import com.mka.model.Projects;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
+import com.mka.service.AccountsService;
 import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
@@ -39,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +75,9 @@ public class EntriesController {
 
     @Autowired
     StatsService ss;
+
+    @Autowired
+    AccountsService accountsService;
 
     /* 
      * 
@@ -142,6 +148,38 @@ public class EntriesController {
                     model.setViewName("redirect:/");
 
                 }
+            } else {
+                model.addObject("errorCode", "401");
+                model.addObject("errorMessage", "Unauthorized Access");
+                model.addObject("errorDescription", "You are not authorized to view this page");
+                model.setViewName("error");
+            }
+        } else {
+            model.addObject("msg", "Invalid username and password!");
+            log.info("Invalid username and password!");
+            model.setViewName("login");
+        }
+        return model;
+    }
+
+    @RequestMapping(value = "/entries/{id}/detail", method = RequestMethod.GET)
+    public ModelAndView entriesDetail(
+            HttpServletRequest request, HttpSession session,
+            @PathVariable(value = "id", required = true) int id) {
+
+        ModelAndView model = new ModelAndView();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.isAuthenticated()
+                && auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+            User u = userService.getUser(auth.getName());
+            CustomersBuyers cusBuy = userService.getCustomerAndBuyer(id);
+            if (u != null && cusBuy != null) {
+                model.addObject("user", u);
+                model.addObject("cusBuy", cusBuy);
+                model.addObject("allRoles", Constants.ALL_ROLES);
+                model.addObject("users", userService.getAllUsers());
+                model.setViewName("subPages/customerBuyerAccountDetail");
+
             } else {
                 model.addObject("errorCode", "401");
                 model.addObject("errorMessage", "Unauthorized Access");
@@ -247,6 +285,13 @@ public class EntriesController {
             try {
                 data = userService.getCustomersAndBuyers();
                 totalSize = ((List<CustomersBuyers>) data).size();
+            } catch (Exception e) {
+
+            }
+        } else if (type.equalsIgnoreCase("customersBuyersDetail")) {
+            try {
+                data = accountsService.getAllTransactions(orderBy, sortby, startDate, endDate, buyerSupplier);
+                totalSize = ((List<AccountPayableReceivable>) data).size();
             } catch (Exception e) {
 
             }
@@ -427,7 +472,7 @@ public class EntriesController {
             String tpayer = request.getParameter("tpayer");
             String payfrom = request.getParameter("payfrom");
 
-            if (tpayer.equalsIgnoreCase("other")) {
+            if (tpayer != null && tpayer.equalsIgnoreCase("other")) {
                 tpayer = request.getParameter("tbuysupInput");
                 asyncUtil.addToCustomersAndBuyersList(tpayer);
             }
@@ -474,14 +519,17 @@ public class EntriesController {
             @RequestParam String project) {
 
         AsphaltSales ass = ss.getAsphaltSale(buyerSupplier, project);
-        List<AsphaltSaleConsumption> cons = ss.getAsphaltSaleConsumptions(ass);
-        AsphaltSaleConsumption assVals = new AsphaltSaleConsumption(0, ass.getVehicle(), ass.getBiltee(), ass.getExPlantRate().intValue(), ass.getExPlantCost().intValue());
 
-        if (cons == null) {
-            cons = new ArrayList<>();
+        if (ass != null) {
+            List<AsphaltSaleConsumption> cons = ss.getAsphaltSaleConsumptions(ass);
+            AsphaltSaleConsumption assVals = new AsphaltSaleConsumption(0, ass.getVehicle(), BigDecimal.valueOf(ass.getBiltee()), ass.getExPlantRate(), ass.getExPlantCost());
+            if (cons == null) {
+                cons = new ArrayList<>();
+            }
+            cons.add(assVals);
+            return cons;
         }
-        cons.add(assVals);
-        return cons;
+        return new ArrayList<>();
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

@@ -157,4 +157,9 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    @Override
+    public CustomersBuyers getCustomerAndBuyer(int id) {
+        return userDao.getCustomerAndBuyer(id);
+    }
+
 }

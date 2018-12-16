@@ -19,24 +19,25 @@ $(document).ready(function () {
         },
         "columns": [
             /*
-             <th>ID</th>
              <th>Entry Date</th>
              <th>Item</th>
              <th>Type</th>
              <th>Buyer</th>
              <th>Supplier</th>
+             <th>Project</th>
              <th>Quantity</th>
+             <th>Plant Bilty</th>
+             <th>Recipient Bilty</th>
              <th>Rate</th>
              <th>Amount</th>
              <th>Advance</th>
-             <th>Action</th>
              */
 //            {"data": "id", "render": function (data, type, full, meta) {
 //                    var html = "<div class='id'>" + data + "</div>";
 //                    return html;
 //                }
 //            },
-            {"data": "entryDate"},
+            {"data": "createdDate"},
             {"data": "itemName", "render": function (data, type, full, meta) {
                     if (full.entriesDirectDetails != null) {
 //                        console.log(data + " (" + full.itemType + ")")
@@ -50,6 +51,8 @@ $(document).ready(function () {
             {"data": "supplier"},
             {"data": "project"},
             {"data": "quantity"},
+            {"data": "plantBilty"},
+            {"data": "recipientBilty"},
             {"data": "rate"},
             {"data": "totalPrice"},
             {"data": "advance"}

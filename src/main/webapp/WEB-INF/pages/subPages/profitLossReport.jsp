@@ -42,51 +42,9 @@
                                                 <input value="${type}" id="type" hidden="true">
                                             </div>
                                             <div class="card-body">
-                                                <!--                                                <div id="filtersDiv">
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>From</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        From
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>To</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        To
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="to" type="date" name="to" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Buyer/Supplier</label>
-                                                                                                            <select class="form-control" id="buySup" name="buySup">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Project</label>
-                                                                                                            <select class="form-control" id="proj" name="proj">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-12">
-                                                                                                            <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>-->
                                                 <hr>
-
+                                                <c:set var="totalIndirectExpenses" 
+                                                       value="0" scope="page" />
                                                 <table id="viewDatatable"
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
@@ -97,18 +55,6 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <c:set var="totalSales" value="0" scope="page" />
-                                                        <c:set var="directGrossProfit" value="0" scope="page"/>
-                                                        <c:set var="totalCrushSales" value="0" scope="page" />
-                                                        <c:set var="totalIndirectExpenses" value="0" scope="page" />
-                                                        <c:set var="netProfit" value="0" scope="page" />
-
-
-                                                        <c:forEach items="${stockTrace}" var="item">
-                                                            <c:set var="totalSales" value="${totalSales + item.salesAmount}" scope="page"/>
-                                                            <c:set var="directGrossProfit" value="${directGrossProfit + item.consumeAmount}" scope="page"/>
-
-                                                        </c:forEach>
                                                         <tr>
                                                             <td>
                                                                 Sales
@@ -130,9 +76,6 @@
                                                             </td>
                                                         </tr>
                                                         <c:forEach items="${stockTrace}" var="item">
-                                                            <c:if test = "${item.itemId == 6}">
-                                                                <c:set var="totalCrushSales" value="${totalCrushSales+item.consumeAmount}" scope="page" />
-                                                            </c:if>
                                                             <c:if test = "${item.itemId != 6 && item.itemId !=17}">
                                                                 <tr>
                                                                     <td>
@@ -151,6 +94,24 @@
                                                             </td>
                                                             <td>
                                                                 ${totalCrushSales}
+                                                            </td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                Asphalt Laying
+                                                            </td>
+                                                            <td>
+                                                                ${totalAssLaying}
+                                                            </td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                Asphalt Carriage
+                                                            </td>
+                                                            <td>
+                                                                ${totalAssCarr}
                                                             </td>
                                                             <td></td>
                                                         </tr>

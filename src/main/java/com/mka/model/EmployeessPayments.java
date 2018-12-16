@@ -6,6 +6,7 @@
 package com.mka.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -32,10 +33,11 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "EmployeessPayments.findAll", query = "SELECT e FROM EmployeessPayments e")})
 public class EmployeessPayments implements Serializable {
 
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Column(name = "amount_payed")
-    private long amountPayed;
+    private BigDecimal amountPayed;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,7 +61,7 @@ public class EmployeessPayments implements Serializable {
         this.id = id;
     }
 
-    public EmployeessPayments(Integer id, Date paymentDate, int amountPayed) {
+    public EmployeessPayments(Integer id, Date paymentDate, BigDecimal amountPayed) {
         this.id = id;
         this.paymentDate = paymentDate;
         this.amountPayed = amountPayed;
@@ -114,11 +116,11 @@ public class EmployeessPayments implements Serializable {
         return "com.mka.model.EmployeessPayments[ id=" + id + " ]";
     }
 
-    public long getAmountPayed() {
+    public BigDecimal getAmountPayed() {
         return amountPayed;
     }
 
-    public void setAmountPayed(long amountPayed) {
+    public void setAmountPayed(BigDecimal amountPayed) {
         this.amountPayed = amountPayed;
     }
 

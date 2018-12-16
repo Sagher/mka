@@ -145,6 +145,8 @@
                                                             <th>Supplier</th>
                                                             <th>Project</th>
                                                             <th>Quantity</th>
+                                                            <th>Plant Bilty</th>
+                                                            <th>Recipient Bilty</th>
                                                             <th>Rate</th>
                                                             <th>Amount</th>
                                                             <th>Advance</th>

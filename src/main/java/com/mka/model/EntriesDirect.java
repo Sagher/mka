@@ -5,6 +5,7 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -37,6 +38,11 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
+
+    @Column(name = "plant_bilty")
+    private Integer plantBilty;
+    @Column(name = "recipient_bilty")
+    private Integer recipientBilty;
 
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
@@ -87,13 +93,11 @@ public class EntriesDirect implements Serializable {
     @NotNull
     @Column(name = "is_active")
     private boolean isActive;
-    @Column(name = "entry_date")
-    @Temporal(TemporalType.DATE)
-    private Date entryDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date createdDate;
     @Column(name = "update_date")
     @Temporal(TemporalType.TIMESTAMP)
@@ -166,14 +170,6 @@ public class EntriesDirect implements Serializable {
         this.isActive = isActive;
     }
 
-    public Date getEntryDate() {
-        return entryDate;
-    }
-
-    public void setEntryDate(Date entryDate) {
-        this.entryDate = entryDate;
-    }
-
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -220,7 +216,7 @@ public class EntriesDirect implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", entryDate=" + entryDate + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
+        return "id=" + id + ", subEntryType=" + subEntryType + ", buyer=" + buyer + ", supplier=" + supplier + ", project=" + project + ", quantity=" + quantity + ", rate=" + rate + ", advance=" + advance + ", totalPrice=" + totalPrice + ", isActive=" + isActive + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
     public String getDescription() {
@@ -277,6 +273,22 @@ public class EntriesDirect implements Serializable {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Integer getPlantBilty() {
+        return plantBilty;
+    }
+
+    public void setPlantBilty(Integer plantBilty) {
+        this.plantBilty = plantBilty;
+    }
+
+    public Integer getRecipientBilty() {
+        return recipientBilty;
+    }
+
+    public void setRecipientBilty(Integer recipientBilty) {
+        this.recipientBilty = recipientBilty;
     }
 
 }

@@ -7,6 +7,7 @@ package com.mka.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,15 +46,15 @@ public class AsphaltSaleConsumption implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "item_quantity")
-    private int itemQuantity;
+    private BigDecimal itemQuantity;
     @Basic(optional = false)
     @NotNull
     @Column(name = "item_rate")
-    private int itemRate;
+    private BigDecimal itemRate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "item_amount")
-    private int itemAmount;
+    private BigDecimal itemAmount;
     @JoinColumn(name = "asphlat_sale_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @JsonIgnore
@@ -66,7 +67,7 @@ public class AsphaltSaleConsumption implements Serializable {
         this.id = id;
     }
 
-    public AsphaltSaleConsumption(Integer id, String itemName, int itemQuantity, int itemRate, int itemAmount) {
+    public AsphaltSaleConsumption(Integer id, String itemName, BigDecimal itemQuantity, BigDecimal itemRate, BigDecimal itemAmount) {
         this.id = id;
         this.itemName = itemName;
         this.itemQuantity = itemQuantity;
@@ -90,27 +91,27 @@ public class AsphaltSaleConsumption implements Serializable {
         this.itemName = itemName;
     }
 
-    public int getItemQuantity() {
+    public BigDecimal getItemQuantity() {
         return itemQuantity;
     }
 
-    public void setItemQuantity(int itemQuantity) {
+    public void setItemQuantity(BigDecimal itemQuantity) {
         this.itemQuantity = itemQuantity;
     }
 
-    public int getItemRate() {
+    public BigDecimal getItemRate() {
         return itemRate;
     }
 
-    public void setItemRate(int itemRate) {
+    public void setItemRate(BigDecimal itemRate) {
         this.itemRate = itemRate;
     }
 
-    public int getItemAmount() {
+    public BigDecimal getItemAmount() {
         return itemAmount;
     }
 
-    public void setItemAmount(int itemAmount) {
+    public void setItemAmount(BigDecimal itemAmount) {
         this.itemAmount = itemAmount;
     }
 

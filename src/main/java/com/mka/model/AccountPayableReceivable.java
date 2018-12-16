@@ -5,6 +5,7 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -41,9 +42,8 @@ public class AccountPayableReceivable implements Serializable {
     @JoinColumn(name = "item_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private EntryItems itemType;
-
     @Column(name = "quantity")
-    private Integer quantity;
+    private BigDecimal quantity;
     @Column(name = "rate")
     private BigDecimal rate;
     @Column(name = "total_amount")
@@ -87,9 +87,9 @@ public class AccountPayableReceivable implements Serializable {
     private boolean isActive;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "created_date")
-    @Temporal(TemporalType.DATE)
-    private Date createdDate;
+    @Column(name = "timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timestamp;
 
     public AccountPayableReceivable() {
     }
@@ -98,13 +98,12 @@ public class AccountPayableReceivable implements Serializable {
         this.id = id;
     }
 
-    public AccountPayableReceivable(Integer id, String accountName, String type, int entryId, boolean isActive, Date createdDate, int amount) {
+    public AccountPayableReceivable(Integer id, String accountName, String type, int entryId, boolean isActive, int amount) {
         this.id = id;
         this.accountName = accountName;
         this.type = type;
         this.entryId = entryId;
         this.isActive = isActive;
-        this.createdDate = createdDate;
         this.amount = BigDecimal.valueOf(amount);
 
     }
@@ -147,14 +146,6 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
     }
 
     @Override
@@ -206,11 +197,11 @@ public class AccountPayableReceivable implements Serializable {
         this.description = description;
     }
 
-    public Integer getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
@@ -244,6 +235,15 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setSubType(String subType) {
         this.subType = subType;
+    }
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

@@ -4,6 +4,7 @@ import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.service.StatsService;
 import com.mka.service.UserService;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -55,15 +56,15 @@ public class IndexController {
             List<StockTrace> stockTrace = ss.getStats();
             try {
                 stockTrace.parallelStream().filter((StockTrace e) -> {
-                    totalSale += e.getSalesAmount().intValue();
-                    totalPurchase += e.getPurchaseAmount().intValue();
-                    totalStock += e.getStockAmount().intValue();
+                    totalSale += (e.getSalesAmount().intValue());
+                    totalPurchase += (e.getPurchaseAmount().intValue());
+                    totalStock += (e.getStockAmount().intValue());
 
-                    saleUnits += e.getSalesUnit();
-                    purchaseUnits += e.getPurchaseUnit();
-                    stockUnits += e.getStockUnits();
+                    saleUnits += (e.getSalesUnit().intValue());
+                    purchaseUnits += (e.getPurchaseUnit().intValue());
+                    stockUnits += (e.getStockUnits().intValue());
 
-//                log.info(e.toString());
+//                    log.info(e.toString());
                     return true;
                 }).collect(Collectors.toList());
             } catch (Exception e) {

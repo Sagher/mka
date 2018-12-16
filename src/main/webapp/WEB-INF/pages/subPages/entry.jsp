@@ -135,7 +135,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Project</span>
-                                                            <select class="form-control dproj" id="projSelect" name="dproj" required="true">
+                                                            <select class="form-control dproj" id="projSelect" name="dproj">
                                                                 <option selected value="">-- Please select A Project --</option>
                                                             </select>
                                                             <br>
@@ -157,7 +157,7 @@
                                                         <div class="col-md-4">
                                                             <span class="help-block">Quantity of the material</span>
                                                             <input class="form-control" id="dquantity" type="number" value="0" name="dquantity" 
-                                                                   placeholder="Quantity" onblur="if (this.value == '') {
+                                                                   step=".01" min="0"  placeholder="Quantity" onblur="if (this.value == '') {
                                                                                this.value = '0';
                                                                            }"  onfocus="if (this.value == '0') {
                                                                                        this.value = '';
@@ -165,7 +165,8 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <span class="help-block" id="pup">Per Unit Price</span>
-                                                            <input class="form-control" id="drate" type="number" value="0" name="drate" placeholder="Rate"
+                                                            <input class="form-control" id="drate" type="number" value="0" name="drate"
+                                                                   step=".01" min="0" placeholder="Rate"
                                                                    onblur="if (this.value == '') {
                                                                                this.value = '0';
                                                                            }"  onfocus="if (this.value == '0') {
@@ -177,10 +178,10 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-4">
-                                                            <span class="help-block">Total Price</span>
-                                                            <input class="form-control" id="damount" type="number" name="damount" placeholder="Total Price" required="true">
+                                                            <span class="help-block" id="dtpLabel">Total Price</span>
+                                                            <input class="form-control" id="damount" type="number" name="damount"  step=".01" min="0" placeholder="Total Price" required="true">
                                                         </div>
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-4" id="dadvanceDiv">
                                                             <span class="help-block">Advance Received/Paid</span>
                                                             <input class="form-control" id="dadvance" type="number" name="dadvance" placeholder="Advance Paid" value="0" 
                                                                    required="true" onblur="if (this.value == '') {
@@ -191,7 +192,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row">
+                                                    <div class="form-group row" id="directPayFromDiv">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Pay From</span>
@@ -214,7 +215,28 @@
                                                         <div class="col-md-8">
                                                             <span class="help-block">Date of Entry</span>
                                                             <div class="help-block">
-                                                                <input class="form-control" id="doe" type="date" name="doe" required="true">
+                                                                <input class="form-control" id="doe" type="date" name="doe" required="true"  />
+                                                            </div>
+                                                            <scrip>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Plant Bilty Number</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="biltee" type="number" name="pBilty">
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Recipient Bilty Number</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="biltee" type="number" name="cBilty">
                                                             </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
@@ -238,30 +260,6 @@
                                                                 <div class="row">
                                                                     <div class="col-sm-12">
                                                                         <div class="form-group">
-                                                                            <label for="unloadedCrush">Total Unloaded</label>
-                                                                            <input class="form-control" id="unloadedCrush" name="unloadedCrush" type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="unloadingCost">Unloading Cost Per Cubic Ft.</label>
-                                                                            <input class="form-control" id="unloadingCost" name="unloadingCost" type="number" value="0">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
-                                                                            <label for="unloadingCost">Total Unloading Cost</label>
-                                                                            <input class="form-control" id="totalUnloadingCost" name="totalUnloadingCost" value="0" type="number">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-sm-12">
-                                                                        <div class="form-group">
                                                                             <label for="unloadingParty">Carriage Contractor</label>
                                                                             <select class="form-control dcParty" id="dcParty" name="unloadingParty">
                                                                                 <option selected value="">-- Please select A Carriage Contractor --</option>
@@ -269,6 +267,32 @@
                                                                             <br>
                                                                             <input hidden="true" class="form-control" id="dcPartyInput" type="text" 
                                                                                    name="dcPartyInput" placeholder="Custom Contractor">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadedCrush">Total Unloaded</label>
+                                                                            <input class="form-control" id="unloadedCrush" name="unloadedCrush" step=".01" min="0"
+                                                                                   type="number" placeholder="Enter Amount of Unloaded Crush in Cubic Ft.">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingCost">Unloading Cost Per Cubic Ft.</label>
+                                                                            <input class="form-control" id="unloadingCost" name="unloadingCost" step=".01" min="0" type="number" value="0">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingCost">Total Unloading Cost</label>
+                                                                            <input class="form-control" id="totalUnloadingCost" name="totalUnloadingCost" 
+                                                                                   step=".01" min="0" value="0" type="number">
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -357,12 +381,12 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row" id="rateDiv">
+                                                    <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount of Expenditure</span>
-                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost" 
-                                                                   onblur="if (this.value == '') {
+                                                            <input class="form-control" id="icost" type="number" value="0" name="icost" placeholder="Cost" step=".01" min="0"
+                                                                   onchange="toggleIndirectFullyPayed()"  onblur="if (this.value == '') {
                                                                                this.value = '0';
                                                                            }"  onfocus="if (this.value == '0') {
                                                                                        this.value = '';
@@ -370,12 +394,26 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row" id="rateDiv">
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" id="indirectFullyPayed" type="checkbox" 
+                                                                           name="indirectFullyPayed" onclick="toggleIndirectFullyPayed()">
+                                                                    <label class="form-check-label" for="inline-radio1">Payed</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Advance paid</span>
-                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" placeholder="Cost" 
-                                                                   onblur="if (this.value == '') {
+                                                            <input class="form-control" id="iadvance" type="number" value="0" name="iadvance" step=".01" min="0"
+                                                                   readonly="true" onblur="if (this.value == '') {
                                                                                this.value = '0';
                                                                            }"  onfocus="if (this.value == '0') {
                                                                                        this.value = '';
@@ -463,61 +501,64 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Transaction Type</span>
-                                                            <select class="form-control" id="ttype" name="ttype">
+                                                            <select class="form-control" id="ttype" name="ttype" required="true">
+                                                                <option value="">-- select an option --</option>
                                                                 <option value="+">
                                                                     To Head Office Account
                                                                 </option>
                                                                 <option value="-">
                                                                     From Head Office Account
                                                                 </option>
-                                                                <option value="-+">
-                                                                    To Cash In Hand
-                                                                </option>
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    <div class="form-group row" id="fromHeadOfficeOptionsDiv" hidden="true">
+
+                                                    <div class="form-group row" id="fromHoOptions" hidden="true">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
+                                                            <span class="help-block">To</span>
                                                             <div class="help-block">
                                                                 <div class="form-check form-check-inline mr-1">
-                                                                    <input checked="true" class="form-check-input" type="radio" value="1" name="payfrom">
-                                                                    <label class="form-check-label" for="inline-radio1">From Main Account</label>
+                                                                    <input checked="true" class="form-check-input" id="inline-radio0" type="radio" 
+                                                                           value="0" name="payfrom" onclick="togglePayeeDiv(0)" >
+                                                                    <label class="form-check-label" for="inline-radio0">Other</label>
                                                                 </div>
                                                                 <label class="col-md-1"></label>
                                                                 <div class="form-check form-check-inline mr-1">
-                                                                    <input class="form-check-input" type="radio" value="0" name="payfrom">
-                                                                    <label class="form-check-label" for="inline-radio0">From Cash In Hand</label>
+                                                                    <input class="form-check-input" id="inline-radio1" type="radio" 
+                                                                           onclick="togglePayeeDiv(1)" value="1" name="payfrom">
+                                                                    <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <div class="form-group row" id="cashInHandOptionsDiv" hidden="true">
-                                                        <label class="col-md-2"></label>
-                                                        <div class="col-md-8">
-                                                            <span class="help-block">From</span>
-                                                            <div class="help-block">
-                                                                <div class="form-check form-check-inline mr-1">
-                                                                    <input checked="true" class="form-check-input" onchange="changeCashTranCusLabel(1)" id="inline-radio1" type="radio" value="1" name="payfrom">
-                                                                    <label class="form-check-label" for="inline-radio1">From Head Office</label>
-                                                                </div>
-                                                                <label class="col-md-1"></label>
-                                                                <div class="form-check form-check-inline mr-1">
-                                                                    <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom"  onchange="changeCashTranCusLabel(0)">
-                                                                    <label class="form-check-label" for="inline-radio0">From Customer</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <label class="col-md-2"></label>
-                                                    </div>
+                                                    <!--                                                    <div class="form-group row" id="toHoOptions" hidden="true">
+                                                                                                            <label class="col-md-2"></label>
+                                                                                                            <div class="col-md-8">
+                                                                                                                <span class="help-block">From</span>
+                                                                                                                <div class="help-block">
+                                                                                                                    <div class="form-check form-check-inline mr-1">
+                                                                                                                        <input class="form-check-input" onchange="" id="inline-radio2" type="radio" value="1" name="payToHo">
+                                                                                                                        <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
+                                                                                                                    </div>
+                                                                                                                    <label class="col-md-1"></label>
+                                                                                                                    <div class="form-check form-check-inline mr-1">
+                                                                                                                        <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom"  onchange="">
+                                                                                                                        <label class="form-check-label" for="inline-radio0">Customer</label>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <label class="col-md-2"></label>
+                                                                                                        </div>-->
+
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount</span>
-                                                            <input class="form-control" name="tamount" type="number" required="true" onblur="if (this.value == '') {
+                                                            <input class="form-control" name="tamount" type="number" required="true" step=".01" min="0" onblur="if (this.value == '') {
                                                                         this.value = '0';
                                                                     }"  onfocus="if (this.value == '0') {
                                                                                 this.value = '';
@@ -605,19 +646,6 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Total Asphalt in TONS</span>
-                                                            <input class="form-control" name="tass" id="tass" type="number" required="true" onblur="if (this.value == '') {
-                                                                        this.value = '0';
-                                                                    }" onfocus="if (this.value == '0') {
-                                                                                this.value = '';
-                                                                                }" onchange="triggerAllChanges()">
-                                                        </div>
-                                                        <label class="col-md-2"></label>
-                                                    </div>
-
-                                                    <div class="form-group row">
-                                                        <label class="col-md-2"></label>
-                                                        <div class="col-md-8">
                                                             <span class="help-block">Customer</span>
                                                             <select class="form-control" id="asCusSelect" name="asCus" required="true" onchange="getAutoFillValues()">
                                                                 <option selected value="">-- Please select A Customer --</option>
@@ -641,11 +669,24 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Total Asphalt in TONS</span>
+                                                            <input class="form-control" name="tass" id="tass" type="number" 
+                                                                   step=".01" min="0" required="true" onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }" onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }" onchange="triggerAllChanges()">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
 
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
-                                                            <span class="help-block">Biltee Number</span>
+                                                            <span class="help-block">Bilty Number</span>
                                                             <input class="form-control" id="biltee" type="number" name="biltee">
                                                         </div>
                                                         <label class="col-md-2"></label>
@@ -695,7 +736,7 @@
                                                             <br>
                                                             <input hidden="true" class="form-control" id="assCarProviderInput" type="text" 
                                                                    name="assCarProviderInput" placeholder="Custom Contractor">
-                                                            <span class="help-block">Per Ton Cost</span>
+                                                            <span class="help-block">Per Ton Carriage</span>
                                                             <input class="form-control" id="assCarCostPerTon" name="assCarCostPerTon" type="number" value="0">
                                                             <span class="help-block">Total Cost</span>
                                                             <input class="form-control" id="totalAssCarCost" name="totalAssCarCost" value="0" type="number" readonly="true" tabindex="-1">
@@ -761,6 +802,7 @@
                                                                     <input class="form-control" id="${item.id}rate" type="number" 
                                                                            name="${item.id}rate" value="0" 
                                                                            onchange="updateAssRate('${item.id}~rate', this.value, ${item.averageUnitPrice})">
+                                                                    <input hidden="true" id="${item.itemName}${item.subType}RateDynamicId" value="${item.id}rate">
                                                                     <br>                                                                
                                                                     <span class="help-block">Total ${item.itemName} ${item.subType} Quantity in ${item.itemUnit}</span>
                                                                     <input tabindex="-1" class="form-control" id="${item.id}quantity" type="number" readonly="readonly"

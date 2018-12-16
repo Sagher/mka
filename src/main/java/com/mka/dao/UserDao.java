@@ -35,4 +35,6 @@ public interface UserDao {
 
     public boolean addProject(Projects proj);
 
+    public CustomersBuyers getCustomerAndBuyer(int id);
+
 }

@@ -34,7 +34,7 @@ $(document).ready(function () {
 //                    return html;
 //                }
 //            },
-            {"data": "entryDate"},
+            {"data": "createdDate"},
             {"data": "itemName"},
 //            {"data": "itemType"},
             {"data": "name"},

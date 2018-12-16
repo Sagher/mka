@@ -20,8 +20,9 @@ import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
 import com.mka.service.UserService;
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Date;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +81,8 @@ public class AsyncUtil {
             StockTrace st = ss.getStockTrace(entry.getItem().getId(),
                     entry.getEntriesDirectDetails() != null ? entry.getEntriesDirectDetails().getSubType() : null);
             if (entry.getSubEntryType().equals(Constants.SALE)) {
-                st.setSalesUnit(st.getSalesUnit() + entry.getQuantity().intValue());
-                st.setStockUnits(st.getStockUnits() - entry.getQuantity().intValue());
+                st.setSalesUnit(st.getSalesUnit().add(entry.getQuantity()));
+                st.setStockUnits(st.getStockUnits().subtract(entry.getQuantity()));
 
                 BigDecimal totalSaleAm = entry.getTotalPrice().add(st.getSalesAmount());
                 st.setSalesAmount(totalSaleAm);
@@ -90,8 +91,8 @@ public class AsyncUtil {
                 st.setStockAmount(remainingSrock);
 
             } else if (entry.getSubEntryType().equals(Constants.PURCHASE)) {
-                st.setPurchaseUnit(st.getPurchaseUnit() + entry.getQuantity().intValue());
-                st.setStockUnits(st.getStockUnits() + entry.getQuantity().intValue());
+                st.setPurchaseUnit(st.getPurchaseUnit().add(entry.getQuantity()));
+                st.setStockUnits(st.getStockUnits().add(entry.getQuantity()));
 
                 BigDecimal stockAm = st.getStockAmount().add(entry.getTotalPrice());
                 st.setStockAmount(stockAm);
@@ -100,21 +101,21 @@ public class AsyncUtil {
                 st.setPurchaseAmount(pAm);
 
             } else if (entry.getSubEntryType().equals(Constants.PRODUCE)) {
-                st.setStockUnits(st.getStockUnits() + entry.getQuantity().intValue());
+                st.setStockUnits(st.getStockUnits().add(entry.getQuantity()));
 
             } else if (entry.getSubEntryType().equals(Constants.CONSUME)) {
-                st.setStockUnits(st.getStockUnits() - entry.getQuantity().intValue());
+                st.setStockUnits(st.getStockUnits().subtract(entry.getQuantity()));
 
                 BigDecimal stockAm = st.getStockAmount().subtract(entry.getTotalPrice());
                 st.setStockAmount(stockAm);
 
-                st.setConsumeUnit(st.getConsumeUnit() + entry.getQuantity().intValue());
+                st.setConsumeUnit(st.getConsumeUnit().add(entry.getQuantity()));
                 st.setConsumeAmount(st.getConsumeAmount().add(entry.getTotalPrice()));
             }
 
 //            st.setAverageUnitPrice(ss.getAveragePricePerUnit(entry.getItem().getId()));
-            int avgUnitPrice = st.getStockAmount().intValue() / st.getStockUnits();
-            st.setAverageUnitPrice(BigDecimal.valueOf(avgUnitPrice));
+            BigDecimal avgUnitPrice = st.getStockAmount().divide(st.getStockUnits(), 2, RoundingMode.HALF_UP);
+            st.setAverageUnitPrice((avgUnitPrice));
 
             ss.updateStockTrace(st);
         } catch (Exception e) {
@@ -125,8 +126,8 @@ public class AsyncUtil {
     @Async
     public void updateStockTrace(StockTrace st) {
         try {
-            int avgUnitPrice = st.getStockAmount().intValue() / st.getStockUnits();
-            st.setAverageUnitPrice(BigDecimal.valueOf(avgUnitPrice));
+            BigDecimal avgUnitPrice = st.getStockAmount().divide(st.getStockUnits());
+            st.setAverageUnitPrice((avgUnitPrice));
             ss.updateStockTrace(st);
         } catch (Exception e) {
             log.error("Exception in updateStockTrace: ", e);
@@ -155,7 +156,7 @@ public class AsyncUtil {
                 AccountPayableReceivable receivable = new AccountPayableReceivable();
                 receivable.setAccountName(entry.getBuyer());
                 receivable.setAmount(entry.getTotalPrice().subtract(entry.getAdvance()));
-                receivable.setQuantity(entry.getQuantity().intValue());
+                receivable.setQuantity(entry.getQuantity());
                 receivable.setRate(entry.getRate());
                 receivable.setTotalAmount(entry.getTotalPrice());
                 receivable.setEntryId(entry.getId());
@@ -164,6 +165,7 @@ public class AsyncUtil {
                 receivable.setType(Constants.RECEIVABLE);
                 receivable.setSubType(Constants.SALE);
                 receivable.setItemType(entry.getItem());
+                receivable.setTimestamp(entry.getCreatedDate());
 
                 if (!accountsDao.logAccountPayableReceivable(receivable)) {
                     log.warn("*** Account Recevaible not logged ***");
@@ -177,7 +179,7 @@ public class AsyncUtil {
                 AccountPayableReceivable payable = new AccountPayableReceivable();
                 payable.setAccountName(entry.getSupplier());
                 payable.setAmount(entry.getTotalPrice().subtract(entry.getAdvance()));
-                payable.setQuantity(entry.getQuantity().intValue());
+                payable.setQuantity(entry.getQuantity());
                 payable.setRate(entry.getRate());
                 payable.setTotalAmount(entry.getTotalPrice());
                 payable.setEntryId(entry.getId());
@@ -186,6 +188,7 @@ public class AsyncUtil {
                 payable.setType(Constants.PAYABLE);
                 payable.setSubType(Constants.PURCHASE);
                 payable.setItemType(entry.getItem());
+                payable.setTimestamp(entry.getCreatedDate());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");
@@ -207,7 +210,7 @@ public class AsyncUtil {
                 AccountPayableReceivable payable = new AccountPayableReceivable();
                 payable.setAccountName(entry.getName());
                 payable.setAmount(entry.getAmount().subtract(entry.getAdvance()));
-                payable.setQuantity(0);
+                payable.setQuantity(BigDecimal.ZERO);
                 payable.setRate(BigDecimal.ZERO);
                 payable.setTotalAmount(entry.getAmount());
                 payable.setEntryId(entry.getId());
@@ -216,6 +219,7 @@ public class AsyncUtil {
                 payable.setType(Constants.PAYABLE);
                 payable.setSubType(Constants.EXPENSE);
                 payable.setItemType(entry.getItem());
+                payable.setTimestamp(entry.getCreatedDate());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");
@@ -231,7 +235,7 @@ public class AsyncUtil {
 
     @Async
     public void logAmountPayable(BigDecimal amount, String payableTo, int entryId, String project, String description,
-            int quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem, String subType) {
+            BigDecimal quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem, String subType, Date entryDate) {
         try {
             //payable
             AccountPayableReceivable payable = new AccountPayableReceivable();
@@ -247,6 +251,7 @@ public class AsyncUtil {
             payable.setSubType(subType);
             payable.setItemType(eItem);
             payable.setDescription(description);
+            payable.setTimestamp(entryDate);
 
             if (!accountsDao.logAccountPayableReceivable(payable)) {
                 log.warn("*** Account Payable not logged ***");
@@ -280,7 +285,7 @@ public class AsyncUtil {
         AccountPayableReceivable receivable = new AccountPayableReceivable();
         receivable.setAccountName(mah.getPayee());
         receivable.setAmount(BigDecimal.ZERO);
-        receivable.setQuantity(0);
+        receivable.setQuantity(BigDecimal.ZERO);
         receivable.setRate(BigDecimal.ZERO);
         receivable.setTotalAmount(mah.getAmount());
         receivable.setEntryId(mah.getId());
@@ -290,6 +295,7 @@ public class AsyncUtil {
         receivable.setSubType(subType);
         receivable.setItemType(new EntryItems(18));
         receivable.setDescription(mah.getDescription());
+        receivable.setTimestamp(new Date());
 
         logAmountReceivable(receivable);
     }
@@ -354,8 +360,26 @@ public class AsyncUtil {
                 }
             }
 
-            userService.updateCustomerAndBuyer(cusBuy);
+            if (userService.updateCustomerAndBuyer(cusBuy)) {
+                updateAllDues();
+            }
         }
+    }
+
+    private void updateAllDues() {
+        MasterAccount ma = ss.getMasterAccount();
+        BigDecimal allPayable = new BigDecimal(0);
+        BigDecimal allReceivable = new BigDecimal(0);
+
+        for (CustomersBuyers c : userService.getCustomersAndBuyers()) {
+            allPayable = allPayable.add(c.getPayable());
+            allReceivable = allReceivable.add(c.getReceivable());
+        }
+
+        ma.setAllPayable(allPayable);
+        ma.setAllReceivable(allReceivable);
+
+        ss.updateMasterAccount(ma);
     }
 
 }

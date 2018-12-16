@@ -39,87 +39,84 @@
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
                                                 <span>Closing Stock</span>
-                                                <input value="${type}" id="type" hidden="true">
                                             </div>
                                             <div class="card-body">
-                                                <!--                                                <div id="filtersDiv">
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>From</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        From
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="from" type="date" name="from" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>To</label>
-                                                                                                            <div class="input-group">
-                                                                                                                <div class="input-group-prepend">
-                                                                                                                    <span class="input-group-text">
-                                                                                                                        To
-                                                                                                                    </span>
-                                                                                                                </div>
-                                                                                                                <input class="form-control" id="to" type="date" name="to" placeholder="Search By Entry Date">
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Buyer/Supplier</label>
-                                                                                                            <select class="form-control" id="buySup" name="buySup">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                        <div class="col-sm-3">
-                                                                                                            <label>Project</label>
-                                                                                                            <select class="form-control" id="proj" name="proj">
-                                                                                                                <option selected value="">All</option>
-                                                                                                            </select>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                    <div class="form-group row">
-                                                                                                        <div class="col-sm-12">
-                                                                                                            <button class="btn btn-primary pull-right" onclick="advanceSearch()" type="button">Apply</button>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>-->
-                                                <hr>
-
+                                                <hr> 
                                                 <table id="viewDatatable"
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th>Date</th>
                                                             <th>Item</th>
                                                             <th>Quantity</th>
-                                                            <th>Avg Rate</th>
-                                                            <th>Total Amount</th>
+                                                            <th>Average Rate</th>
+                                                            <th>Amount</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        <c:set var="totalStockAmount" value="0" scope="page" />
+
+                                                        <c:forEach items="${stockTrace}" var="item">
+                                                            <c:if test = "${item.itemId !=17}">
+                                                                <tr>
+                                                                    <td>
+                                                                        ${item.itemName} ${item.subType}
+                                                                    </td>
+                                                                    <td>
+                                                                        ${item.stockUnits}
+                                                                    </td>
+                                                                    <td>
+                                                                        ${item.averageUnitPrice}
+                                                                    </td>
+                                                                    <td>
+                                                                        ${item.stockAmount}
+                                                                        <c:set var="totalStockAmount" value="${totalStockAmount+item.stockAmount}" />
+                                                                    </td>
+                                                                </tr>
+                                                            </c:if>
+                                                        </c:forEach>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <h4>Summary</h4>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <h6>Total Stock Amount</h6>
+                                                            </td>
+                                                            <td>
+                                                                ${totalStockAmount}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <h6>Total Cash In Hand</h6>
+                                                            </td>
+                                                            <td>
+                                                                ${masterAccount.cashInHand}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <h6>Grand Total</h6>
+                                                            </td>
+                                                            <td>
+                                                                ${masterAccount.cashInHand+totalStockAmount}
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
-                                                <div>
-                                                    <hr>
-                                                    <h4>Summary</h4>
-                                                    <br>
-                                                    <h5>Total Stock Value: 
-                                                        <text id="totalField">
-                                                        </text> PKR
-                                                    </h5>
-                                                    <h5>Cash In Hand: 
-                                                        <text>
-                                                        ${masterAccount.cashInHand} PKR
-                                                        </text>
-                                                        <input id ="cashInHandTotal" value="${masterAccount.cashInHand}" hidden="true">
-                                                    </h5>
-                                                    <h5>Grand Total: 
-                                                        <text id="gTotal">
-                                                        </text> PKR
-                                                    </h5>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

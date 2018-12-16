@@ -36,4 +36,6 @@ public interface UserService {
     public List<Projects> getProjects();
 
     public boolean addProject(String proj);
+
+    public CustomersBuyers getCustomerAndBuyer(int id);
 }

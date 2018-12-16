@@ -31,6 +31,11 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "MasterAccount.findAll", query = "SELECT m FROM MasterAccount m")})
 public class MasterAccount implements Serializable {
 
+    @Column(name = "all_receivable")
+    private BigDecimal allReceivable;
+    @Column(name = "all_payable")
+    private BigDecimal allPayable;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "cash_in_hand")
     private BigDecimal cashInHand;
@@ -116,6 +121,22 @@ public class MasterAccount implements Serializable {
 
     public void setTotalCash(BigDecimal totalCash) {
         this.totalCash = totalCash;
+    }
+
+    public BigDecimal getAllReceivable() {
+        return allReceivable;
+    }
+
+    public void setAllReceivable(BigDecimal allReceivable) {
+        this.allReceivable = allReceivable;
+    }
+
+    public BigDecimal getAllPayable() {
+        return allPayable;
+    }
+
+    public void setAllPayable(BigDecimal allPayable) {
+        this.allPayable = allPayable;
     }
 
 }

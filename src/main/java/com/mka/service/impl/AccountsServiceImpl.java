@@ -9,18 +9,8 @@ import com.mka.dao.AccountsDao;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntryItems;
 import com.mka.service.AccountsService;
-import com.mka.utils.Constants;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +41,11 @@ public class AccountsServiceImpl implements AccountsService {
     @Override
     public int getAccountPayableReceivableCount(EntryItems entryItem, String type, String startDate, String endDate, String buyerSupplier, String project) {
         return accountsDao.getAccountPayableReceivableCount(entryItem, type, startDate, endDate, buyerSupplier, project);
+    }
+
+    @Override
+    public Object getAllTransactions(String orderBy, String sortby, String startDate, String endDate, String buyerSupplier) {
+        return accountsDao.getAllTransactions(orderBy, sortby, startDate, endDate, buyerSupplier);
     }
 
 }

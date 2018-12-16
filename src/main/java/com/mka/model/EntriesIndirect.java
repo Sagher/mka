@@ -59,9 +59,6 @@ public class EntriesIndirect implements Serializable {
     private String name;
     @Column(name = "description")
     private String description;
-    @Column(name = "entry_date")
-    @Temporal(TemporalType.DATE)
-    private Date entryDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_active")
@@ -130,14 +127,6 @@ public class EntriesIndirect implements Serializable {
         this.description = description;
     }
 
-    public Date getEntryDate() {
-        return entryDate;
-    }
-
-    public void setEntryDate(Date entryDate) {
-        this.entryDate = entryDate;
-    }
-
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -192,7 +181,7 @@ public class EntriesIndirect implements Serializable {
 
     @Override
     public String toString() {
-        return "id=" + id + ", itemType=" + itemType + ", name=" + name + ", description=" + description + ", amount=" + amount + ", advance=" + advance + ", entryDate=" + entryDate + ", isActive=" + isActive + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
+        return "id=" + id + ", itemType=" + itemType + ", name=" + name + ", description=" + description + ", amount=" + amount + ", advance=" + advance + ", isActive=" + isActive + ", createdDate=" + createdDate + ", updateDate=" + updateDate;
     }
 
     public BigDecimal getAmount() {

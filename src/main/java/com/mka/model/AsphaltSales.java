@@ -75,7 +75,7 @@ public class AsphaltSales implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "quantity")
-    private int quantity;
+    private BigDecimal quantity;
     @Size(max = 100)
     @Column(name = "buyer")
     private String buyer;
@@ -90,9 +90,6 @@ public class AsphaltSales implements Serializable {
     @NotNull
     @Column(name = "is_active")
     private boolean isActive;
-    @Column(name = "entry_date")
-    @Temporal(TemporalType.DATE)
-    private Date entryDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_date")
@@ -111,7 +108,7 @@ public class AsphaltSales implements Serializable {
         this.id = id;
     }
 
-    public AsphaltSales(Integer id, int quantity, BigDecimal totalSaleAmount, boolean isActive, Date createdDate) {
+    public AsphaltSales(Integer id, BigDecimal quantity, BigDecimal totalSaleAmount, boolean isActive, Date createdDate) {
         this.id = id;
         this.quantity = quantity;
         this.totalSaleAmount = totalSaleAmount;
@@ -127,11 +124,11 @@ public class AsphaltSales implements Serializable {
         this.id = id;
     }
 
-    public int getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
@@ -165,14 +162,6 @@ public class AsphaltSales implements Serializable {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-    }
-
-    public Date getEntryDate() {
-        return entryDate;
-    }
-
-    public void setEntryDate(Date entryDate) {
-        this.entryDate = entryDate;
     }
 
     public Date getCreatedDate() {
@@ -221,7 +210,7 @@ public class AsphaltSales implements Serializable {
 
     @Override
     public String toString() {
-        return "AsphaltSales{" + "id=" + id + ", quantity=" + quantity + ", buyer=" + buyer + ", project=" + project + ", totalSaleAmount=" + totalSaleAmount + ", entryDate=" + entryDate + '}';
+        return "AsphaltSales{" + "id=" + id + ", quantity=" + quantity + ", buyer=" + buyer + ", project=" + project + ", totalSaleAmount=" + totalSaleAmount + '}';
     }
 
     public BigDecimal getTotalSaleAmount() {

@@ -95,7 +95,7 @@
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
                                             <a href="<c:url value="/report?type=receivable" />">
-                                                <div class="item-name">Accounts Receivable Report</div>
+                                                <div class="item-name">Accounts Receivable</div>
                                             </a>
                                         </div>
                                     </div>
@@ -106,7 +106,7 @@
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
                                             <a href="<c:url value="/report?type=payable" />">
-                                                <div class="item-name">Accounts Payable Report</div>
+                                                <div class="item-name">Accounts Payable</div>
                                             </a>
                                         </div>
                                     </div>
@@ -129,6 +129,17 @@
                                         <div class="card-body">
                                             <a class="disabled" href="<c:url value="/report?type=closingStock" />">
                                                 <div class="item-name">Closing Stock</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/entries?type=customersBuyers" />">
+                                                <div class="item-name">Individual Account Details</div>
                                             </a>
                                         </div>
                                     </div>

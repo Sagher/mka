@@ -69,7 +69,6 @@ public class EntriesDaoImpl implements EntriesDao {
             tx = session.beginTransaction();
             session.setFlushMode(FlushMode.COMMIT);
             session.evict(entry);
-            entry.setCreatedDate(new Date());
             entry.setUpdateDate(null);
             session.save(entry);
 
@@ -475,7 +474,6 @@ public class EntriesDaoImpl implements EntriesDao {
             session.setFlushMode(FlushMode.COMMIT);
             ass.setIsActive(true);
             ass.setCreatedDate(new Date());
-            ass.setEntryDate(new Date());
 
             session.evict(ass);
             session.save(ass);

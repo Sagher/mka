@@ -23,4 +23,6 @@ public interface AccountsDao {
 
     public int getAccountPayableReceivableCount(EntryItems entryItem, String type, String startDate, String endDate,
             String buyerSupplier, String project);
+
+    public Object getAllTransactions(String orderBy, String sortby, String startDate, String endDate, String buyerSupplier);
 }

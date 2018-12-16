@@ -6,7 +6,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Customers Buyers</title>
+        <title>Account Details</title>
 
         <c:import url="../fragments/global-css.jsp" />
 
@@ -38,7 +38,8 @@
                                         <div class="card">
                                             <div class="card-header">
                                                 <i class="fa fa-align-justify"></i>
-                                                <span>Customers Buyers</span>
+                                                <span>${cusBuy.name}'s All Transactions</span>
+                                                <input id="cusBuy" type="hidden" value="${cusBuy.name}">
                                             </div>
                                             <div class="card-body">
 
@@ -46,10 +47,17 @@
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
-                                                            <th style="width: 25%">Name</th>
-                                                            <th style="width: 25%">Payable</th>
-                                                            <th style="width: 25%">Receivable</th>
-                                                            <th style="width: 25%">Details</th>
+                                                            <th>Date</th>
+                                                            <th>Project</th>
+                                                            <th>Type</th>
+                                                            <th>Item</th>
+                                                            <th>Type</th>
+                                                            <th>Quantity</th>
+                                                            <th>Rate</th>
+                                                            <th>Total Amount</th>
+                                                            <th>Advance</th>
+                                                            <th>Amount</th>
+                                                            <th>Description</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -86,7 +94,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
-    <script src="<c:url value="/resources/js/customersBuyers.js"/>"></script>
+    <script src="<c:url value="/resources/js/customerBuyerAccountDetail.js"/>"></script>
 
 </html>
 

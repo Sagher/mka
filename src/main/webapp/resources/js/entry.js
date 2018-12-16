@@ -270,19 +270,29 @@ entryTypeSelection.change(function () {
     if (type === 'CONSUME') {
         console.log('consumate');
         $("#damount").attr("readonly", "true");
-        $("#dadvance").attr("readonly", "true");
+        $("#dadvanceDiv").attr("hidden", "true");
         $("#drate").attr("readonly", "true");
         $("#drate").val(stockData.averageUnitPrice);
         $("#supBuyDiv").attr("hidden", "true");
         $("#dbuysupSelect").removeAttr("required");
-
-
+        $("#dtpLabel").html("Total Cost");
+        $("#directPayFromDiv").attr("hidden", "true");
+        projectSelect.removeAttr("required");
+        var selectItemId = ditemTypeSelection.val();
+        if (selectItemId == '4' || selectItemId == '5') {
+            // pc,tc
+            projectSelect.attr("required", "true");
+        }
     } else {
         $("#damount").removeAttr("readonly");
-        $("#dadvance").removeAttr("readonly");
+        $("#dadvanceDiv").removeAttr("hidden");
         $("#drate").removeAttr("readonly");
         $("#supBuyDiv").removeAttr("hidden");
         $("#dbuysupSelect").attr("required", "true");
+        $("#dtpLabel").html("Total Price");
+        $("#directPayFromDiv").removeAttr("hidden");
+        projectSelect.removeAttr("required");
+
     }
 });
 
@@ -462,6 +472,18 @@ iname.change(function () {
     }
 });
 
+function toggleIndirectFullyPayed() {
+    var checkBox = document.getElementById("indirectFullyPayed");
+    if (checkBox.checked == true) {
+        $("#iadvance").val($("#icost").val());
+        $("#iadvance").attr("readonly", "true");
+    } else {
+        $("#iadvance").removeAttr("readonly");
+
+    }
+
+}
+
 function logiEntry() {
     $('#ientryForm').ajaxForm({
         beforeSend: function () {
@@ -520,36 +542,39 @@ tCustomerBuyerSelect.change(function () {
 //
 //attach change event to project select
 ttype.change(function () {
-    if ($('#ttype option:selected').val() == "-+") {
-        $("#fromHeadOfficeOptionsDiv").attr("hidden", "true");
-        cashInHandOptionsDiv.removeAttr("hidden");
-        changeCashTranCusLabel(1);
-    } else if ($('#ttype option:selected').val() == "-") {
-        $("#fromHeadOfficeOptionsDiv").removeAttr("hidden");
-        cashInHandOptionsDiv.attr("hidden", "true");
-        changeCashTranCusLabel(0);
+    if ($('#ttype option:selected').val() == "+") {
+        $("#toHoOptions").removeAttr("hidden");
+        $("#fromHoOptions").attr("hidden", "true");
     } else {
-        cashInHandOptionsDiv.attr("hidden", "true");
-        $("#fromHeadOfficeOptionsDiv").attr("hidden", "true");
-        changeCashTranCusLabel(0);
-
+        $("#fromHoOptions").removeAttr("hidden");
+        $("#toHoOptions").attr("hidden", "true");
     }
 });
 
-function changeCashTranCusLabel(value) {
+function togglePayeeDiv(value) {
     if (value === 0) {
-        $("#tPayeeLabel").html("Customer");
-        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" id="tbuysupSelect" name="tpayer" required="true"><option selected value="">-- Please select An Option --</option></select><br><input hidden="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" placeholder="Custom Buyer/Supplier">');
-        for (var i in customersBuyersList) {
-            $("#tbuysupSelect").append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
-        }
-        $("#tbuysupSelect").append($("<option />").val('Other').text('Other'));
-    } else {
-        $("#tPayeeLabel").html("Payee");
-        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" style="display:none" id="tbuysupSelect" name="tpayer" required="true"><option selected value="Other">Other</option></select><input readonly="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" value="HeadOffice">');
+        $("cashTranPayeeDiv").removeAttr("hidden");
+        $("#tbuysupSelect").attr("required", "true")
 
+    } else {
+        $("#cashTranPayeeDiv").attr("hidden", "true");
+        $("#tbuysupSelect").removeAttr("required")
     }
 }
+//function changeCashTranCusLabel(value) {
+//    if (value === 0) {
+//        $("#tPayeeLabel").html("Customer");
+//        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" id="tbuysupSelect" name="tpayer" required="true"><option selected value="">-- Please select An Option --</option></select><br><input hidden="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" placeholder="Custom Buyer/Supplier">');
+//        for (var i in customersBuyersList) {
+//            $("#tbuysupSelect").append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+//        }
+//        $("#tbuysupSelect").append($("<option />").val('Other').text('Other'));
+//    } else {
+//        $("#tPayeeLabel").html("Payee");
+//        $("#cashTranPayeeDiv").html('<span class="help-block" id="tPayeeLabel">Payee</span><select class="form-control" style="display:none" id="tbuysupSelect" name="tpayer" required="true"><option selected value="Other">Other</option></select><input readonly="true" class="form-control" id="tbuysupInput" type="text" name="tbuysupInput" value="HeadOffice">');
+//
+//    }
+//}
 
 function logCashTransaction() {
     $('#cashTranForm').ajaxForm({
@@ -726,10 +751,6 @@ function getAutoFillers(cusBuy, proj) {
                     $("#vehicle").val(vehicle);
                     $("#expRate").val(explantRate).trigger('change');
                 }
-                if (data[i].itemName === 'BITUMEN') {
-                    var bitumenRateDynamicId = $("#bitumenRateDynamicId").val();
-                    $("#" + bitumenRateDynamicId).val(data[i].itemRate).trigger('change');
-                }
                 if (data[i].itemName.startsWith('LAYED BY ')) {
                     var layer = data[i].itemName.substring(9, data[i].itemName.length);
                     $("#assLayer").val(layer);
@@ -742,6 +763,17 @@ function getAutoFillers(cusBuy, proj) {
                     $("#assCarProvider").val(layer);
                     $("#assCarCostPerTon").val(data[i].itemRate).trigger('change');
                     ;
+                }
+                if (data[i].itemName === 'BITUMEN') {
+                    var bitumenRateDynamicId = $("#bitumenRateDynamicId").val();
+                    $("#" + bitumenRateDynamicId).val(data[i].itemRate).trigger('change');
+                }
+                if (data[i].itemName.startsWith("CRUSH")) {
+                    var cId = data[i].itemName + "RateDynamicId";
+                    console.log(cId)
+                    var crushRateDynamicId = document.getElementById(cId).value;
+                    console.log(crushRateDynamicId)
+                    $("#" + crushRateDynamicId).val(data[i].itemRate).trigger('change');
                 }
             }
 
@@ -759,7 +791,7 @@ function triggerAllChanges() {
     $("#assCarCostPerTon").trigger('change');
     $("#assCarCostPerTon").trigger('change');
     $("#assCarCostPerTon").trigger('change');
-
+    getAutoFillValues();
 }
 
 function logAssSale() {

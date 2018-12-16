@@ -7,6 +7,7 @@ package com.mka.controller;
 
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntryItems;
+import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
@@ -118,52 +119,63 @@ public class ReportsController {
 
                 } else if (type.equalsIgnoreCase("profitLoss")) {
                     model.addObject("stockTrace", ss.getStats());
+                    int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
+
+                    for (StockTrace e : ss.getStats()) {
+                        totalSales += e.getSalesAmount().intValue();
+                        directGrossProfit += e.getConsumeAmount().intValue();
+
+                        if (e.getItemId() == 6) {
+                            totalCrushSales += e.getConsumeAmount().intValue();
+                        }
+                    }
 
                     List<AccountPayableReceivable> indirectExpenses = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, Constants.EXPENSE, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
                     Map<String, Integer> indirectExpMap = new HashMap<>();
 
                     if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
                         for (AccountPayableReceivable acc : indirectExpenses) {
-
-                            if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
-                                Integer val = indirectExpMap.get(acc.getItemType().getItemName());
-                                val = val + acc.getAmount().intValue();
-                                indirectExpMap.put(acc.getItemType().getItemName(), val);
+                            if (!acc.getSubType().equalsIgnoreCase(Constants.EXPENSE)) {
+                                if (acc.getItemType().getId() == 20) {
+                                    totalAssLaying += acc.getTotalAmount().intValue();
+                                }
+                                if (acc.getItemType().getId() == 21) {
+                                    totalAssCarr += acc.getTotalAmount().intValue();
+                                }
+                                directGrossProfit += acc.getTotalAmount().intValue();
                             } else {
-                                indirectExpMap.put(acc.getItemType().getItemName(), acc.getAmount().intValue());
+                                if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
+                                    Integer val = indirectExpMap.get(acc.getItemType().getItemName());
+                                    val = val + acc.getTotalAmount().intValue();
+                                    indirectExpMap.put(acc.getItemType().getItemName(), val);
+                                } else {
+                                    indirectExpMap.put(acc.getItemType().getItemName(), acc.getTotalAmount().intValue());
+                                }
                             }
                         }
                     }
 
+                    model.addObject("totalSales", totalSales);
+                    model.addObject("directGrossProfit", directGrossProfit);
+                    model.addObject("totalCrushSales", totalCrushSales);
+                    model.addObject("netProfit", netProfit);
                     model.addObject("indirectExpenses", indirectExpMap);
+                    model.addObject("totalAssLaying", totalAssLaying);
+                    model.addObject("totalAssCarr", totalAssCarr);
 
                     model.setViewName("subPages/profitLossReport");
                     return model;
 
                 } else if (type.equalsIgnoreCase("closingStock")) {
-                    model.setViewName("subPages/closingStock");
+
                     model.addObject("masterAccount", ss.getMasterAccount());
+                    model.addObject("stockTrace", ss.getStats());
+                    model.setViewName("subPages/closingStock");
                     return model;
 
                 } else if (type.equalsIgnoreCase("balanceSheet")) {
-
+                    MasterAccount ma = ss.getMasterAccount();
                     model.setViewName("subPages/balanceSheet");
-
-                    int allReceivable = 0, allPayable = 0;
-                    dataList = accountsService.getAccountPayableReceivable(null, null, null, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
-
-                    if (dataList != null && !dataList.isEmpty()) {
-                        for (AccountPayableReceivable acc : dataList) {
-                            if (acc.getItemType().getId() != 18) {// don't include cash transaction
-                                if (acc.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
-                                    allReceivable += acc.getAmount().intValue();
-                                } else {
-                                    allPayable += acc.getAmount().intValue();
-                                }
-                            }
-                        }
-
-                    }
 
                     int totalStockAmount = 0, totalSale = 0;
                     List<StockTrace> stock = ss.getStats();
@@ -175,8 +187,8 @@ public class ReportsController {
                         }
                     }
 
-                    model.addObject("allReceivable", allReceivable);
-                    model.addObject("allPayable", allPayable);
+                    model.addObject("allReceivable", ma.getAllReceivable());
+                    model.addObject("allPayable", ma.getAllPayable());
                     model.addObject("totalSalesProfit", totalSale);
                     model.addObject("totalStockAmount", totalStockAmount);
 
@@ -215,7 +227,8 @@ public class ReportsController {
             @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
             @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
             @RequestParam(value = "toDate", required = false, defaultValue = "") String endDate,
-            @RequestParam(value = "search[value]", required = false) String search) {
+            @RequestParam(value = "search[value]", required = false) String search
+    ) {
 
         DataTableResp resp = new DataTableResp();
 
@@ -242,7 +255,7 @@ public class ReportsController {
         dataList = (data != null) ? (List<AccountPayableReceivable>) data : null;
         if (dataList != null && !dataList.isEmpty()) {
             int tAmount = getTotalAmount(type);
-            dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, null, tAmount));
+            dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, tAmount));
 
             if (!buyerSupplier.isEmpty()) {
                 if (type.equalsIgnoreCase(Constants.PAYABLE)
@@ -263,13 +276,13 @@ public class ReportsController {
 
         return resp;
     }
+    //    @RequestMapping(value = "/report/total", method = RequestMethod.GET)
+    //    public @ResponseBody
+    //    int getTotal(HttpServletRequest request,
+    //            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type) {
+    //        return getTotalAmount(type);
+    //    }
 
-//    @RequestMapping(value = "/report/total", method = RequestMethod.GET)
-//    public @ResponseBody
-//    int getTotal(HttpServletRequest request,
-//            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type) {
-//        return getTotalAmount(type);
-//    }
     private int getTotalAmount(String type) {
         int totalAmount = 0;
         if (dataList != null && !dataList.isEmpty()) {
@@ -364,51 +377,4 @@ public class ReportsController {
         return profitLossTotal;
     }
 
-    /*
-     *  Closing Stock
-     */
-    @RequestMapping(value = "/report/closingStock", method = RequestMethod.GET)
-    public @ResponseBody
-    DataTableResp closingStock(
-            HttpServletRequest request,
-            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
-            @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
-            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
-            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
-            @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
-            @RequestParam(value = "project", required = false, defaultValue = "") String project,
-            @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
-            @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
-            @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
-            @RequestParam(value = "toDate", required = false, defaultValue = "") String endDate,
-            @RequestParam(value = "search[value]", required = false) String search) {
-
-        DataTableResp resp = new DataTableResp();
-
-        int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
-        String orderBy = request.getParameter("order[0][dir]");
-        String sortby = request.getParameter("columns[" + order0Col + "][data]");
-
-        List<StockTrace> stock = ss.getStats();
-        resp.setData(stock);
-        resp.setRecordsFiltered(stock != null ? stock.size() : 0);
-        resp.setRecordsTotal(stock != null ? stock.size() : 0);
-        resp.setDraw(draw);
-
-        return resp;
-    }
-
-    @RequestMapping(value = "/report/closingStock/total", method = RequestMethod.GET)
-    public @ResponseBody
-    int cashInHandTotal(HttpServletRequest request) {
-        int totalStockAmount = 0;
-
-        List<StockTrace> stock = ss.getStats();
-        if (stock != null && !stock.isEmpty()) {
-            for (StockTrace s : stock) {
-                totalStockAmount += s.getStockAmount().intValue();
-            }
-        }
-        return totalStockAmount;
-    }
 }

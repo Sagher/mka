@@ -35,7 +35,7 @@ public class StockTrace implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "consume_unit")
-    private int consumeUnit;
+    private BigDecimal consumeUnit;
     @Basic(optional = false)
     @NotNull
     @Column(name = "consume_amount")
@@ -79,15 +79,15 @@ public class StockTrace implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "sales_unit")
-    private int salesUnit;
+    private BigDecimal salesUnit;
     @Basic(optional = false)
     @NotNull
     @Column(name = "purchase_unit")
-    private int purchaseUnit;
+    private BigDecimal purchaseUnit;
     @Basic(optional = false)
     @NotNull
     @Column(name = "stock_units")
-    private int stockUnits;
+    private BigDecimal stockUnits;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 15)
@@ -133,27 +133,27 @@ public class StockTrace implements Serializable {
         this.month = month;
     }
 
-    public int getSalesUnit() {
+    public BigDecimal getSalesUnit() {
         return salesUnit;
     }
 
-    public void setSalesUnit(int salesUnit) {
+    public void setSalesUnit(BigDecimal salesUnit) {
         this.salesUnit = salesUnit;
     }
 
-    public int getPurchaseUnit() {
+    public BigDecimal getPurchaseUnit() {
         return purchaseUnit;
     }
 
-    public void setPurchaseUnit(int purchaseUnit) {
+    public void setPurchaseUnit(BigDecimal purchaseUnit) {
         this.purchaseUnit = purchaseUnit;
     }
 
-    public int getStockUnits() {
+    public BigDecimal getStockUnits() {
         return stockUnits;
     }
 
-    public void setStockUnits(int stockUnits) {
+    public void setStockUnits(BigDecimal stockUnits) {
         this.stockUnits = stockUnits;
     }
 
@@ -238,11 +238,11 @@ public class StockTrace implements Serializable {
         this.stockAmount = stockAmount;
     }
 
-    public int getConsumeUnit() {
+    public BigDecimal getConsumeUnit() {
         return consumeUnit;
     }
 
-    public void setConsumeUnit(int consumeUnit) {
+    public void setConsumeUnit(BigDecimal consumeUnit) {
         this.consumeUnit = consumeUnit;
     }
 

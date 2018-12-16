@@ -353,4 +353,29 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    @Override
+    public CustomersBuyers getCustomerAndBuyer(int id) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(CustomersBuyers.class);
+            criteria.add(Restrictions.eq("isActive", true));
+            criteria.add(Restrictions.eq("id", id));
+            List<CustomersBuyers> users = criteria.list();
+            if (users.size() > 0) {
+                return users.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getCustomerAndBuyer() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
 }
