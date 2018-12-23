@@ -31,6 +31,9 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "MasterAccount.findAll", query = "SELECT m FROM MasterAccount m")})
 public class MasterAccount implements Serializable {
 
+    @Column(name = "headoffice_receivable")
+    private BigDecimal headofficeReceivable;
+
     @Column(name = "all_receivable")
     private BigDecimal allReceivable;
     @Column(name = "all_payable")
@@ -137,6 +140,14 @@ public class MasterAccount implements Serializable {
 
     public void setAllPayable(BigDecimal allPayable) {
         this.allPayable = allPayable;
+    }
+
+    public BigDecimal getHeadofficeReceivable() {
+        return headofficeReceivable;
+    }
+
+    public void setHeadofficeReceivable(BigDecimal headofficeReceivable) {
+        this.headofficeReceivable = headofficeReceivable;
     }
 
 }

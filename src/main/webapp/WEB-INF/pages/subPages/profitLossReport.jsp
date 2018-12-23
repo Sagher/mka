@@ -43,8 +43,6 @@
                                             </div>
                                             <div class="card-body">
                                                 <hr>
-                                                <c:set var="totalIndirectExpenses" 
-                                                       value="0" scope="page" />
                                                 <table id="viewDatatable"
                                                        class="table table-responsive-sm table-bordered table-striped table-sm">
                                                     <thead>
@@ -151,8 +149,6 @@
                                                                 </td> 
                                                                 <td>
                                                                     <c:out value="${entry.value}"/>
-                                                                    <c:set var="totalIndirectExpenses" 
-                                                                           value="${totalIndirectExpenses+entry.value}" scope="page" />
                                                                 </td>
                                                                 <td></td>
                                                             </tr>
@@ -193,16 +189,6 @@
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                <!--                                                <div>
-                                                                                                    <hr>
-                                                                                                    <h4>Summary</h4>
-                                                                                                    <br>
-                                                                                                    <h5>Total ${type} Amount: 
-                                                                                                        <text id="totalField">
-                                                
-                                                                                                        </text>
-                                                                                                    </h5>
-                                                                                                </div>-->
                                             </div>
                                         </div>
                                     </div>

@@ -73,7 +73,7 @@
                                                             <tr>
                                                                 <th>Stock Available </th>
                                                                 <td>
-                                                                    ${totalStockAmount}
+                                                                    ${totalStockAmount+cashInHand}
                                                                 </td>
                                                                 <th>Net Profit </th>
                                                                 <td>
@@ -94,8 +94,8 @@
                                                             <tr>
                                                                 <th> </th>
                                                                 <td>
-                                                                    ${allReceivable+totalStockAmount}
-                                                                </td>
+                                                                    ${allReceivable+totalStockAmount+cashInHand} 
+                                                               </td>
                                                                 <th> </th>
                                                                 <td>
                                                                     ${totalSalesProfit+allPayable}

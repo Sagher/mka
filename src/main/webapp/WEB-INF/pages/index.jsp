@@ -353,6 +353,39 @@
                                         <!-- /.row-->
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <label>HeadOffice Total Cash</label>
+                                                    <input id="masterAccountCash" class="form-control" value="${masterAccount.totalCash}" type="number">
+                                                </div>
+                                                <div class="row">
+                                                    <hr>
+                                                    <button class="btn btn-primary" onclick="updateMasterCash()">Update Cash</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    function updateMasterCash() {
+                                        console.log($("#masterAccountCash").val());
+                                        $.ajax({
+                                            url: "updateMasterAccountCash?value=" + $("#masterAccountCash").val(),
+                                            dataType: "html",
+                                            success: function (data) {
+                                                console.log(data)
+                                                location.reload();
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                console.log(textStatus);
+                                            }
+                                        });
+                                    }
+                                </script>
                             </div>
                             <!-- /.col-->
                         </div>

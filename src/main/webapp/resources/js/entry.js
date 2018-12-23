@@ -545,15 +545,31 @@ ttype.change(function () {
     if ($('#ttype option:selected').val() == "+") {
         $("#toHoOptions").removeAttr("hidden");
         $("#fromHoOptions").attr("hidden", "true");
-    } else {
+    } else if ($('#ttype option:selected').val() == "-") {
         $("#fromHoOptions").removeAttr("hidden");
         $("#toHoOptions").attr("hidden", "true");
+    } else {
+        $("#fromHoOptions").attr("hidden", "true");
+        $("#toHoOptions").attr("hidden", "true");
+
+
     }
 });
 
 function togglePayeeDiv(value) {
     if (value === 0) {
-        $("cashTranPayeeDiv").removeAttr("hidden");
+        $("#cashTranPayeeDiv").removeAttr("hidden");
+        $("#tbuysupSelect").attr("required", "true")
+
+    } else {
+        $("#cashTranPayeeDiv").attr("hidden", "true");
+        $("#tbuysupSelect").removeAttr("required")
+    }
+}
+
+function togglePayeeDiv2(value) {
+    if (value === 0) {
+        $("#cashTranPayeeDiv").removeAttr("hidden");
         $("#tbuysupSelect").attr("required", "true")
 
     } else {

@@ -5,10 +5,6 @@
  */
 package com.mka.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
@@ -30,8 +26,8 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import com.sun.javafx.tk.quantum.MasterTimer;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -461,6 +457,17 @@ public class EntriesController {
         return respList;
     }
 
+    @RequestMapping(value = "/updateMasterAccountCash", method = RequestMethod.GET)
+    public @ResponseBody
+    String updateMasterAccountCash(
+            HttpServletRequest request,
+            @RequestParam String value) {
+        MasterAccount ma = ss.getMasterAccount();
+        ma.setTotalCash(BigDecimal.valueOf(Integer.parseInt(value)));
+        ss.updateMasterAccount(ma);
+        return "Success";
+    }
+
     @RequestMapping(value = "/logCashTransaction", method = RequestMethod.POST)
     public @ResponseBody
     String logCashTransaction(HttpServletRequest request, HttpSession httpSession) {
@@ -470,7 +477,15 @@ public class EntriesController {
             String tamount = request.getParameter("tamount");
             String tdesc = request.getParameter("tdesc");
             String tpayer = request.getParameter("tpayer");
-            String payfrom = request.getParameter("payfrom");
+
+            String payfrom;
+            if (ttype.equals("+")) {
+                payfrom = request.getParameter("payToHo");
+            } else if (ttype.equals("-")) {
+                payfrom = request.getParameter("payFromHo");
+            } else {
+                payfrom = null; //cash in hand in or out
+            }
 
             if (tpayer != null && tpayer.equalsIgnoreCase("other")) {
                 tpayer = request.getParameter("tbuysupInput");
@@ -485,7 +500,7 @@ public class EntriesController {
 
             String transactionLogged = ss.logCashTransaction(mah, payfrom);
             if (transactionLogged == null) {
-                return ("01:Failed To Log Transaction. Make sure all field are filled in.");
+                return ("01:Failed To Log Transaction. Make sure all fields are Properly Filled.");
             } else {
 //                logActivity(request, auth.getName(), "CASH TRANSACTION", mah.toString());
                 asyncUtil.logCashTran(mah, transactionLogged);

@@ -91,6 +91,7 @@ public class EntriesServiceImpl implements EntriesService {
             String payfrom = request.getParameter("payfrom");
             String pBilty = request.getParameter("pBilty") != null ? request.getParameter("pBilty") : "0";
             String cBilty = request.getParameter("cBilty") != null ? request.getParameter("cBilty") : "0";
+            String totalAmount = amount;
 
             EntryItems item = getEntryItemById(Integer.parseInt(dItemType));
             if (item != null) {
@@ -126,6 +127,9 @@ public class EntriesServiceImpl implements EntriesService {
                             && !unloadingRate.isEmpty() && !unloadingRate.equals("0")
                             && !unloadingParty.isEmpty() && !unloadingParty.equals("0")) {
                         //Carriage =((10*700) + (800*5))/800
+                        if (rate.isEmpty() || rate.equals("0")) {
+                            rate = String.valueOf(Float.parseFloat(amount) / Float.parseFloat(quantity));
+                        }
                         Float c1 = Float.parseFloat(unloadingRate) * Float.parseFloat(totalUnloadedCrush);
                         Float c2 = Float.parseFloat(rate) * Float.parseFloat(quantity);
                         Float c3 = (c1 + c2) / Float.parseFloat(totalUnloadedCrush);
@@ -133,7 +137,7 @@ public class EntriesServiceImpl implements EntriesService {
                         Float cAmount = Float.parseFloat(totalUnloadingCost);
                         Float totalUnloaded = Float.parseFloat(totalUnloadedCrush);
 
-                        amount = String.valueOf(c1 + c2);
+                        totalAmount = String.valueOf(c1 + c2);
 
                         Float newQuantity = totalUnloaded;
                         entryDetail = new EntriesDirectDetails();
@@ -206,7 +210,6 @@ public class EntriesServiceImpl implements EntriesService {
                     }
 
                     entry.setEntriesDirectDetails(entryDetail);
-                    asyncUtil.updateStockTrace(entry);
 
                     EntriesDirect entry2 = new EntriesDirect();
                     BeanUtils.copyProperties(entry, entry2);
@@ -214,9 +217,12 @@ public class EntriesServiceImpl implements EntriesService {
                     entry2.setTotalPrice(BigDecimal.valueOf(Float.parseFloat(amount)));
                     entry2.setQuantity(BigDecimal.valueOf(Float.parseFloat(quantity)));
                     if (entry2.getRate().equals(BigDecimal.ZERO)) {
-                        entry2.setRate(entry.getTotalPrice().divide(entry.getQuantity()));
+                        entry2.setRate(entry2.getTotalPrice().divide(entry2.getQuantity()));
                     }
                     asyncUtil.logDirectAccountPayableReceivable(entry2);
+
+                    entry.setTotalPrice(BigDecimal.valueOf(Float.parseFloat(totalAmount)));
+                    asyncUtil.updateStockTrace(entry);
                     asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance().intValue());
                     return entry;
                 }
@@ -438,6 +444,7 @@ public class EntriesServiceImpl implements EntriesService {
                 receivable.setType(Constants.RECEIVABLE);
                 receivable.setItemType(new EntryItems(17));
                 receivable.setDescription(realAss.getDescription());
+                receivable.setTimestamp(new Date());
 
                 asyncUtil.logAmountReceivable(receivable);
 
@@ -544,8 +551,8 @@ public class EntriesServiceImpl implements EntriesService {
                                 asyncUtil.updateStockTrace(s);
 
                             } else if (s.getItemId() == 17) {
-                                s.setSalesUnit(realAss.getQuantity());
-                                s.setSalesAmount(realAss.getTotalSaleAmount());
+                                s.setSalesUnit(s.getSalesUnit().add(realAss.getQuantity()));
+                                s.setSalesAmount(s.getSalesAmount().add(realAss.getTotalSaleAmount()));
                                 asyncUtil.updateStockTrace(s);
 
                             }

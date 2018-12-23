@@ -126,8 +126,10 @@ public class AsyncUtil {
     @Async
     public void updateStockTrace(StockTrace st) {
         try {
-            BigDecimal avgUnitPrice = st.getStockAmount().divide(st.getStockUnits());
-            st.setAverageUnitPrice((avgUnitPrice));
+            if (st.getStockUnits().intValue() > 0) {
+                BigDecimal avgUnitPrice = st.getStockAmount().divide(st.getStockUnits(), 2, RoundingMode.HALF_UP);
+                st.setAverageUnitPrice((avgUnitPrice));
+            }
             ss.updateStockTrace(st);
         } catch (Exception e) {
             log.error("Exception in updateStockTrace: ", e);
@@ -272,7 +274,10 @@ public class AsyncUtil {
                 log.warn("*** Account Receivable not logged ***");
             } else {
                 // update users account
+
                 updateAccount(receivable);
+                int hr = accountsDao.getHeadOfficeReceivable();
+                updateMaReceivable(hr);
             }
         } catch (Exception e) {
 
@@ -291,7 +296,19 @@ public class AsyncUtil {
         receivable.setEntryId(mah.getId());
         receivable.setIsActive(true);
         receivable.setProject(null);
-        receivable.setType("NA");
+        receivable.setSubType(subType);
+
+        if (subType.equalsIgnoreCase(Constants.FROM_HEADOFFICE_TO_PERSON)
+                || subType.equalsIgnoreCase(Constants.FROM_HEADOFFICE_TO_CASH_IN_HAND)
+                || subType.equalsIgnoreCase(Constants.FROM_CASH_IN_HAND_TO_PERSON)) {
+            receivable.setType(Constants.RECEIVABLE);
+
+        } else if (subType.equals(Constants.PERSON_TO_HEADOFFICE)
+                || subType.equals(Constants.CASH_IN_HAND_TO_HEADOFFICE)
+                || subType.equalsIgnoreCase(Constants.FROM_PERSON_TO_CASH_IN_HAND)) {
+            receivable.setType(Constants.PAYABLE);
+
+        }
         receivable.setSubType(subType);
         receivable.setItemType(new EntryItems(18));
         receivable.setDescription(mah.getDescription());
@@ -310,7 +327,7 @@ public class AsyncUtil {
         ss.updateMasterAccount(masterAccount);
     }
 
-    @Async
+//    @Async
     public void updateAccount(AccountPayableReceivable account) {
         CustomersBuyers cusBuy = userService.getCustomerAndBuyer(account.getAccountName());
         if (cusBuy != null) {
@@ -322,13 +339,6 @@ public class AsyncUtil {
             if (account.getItemType().getId() == 18) {
                 // cash tran
                 amount = account.getTotalAmount();
-                if (account.getSubType().startsWith("From") || account.getSubType().startsWith("from")) {
-                    type = Constants.RECEIVABLE;
-                } else if (account.getSubType().equalsIgnoreCase("to head office")) {
-                    type = Constants.PAYABLE;
-                } else if (account.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
-                    type = Constants.PAYABLE;
-                }
             }
 
             if (type.equalsIgnoreCase(Constants.RECEIVABLE)) {
@@ -348,7 +358,7 @@ public class AsyncUtil {
             } else if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                 // payable
                 if ((receivable.compareTo(amount) >= 0)) {
-                    cusBuy.setReceivable(receivable.subtract(amount).negate());
+                    cusBuy.setReceivable(receivable.subtract(amount));
 //                    cusBuy.setPayable(BigDecimal.ZERO);
 
                 } else if ((receivable.compareTo(amount) < 0)) {
@@ -380,6 +390,13 @@ public class AsyncUtil {
         ma.setAllReceivable(allReceivable);
 
         ss.updateMasterAccount(ma);
+    }
+
+    public void updateMaReceivable(int hr) {
+        MasterAccount ma = ss.getMasterAccount();
+        ma.setHeadofficeReceivable(new BigDecimal(hr));
+        ss.updateMasterAccount(ma);
+
     }
 
 }

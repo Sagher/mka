@@ -25,4 +25,10 @@ public interface AccountsService {
             String buyerSupplier, String project);
 
     public Object getAllTransactions(String orderBy, String sortby, String startDate, String endDate, String buyerSupplier);
+
+    public Object getAccountPayableReceivable(String PAYABLE, int startIndex, int fetchSize, String orderBy, String sortby, String startDate, String endDate, String buyerSupplier);
+
+    public int getAccountPayableReceivableCount(String PAYABLE, String startDate, String endDate, String buyerSupplier);
+
+    public int getHeadOfficeReceivable();
 }

@@ -509,6 +509,12 @@
                                                                 <option value="-">
                                                                     From Head Office Account
                                                                 </option>
+                                                                <option value="--">
+                                                                    From Cash In Hand
+                                                                </option>
+                                                                <option value="++">
+                                                                    To Cash In Hand
+                                                                </option>
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>
@@ -521,13 +527,13 @@
                                                             <div class="help-block">
                                                                 <div class="form-check form-check-inline mr-1">
                                                                     <input checked="true" class="form-check-input" id="inline-radio0" type="radio" 
-                                                                           value="0" name="payfrom" onclick="togglePayeeDiv(0)" >
+                                                                           value="0" name="payFromHo" onclick="togglePayeeDiv(0)" >
                                                                     <label class="form-check-label" for="inline-radio0">Other</label>
                                                                 </div>
                                                                 <label class="col-md-1"></label>
                                                                 <div class="form-check form-check-inline mr-1">
                                                                     <input class="form-check-input" id="inline-radio1" type="radio" 
-                                                                           onclick="togglePayeeDiv(1)" value="1" name="payfrom">
+                                                                           onclick="togglePayeeDiv(1)" value="1" name="payFromHo">
                                                                     <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
                                                                 </div>
                                                             </div>
@@ -535,34 +541,36 @@
                                                         <label class="col-md-2"></label>
                                                     </div>
 
-                                                    <!--                                                    <div class="form-group row" id="toHoOptions" hidden="true">
-                                                                                                            <label class="col-md-2"></label>
-                                                                                                            <div class="col-md-8">
-                                                                                                                <span class="help-block">From</span>
-                                                                                                                <div class="help-block">
-                                                                                                                    <div class="form-check form-check-inline mr-1">
-                                                                                                                        <input class="form-check-input" onchange="" id="inline-radio2" type="radio" value="1" name="payToHo">
-                                                                                                                        <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
-                                                                                                                    </div>
-                                                                                                                    <label class="col-md-1"></label>
-                                                                                                                    <div class="form-check form-check-inline mr-1">
-                                                                                                                        <input class="form-check-input" id="inline-radio0" type="radio" value="0" name="payfrom"  onchange="">
-                                                                                                                        <label class="form-check-label" for="inline-radio0">Customer</label>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                            <label class="col-md-2"></label>
-                                                                                                        </div>-->
+                                                    <div class="form-group row" id="toHoOptions" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">From</span>
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input checked="true" class="form-check-input" id="inline-radio2" type="radio" value="0" name="payToHo"  onclick="togglePayeeDiv2(0)">
+                                                                    <label class="form-check-label" for="inline-radio0">Customer</label>
+                                                                </div>
+                                                                <label class="col-md-1"></label>
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" onclick="togglePayeeDiv2(1)" id="inline-radio3" type="radio" value="1" name="payToHo">
+                                                                    <label class="form-check-label" for="inline-radio1">Cash In Hand</label>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
 
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Amount</span>
-                                                            <input class="form-control" name="tamount" type="number" required="true" step=".01" min="0" onblur="if (this.value == '') {
-                                                                        this.value = '0';
-                                                                    }"  onfocus="if (this.value == '0') {
-                                                                                this.value = '';
-                                                                            }">
+                                                            <input class="form-control" name="tamount" type="number" required="true" step=".01" min="0" 
+                                                                   onblur="if (this.value == '') {
+                                                                               this.value = '0';
+                                                                           }"  onfocus="if (this.value == '0') {
+                                                                                       this.value = '';
+                                                                                   }">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
@@ -687,7 +695,7 @@
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
                                                             <span class="help-block">Bilty Number</span>
-                                                            <input class="form-control" id="biltee" type="number" name="biltee">
+                                                            <input class="form-control" id="biltee" type="number" required="true" name="biltee">
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>

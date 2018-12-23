@@ -89,35 +89,54 @@ public class StatsServiceImpl implements StatsService {
     public String logCashTransaction(MasterAccountHistory mah, String from) {
         MasterAccount ma = getMasterAccount();
         if (mah.getType().equals("+")) {
-            mah.setType("To Head Office");
-            ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
-        } else if (mah.getType().equals("-")) {
-            ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
             if (from.equals("0")) {
-                mah.setType("From Head Office");
-                ma.setCashInHand(ma.getCashInHand().subtract(mah.getAmount()));
+                mah.setType(Constants.PERSON_TO_HEADOFFICE);
+                mah.setPayee(mah.getPayee());
+                ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
             } else {
-                mah.setType("HeadOffice To Cash In Hand");
-                mah.setPayee("HeadOffice");
-                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+                mah.setType(Constants.CASH_IN_HAND_TO_HEADOFFICE);
+                mah.setPayee(Constants.HEADOFFICE);
+                ma.setTotalCash(ma.getTotalCash().add(mah.getAmount()));
+                ma.setCashInHand(ma.getCashInHand().subtract(mah.getAmount()));
             }
 
-//        } else if (mah.getType().equals("-+")) {
-//            if (from.equals("1")) {
-//                mah.setType("HeadOffice To Cash In Hand");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
-//                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
-//                ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
-//            } else {
-//                mah.setType("Person To Cash In Hand");// CASH IN HAND, GIVEN FROM HQ ACCOUNT
-//                ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
-//            }
+        } else if (mah.getType().equals("-")) {
+            if (from.equals("0")) {
+                if ((ma.getTotalCash().intValue() < mah.getAmount().intValue())) {
+                    return null;
+                }
+                mah.setType(Constants.FROM_HEADOFFICE_TO_PERSON);
+                mah.setPayee(mah.getPayee());
+                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+            } else {
+                if ((ma.getTotalCash().intValue() < mah.getAmount().intValue())) {
+                    return null;
+                }
+                mah.setType(Constants.FROM_HEADOFFICE_TO_CASH_IN_HAND);
+                mah.setPayee(Constants.HEADOFFICE);
+                ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+                ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
+            }
+
+        } else if (mah.getType().equals("--")) {
+            if ((ma.getCashInHand().intValue() < mah.getAmount().intValue())) {
+                return null;
+            }
+            mah.setType(Constants.FROM_CASH_IN_HAND_TO_PERSON);
+            ma.setCashInHand(ma.getCashInHand().subtract(mah.getAmount()));
+
+        } else if (mah.getType().equals("++")) {
+            mah.setType(Constants.FROM_PERSON_TO_CASH_IN_HAND);
+            ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
         }
+        
         boolean tranLogged = statsDao.logCashTransaction(mah);
         if (tranLogged) {
             updateMasterAccount(ma);
             masterAccount = null;
             return mah.getType();
         }
+
         return null;
     }
 

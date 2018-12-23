@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,7 +68,6 @@ public class ReportsController {
     @Autowired
     EntriesService entriesService;
 
-    private List<AccountPayableReceivable> dataList = null;
 
     /* 
      * 
@@ -114,66 +114,21 @@ public class ReportsController {
             User u = userService.getUser(auth.getName());
             if (u != null) {
                 model.addObject("user", u);
+
                 if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                     model.addObject("type", Constants.PAYABLE);
 
-                } else if (type.equalsIgnoreCase("profitLoss")) {
-                    model.addObject("stockTrace", ss.getStats());
-                    int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
+                } else if (type.equalsIgnoreCase(Constants.PROFITLOSS)) {
+                    return getProfitAndLossModel();
 
-                    for (StockTrace e : ss.getStats()) {
-                        totalSales += e.getSalesAmount().intValue();
-                        directGrossProfit += e.getConsumeAmount().intValue();
-
-                        if (e.getItemId() == 6) {
-                            totalCrushSales += e.getConsumeAmount().intValue();
-                        }
-                    }
-
-                    List<AccountPayableReceivable> indirectExpenses = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, Constants.EXPENSE, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
-                    Map<String, Integer> indirectExpMap = new HashMap<>();
-
-                    if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
-                        for (AccountPayableReceivable acc : indirectExpenses) {
-                            if (!acc.getSubType().equalsIgnoreCase(Constants.EXPENSE)) {
-                                if (acc.getItemType().getId() == 20) {
-                                    totalAssLaying += acc.getTotalAmount().intValue();
-                                }
-                                if (acc.getItemType().getId() == 21) {
-                                    totalAssCarr += acc.getTotalAmount().intValue();
-                                }
-                                directGrossProfit += acc.getTotalAmount().intValue();
-                            } else {
-                                if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
-                                    Integer val = indirectExpMap.get(acc.getItemType().getItemName());
-                                    val = val + acc.getTotalAmount().intValue();
-                                    indirectExpMap.put(acc.getItemType().getItemName(), val);
-                                } else {
-                                    indirectExpMap.put(acc.getItemType().getItemName(), acc.getTotalAmount().intValue());
-                                }
-                            }
-                        }
-                    }
-
-                    model.addObject("totalSales", totalSales);
-                    model.addObject("directGrossProfit", directGrossProfit);
-                    model.addObject("totalCrushSales", totalCrushSales);
-                    model.addObject("netProfit", netProfit);
-                    model.addObject("indirectExpenses", indirectExpMap);
-                    model.addObject("totalAssLaying", totalAssLaying);
-                    model.addObject("totalAssCarr", totalAssCarr);
-
-                    model.setViewName("subPages/profitLossReport");
-                    return model;
-
-                } else if (type.equalsIgnoreCase("closingStock")) {
+                } else if (type.equalsIgnoreCase(Constants.CLOSINGSTOCK)) {
 
                     model.addObject("masterAccount", ss.getMasterAccount());
                     model.addObject("stockTrace", ss.getStats());
                     model.setViewName("subPages/closingStock");
                     return model;
 
-                } else if (type.equalsIgnoreCase("balanceSheet")) {
+                } else if (type.equalsIgnoreCase(Constants.BALANCESHEET)) {
                     MasterAccount ma = ss.getMasterAccount();
                     model.setViewName("subPages/balanceSheet");
 
@@ -187,9 +142,10 @@ public class ReportsController {
                         }
                     }
 
-                    model.addObject("allReceivable", ma.getAllReceivable());
+                    model.addObject("allReceivable", ma.getAllReceivable().add(ma.getHeadofficeReceivable()));
                     model.addObject("allPayable", ma.getAllPayable());
-                    model.addObject("totalSalesProfit", totalSale);
+                    model.addObject("cashInHand", ma.getCashInHand());
+                    model.addObject("totalSalesProfit", getNetProfit());
                     model.addObject("totalStockAmount", totalStockAmount);
 
                     return model;
@@ -219,10 +175,7 @@ public class ReportsController {
             HttpServletRequest request,
             @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
             @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
-            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
-            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
             @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
-            @RequestParam(value = "project", required = false, defaultValue = "") String project,
             @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
             @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
             @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
@@ -238,38 +191,30 @@ public class ReportsController {
 
         Object data;
         int totalSize;
-        if (type.equalsIgnoreCase(Constants.PAYABLE)) {
-            if (itemTypeId > 0) {
-                EntryItems entryItem = entriesService.getEntryItemById(itemTypeId);
-                data = accountsService.getAccountPayableReceivable(entryItem, Constants.PAYABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
-                totalSize = accountsService.getAccountPayableReceivableCount(entryItem, Constants.PAYABLE, startDate, endDate, buyerSupplier, project);
-            } else {
-                data = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
-                totalSize = accountsService.getAccountPayableReceivableCount(null, Constants.PAYABLE, startDate, endDate, buyerSupplier, project);
-            }
-        } else {
-            data = accountsService.getAccountPayableReceivable(null, Constants.RECEIVABLE, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
-            totalSize = accountsService.getAccountPayableReceivableCount(null, Constants.RECEIVABLE, startDate, endDate, buyerSupplier, project);
-        }
+        data = accountsService.getAccountPayableReceivable(type, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
+        totalSize = accountsService.getAccountPayableReceivableCount(type, startDate, endDate, buyerSupplier);
 
-        dataList = (data != null) ? (List<AccountPayableReceivable>) data : null;
-        if (dataList != null && !dataList.isEmpty()) {
-            int tAmount = getTotalAmount(type);
-            dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, tAmount));
-
-            if (!buyerSupplier.isEmpty()) {
-                if (type.equalsIgnoreCase(Constants.PAYABLE)
-                        && userService.getCustomerAndBuyer(buyerSupplier).getPayable().intValue() > 0) {
-
-                } else if (type.equalsIgnoreCase(Constants.RECEIVABLE)
-                        && userService.getCustomerAndBuyer(buyerSupplier).getReceivable().intValue() > 0) {
-
+        if (data != null) {
+            List<AccountPayableReceivable> dataList = (List<AccountPayableReceivable>) data;
+            if (type.equalsIgnoreCase(Constants.PAYABLE)) {
+                if (!buyerSupplier.isEmpty()) {
+                    dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, userService.getCustomerAndBuyer(buyerSupplier).getPayable().intValue()));
                 } else {
-                    dataList = null;
+                    dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, ss.getMasterAccount().getAllPayable().intValue()));
                 }
+            } else {
+                if (!buyerSupplier.isEmpty()) {
+                    dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, userService.getCustomerAndBuyer(buyerSupplier).getReceivable().intValue()));
+                } else {
+                    int hr = accountsService.getHeadOfficeReceivable();
+                    dataList.add(new AccountPayableReceivable(0, "Head Office Receivable ", "", 0, true, hr));
+                    dataList.add(new AccountPayableReceivable(0, "Total " + type, "", 0, true, ss.getMasterAccount().getAllReceivable().intValue() + hr));
+                }
+
             }
+
         }
-        resp.setData(dataList != null ? dataList : "");
+        resp.setData(data != null ? data : "");
         resp.setRecordsFiltered(totalSize);
         resp.setRecordsTotal(totalSize);
         resp.setDraw(draw);
@@ -283,98 +228,102 @@ public class ReportsController {
     //        return getTotalAmount(type);
     //    }
 
-    private int getTotalAmount(String type) {
-        int totalAmount = 0;
-        if (dataList != null && !dataList.isEmpty()) {
-            if (type.equalsIgnoreCase(Constants.PAYABLE)) {
-                for (AccountPayableReceivable ac : dataList) {
-                    if (ac.getItemType().getId() == 18 && ac.getSubType().startsWith("From")) {
-                        totalAmount -= (ac.getTotalAmount().intValue());
-                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
-                        totalAmount += (ac.getTotalAmount().intValue());
-                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
-                        totalAmount += (ac.getTotalAmount().intValue());
-                    } else {
-                        totalAmount += ac.getAmount().intValue();
-                    }
-                }
-            } else {
-                for (AccountPayableReceivable ac : dataList) {
-                    if (ac.getItemType().getId() == 18 && ac.getSubType().startsWith("From")) {
-                        totalAmount += (ac.getTotalAmount().intValue());
-                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("to head office")) {
-                        totalAmount -= (ac.getTotalAmount().intValue());
-                    } else if (ac.getItemType().getId() == 18 && ac.getSubType().equalsIgnoreCase("Person To Cash In Hand")) {
-                        totalAmount -= (ac.getTotalAmount().intValue());
-                    } else {
-                        totalAmount += ac.getAmount().intValue();
-                    }
-                }
+    private int getNetProfit() {
+        int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
+
+        for (StockTrace e : ss.getStats()) {
+            totalSales += e.getSalesAmount().intValue();
+            directGrossProfit += e.getConsumeAmount().intValue();
+
+            if (e.getItemId() == 6) {
+                totalCrushSales += e.getConsumeAmount().intValue();
             }
-
         }
-        return totalAmount;
-    }
 
-    /*
-     *  PROFIT & LOSS
-     */
-    @RequestMapping(value = "/report/profitLoss", method = RequestMethod.GET)
-    public @ResponseBody
-    DataTableResp profitLoss(
-            HttpServletRequest request,
-            @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
-            @RequestParam(value = "start", required = false, defaultValue = "0") int startIndex,
-            @RequestParam(value = "itemTypeId", required = false, defaultValue = "0") int itemTypeId,
-            @RequestParam(value = "subEntryType", required = false, defaultValue = "") String subEntryType,
-            @RequestParam(value = "buyerSupplier", required = false, defaultValue = "") String buyerSupplier,
-            @RequestParam(value = "project", required = false, defaultValue = "") String project,
-            @RequestParam(value = "length", required = false, defaultValue = "10") int fetchSize,
-            @RequestParam(value = "draw", required = false, defaultValue = "0") Integer draw,
-            @RequestParam(value = "fromDate", required = false, defaultValue = "") String startDate,
-            @RequestParam(value = "toDate", required = false, defaultValue = "") String endDate,
-            @RequestParam(value = "search[value]", required = false) String search) {
+        List<AccountPayableReceivable> indirectExpenses = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, Constants.EXPENSE, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
+        Map<String, Integer> indirectExpMap = new HashMap<>();
+        int totalIndirectExpenses = 0;
 
-        DataTableResp resp = new DataTableResp();
-
-        int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
-        String orderBy = request.getParameter("order[0][dir]");
-        String sortby = request.getParameter("columns[" + order0Col + "][data]");
-        profitLossTotal = 0;
-        dataList = accountsService.getAccountPayableReceivable(null, null, null, 0, Integer.MAX_VALUE, orderBy, sortby, startDate, endDate, buyerSupplier, project);
-
-        List<AccountPayableReceivable> toBeRemoved = new ArrayList<>();
-        if (dataList != null && !dataList.isEmpty()) {
-            for (AccountPayableReceivable acc : dataList) {
-                if (acc.getItemType().getId() == 18) {// don't include cash transaction
-                    toBeRemoved.add(acc);
-                    profitLossTotal = profitLossTotal - 0;
+        if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
+            for (AccountPayableReceivable acc : indirectExpenses) {
+                if (!acc.getSubType().equalsIgnoreCase(Constants.EXPENSE)) {
+                    if (acc.getItemType().getId() == 20) {
+                        totalAssLaying += acc.getTotalAmount().intValue();
+                    }
+                    if (acc.getItemType().getId() == 21) {
+                        totalAssCarr += acc.getTotalAmount().intValue();
+                    }
+                    directGrossProfit += acc.getTotalAmount().intValue();
                 } else {
-                    if (acc.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
-                        profitLossTotal += acc.getAmount().intValue();
+                    if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
+                        Integer val = indirectExpMap.get(acc.getItemType().getItemName());
+                        val = val + acc.getTotalAmount().intValue();
+                        indirectExpMap.put(acc.getItemType().getItemName(), val);
+                        totalIndirectExpenses += val;
                     } else {
-                        profitLossTotal = profitLossTotal - acc.getAmount().intValue();
+                        indirectExpMap.put(acc.getItemType().getItemName(), acc.getTotalAmount().intValue());
+                        totalIndirectExpenses += acc.getTotalAmount().intValue();
+
                     }
                 }
             }
-
-            dataList.removeAll(toBeRemoved);
-            toBeRemoved.clear();
         }
-        resp.setData(dataList != null ? dataList : "");
-        resp.setRecordsFiltered(dataList != null ? dataList.size() : 0);
-        resp.setRecordsTotal(dataList != null ? dataList.size() : 0);
-        resp.setDraw(draw);
 
-        return resp;
+        return (totalSales - directGrossProfit - totalIndirectExpenses);
     }
 
-    int profitLossTotal = 0;
+    private ModelAndView getProfitAndLossModel() {
+        ModelAndView model = new ModelAndView();
+        model.addObject("stockTrace", ss.getStats());
+        int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
 
-    @RequestMapping(value = "/report/profitLoss/total", method = RequestMethod.GET)
-    public @ResponseBody
-    int profitLossTotal(HttpServletRequest request) {
-        return profitLossTotal;
+        for (StockTrace e : ss.getStats()) {
+            totalSales += e.getSalesAmount().intValue();
+            directGrossProfit += e.getConsumeAmount().intValue();
+
+            if (e.getItemId() == 6) {
+                totalCrushSales += e.getConsumeAmount().intValue();
+            }
+        }
+
+        List<AccountPayableReceivable> indirectExpenses = accountsService.getAccountPayableReceivable(null, Constants.PAYABLE, Constants.EXPENSE, 0, Integer.MAX_VALUE, "", "", "", "", "", "");
+        Map<String, Integer> indirectExpMap = new HashMap<>();
+        int totalIndirectExpenses = 0;
+
+        if (indirectExpenses != null && !indirectExpenses.isEmpty()) {
+            for (AccountPayableReceivable acc : indirectExpenses) {
+                if (!acc.getSubType().equalsIgnoreCase(Constants.EXPENSE)) {
+                    if (acc.getItemType().getId() == 20) {
+                        totalAssLaying += acc.getTotalAmount().intValue();
+                    }
+                    if (acc.getItemType().getId() == 21) {
+                        totalAssCarr += acc.getTotalAmount().intValue();
+                    }
+                    directGrossProfit += acc.getTotalAmount().intValue();
+                } else {
+                    if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
+                        Integer val = indirectExpMap.get(acc.getItemType().getItemName());
+                        indirectExpMap.put(acc.getItemType().getItemName(), (val + acc.getTotalAmount().intValue()));
+                        totalIndirectExpenses += acc.getTotalAmount().intValue();
+                    } else {
+                        indirectExpMap.put(acc.getItemType().getItemName(), acc.getTotalAmount().intValue());
+                        totalIndirectExpenses += acc.getTotalAmount().intValue();
+
+                    }
+                }
+            }
+        }
+
+        model.addObject("totalSales", totalSales);
+        model.addObject("directGrossProfit", directGrossProfit);
+        model.addObject("totalCrushSales", totalCrushSales);
+        model.addObject("netProfit", netProfit);
+        model.addObject("indirectExpenses", indirectExpMap);
+        model.addObject("totalAssLaying", totalAssLaying);
+        model.addObject("totalAssCarr", totalAssCarr);
+        model.addObject("totalIndirectExpenses", totalIndirectExpenses);
+
+        model.setViewName("subPages/profitLossReport");
+        return model;
     }
-
 }

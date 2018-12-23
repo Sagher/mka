@@ -237,7 +237,7 @@ public class AccountPayableReceivable implements Serializable {
         this.subType = subType;
     }
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm")
     public Date getTimestamp() {
         return timestamp;
     }

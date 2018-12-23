@@ -28,6 +28,17 @@ public class Constants {
     public static final String SALE = "SALE", PURCHASE = "PURCHASE", PRODUCE = "PRODUCE", EXPENSE = "EXPENSE", CONSUME = "CONSUME";
     public static final String RECEIVABLE = "RECEIVABLE";
     public static final String PAYABLE = "PAYABLE";
+    public static final String PROFITLOSS = "profitLoss";
+    public static final String CLOSINGSTOCK = "closingStock";
+    public static final String BALANCESHEET = "balanceSheet";
+
+    public static final String HEADOFFICE = "HeadOffice";
+    public static final String PERSON_TO_HEADOFFICE = "Person To HeadOffice";
+    public static final String CASH_IN_HAND_TO_HEADOFFICE = "Cash In Hand To HeadOffice";
+    public static final String FROM_HEADOFFICE_TO_PERSON = "From HeadOffice To Person";
+    public static final String FROM_HEADOFFICE_TO_CASH_IN_HAND = "From HeadOffice To Cash In Hand";
+    public static String FROM_CASH_IN_HAND_TO_PERSON = "Cash In Hand To Person";
+    public static String FROM_PERSON_TO_CASH_IN_HAND = "Person To Cash In Hand";
 
 //    public static String BASE_PATH = "E:\\";
 //    public static String IMAGES_BASE_PATH = "resources\\img\\avatars\\";
