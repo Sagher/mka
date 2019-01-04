@@ -46,4 +46,6 @@ public interface EntriesService {
     public Object logAsphaltSale(HttpServletRequest request);
 
     public boolean logInDirectEntry(EntriesIndirect entry);
+
+    public String logMachinery(HttpServletRequest request);
 }

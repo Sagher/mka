@@ -131,6 +131,7 @@ public class MasterAccountHistory implements Serializable {
         return "MasterAccountHistory{" + "id=" + id + ", type=" + type + ", amount=" + amount + ", description=" + description + '}';
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm")
     public Date getTimestamp() {
         return timestamp;
     }

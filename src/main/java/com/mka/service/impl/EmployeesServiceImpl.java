@@ -102,6 +102,7 @@ public class EmployeesServiceImpl implements EmployeesService {
                     payable.setType(Constants.PAYABLE);
                     payable.setSubType(Constants.EXPENSE);
                     payable.setItemType(new EntryItems(22));
+                    payable.setTimestamp(new Date());
 
                     if (!accountsService.logAccountPayableReceivable(payable)) {
                         log.warn("*** Account Payable not logged ***");
@@ -119,12 +120,12 @@ public class EmployeesServiceImpl implements EmployeesService {
                 if (salariesPayed) {
                     // indirect salaries expense
 //                    EntriesIndirect entry = new EntriesIndirect();
-//                    entry.setItem(entriesService.createNewEntryItem("Salaries"));
+//                    entry.setItem(new EntryItems(22));
 //                    entry.setName("Employees Salaries");
 //                    entry.setDescription("Employees Salaries Payed");
 //                    entry.setAmount(BigDecimal.valueOf(totalAmount));
 //                    entry.setAdvance(BigDecimal.ZERO);
-//                    entry.setEntryDate(new Date());
+//                    entry.setCreatedDate(new Date());
 //                    entry.setIsActive(true);
 //
 //                    boolean entryLogged = entriesService.logInDirectEntry(entry);
@@ -137,6 +138,20 @@ public class EmployeesServiceImpl implements EmployeesService {
         }
 
         return false;
+    }
+
+    public boolean setCurrentMonthSalaryFlagToFalse() {
+        List<Employees> employees = employeesDao.getEmployees(0, employeesDao.getEmployeesCount(""), "", "", "");
+        if (employees != null && !employees.isEmpty()) {
+            for (Employees emp : employees) {
+                emp.setCurrentMonthPayed(false);
+
+                employeesDao.updateEmployee(emp);
+            }
+
+        }
+
+        return true;
     }
 
 }

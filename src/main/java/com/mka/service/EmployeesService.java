@@ -25,4 +25,6 @@ public interface EmployeesService {
     public Employees getEmployee(int id);
 
     public boolean payAllEmployees();
+
+    public boolean setCurrentMonthSalaryFlagToFalse();
 }

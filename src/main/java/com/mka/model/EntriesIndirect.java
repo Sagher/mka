@@ -5,6 +5,7 @@
  */
 package com.mka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -127,6 +128,7 @@ public class EntriesIndirect implements Serializable {
         this.description = description;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm")
     public Date getCreatedDate() {
         return createdDate;
     }

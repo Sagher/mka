@@ -10,6 +10,7 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MachineryCarriage;
 import java.util.List;
 
 public interface EntriesDao {
@@ -45,4 +46,6 @@ public interface EntriesDao {
     public boolean logAsphaltSale(AsphaltSales ass);
 
     public boolean logAsphaltSaleConsumptions(List<AsphaltSaleConsumption> ass);
+
+    public boolean logMachineryCarriage(MachineryCarriage mac);
 }

@@ -61,6 +61,9 @@ $(document).ready(function () {
                 dcPartySelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 assCarProviderSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
                 assLayerSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                macCarConSelect.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+                macCarCon2Select.append($("<option />").val(customersBuyersList[i].name).text(customersBuyersList[i].name));
+
 
             }
             customerBuyerSelect.append($("<option />").val('Other').text('Other'));
@@ -70,6 +73,9 @@ $(document).ready(function () {
             dcPartySelect.append($("<option />").val('Other').text('Other'));
             assCarProviderSelect.append($("<option />").val('Other').text('Other'));
             assLayerSelect.append($("<option />").val('Other').text('Other'));
+            macCarConSelect.append($("<option />").val('Other').text('Other'));
+            macCarCon2Select.append($("<option />").val('Other').text('Other'));
+
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -837,6 +843,81 @@ function logAssSale() {
                     type: "error", layout: "top", timeout: 4000
                 });
                 $("#assSaleBtn").show();
+            }
+
+        }
+    });
+}
+
+
+/*
+ *
+ * MACHINERY CARRIAGE
+ *   
+ */
+var macCarConSelect = $("#macCarConSelect");
+var macCarConInput = $("#macCarConInput");
+var macCarCon2Select = $("#macCarCon2Select");
+var macCarCon2Input = $("#macCarCon2Input");
+
+macCarConSelect.change(function () {
+    if ($('#macCarConSelect option:selected').text() == "Other") {
+        macCarConInput.removeAttr("hidden");
+        macCarConInput.attr("required", "true");
+    } else {
+        macCarConInput.attr("hidden", "true");
+        macCarConInput.removeAttr("required");
+    }
+});
+
+macCarCon2Select.change(function () {
+    if ($('#macCarCon2Select option:selected').text() == "Other") {
+        macCarCon2Input.removeAttr("hidden");
+        macCarCon2Input.attr("required", "true");
+    } else {
+        macCarCon2Input.attr("hidden", "true");
+        macCarCon2Input.removeAttr("required");
+    }
+});
+
+
+function triggerAllChanges() {
+    $("#assCarCostPerTon").trigger('change');
+    $("#assLayingCostPerTon").trigger('change');
+    $("#expRate").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
+    $("#assCarCostPerTon").trigger('change');
+    getAutoFillValues();
+}
+
+function logMacCar() {
+    $('#macCarForm').ajaxForm({
+        beforeSend: function () {
+            $("#macCarBtn").hide();
+        },
+        uploadProgress: function (event, position, total, percentComplete) {
+        },
+        complete: function (xhr) {
+            response = xhr.responseText.split(":");
+            console.log(response);
+            respCode = response[0];
+            respMessage = response[1];
+            if (respCode === '00') {
+                noty({
+                    text: respMessage,
+                    type: "success", layout: "top", timeout: 4000
+                });
+                $("#macCarBtn").show();
+                setTimeout(function () {
+                    location.reload();
+                }, 5000);
+            } else {
+                noty({
+                    text: respMessage,
+                    type: "error", layout: "top", timeout: 4000
+                });
+                $("#macCarBtn").show();
             }
 
         }

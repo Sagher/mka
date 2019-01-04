@@ -188,6 +188,7 @@ public class ReportsController {
         int order0Col = Integer.parseInt(request.getParameter("order[0][column]"));
         String orderBy = request.getParameter("order[0][dir]");
         String sortby = request.getParameter("columns[" + order0Col + "][data]");
+        buyerSupplier = (!buyerSupplier.isEmpty()) ? buyerSupplier.replace('$', '&') : "";
 
         Object data;
         int totalSize;
@@ -257,9 +258,8 @@ public class ReportsController {
                 } else {
                     if (indirectExpMap.containsKey(acc.getItemType().getItemName())) {
                         Integer val = indirectExpMap.get(acc.getItemType().getItemName());
-                        val = val + acc.getTotalAmount().intValue();
-                        indirectExpMap.put(acc.getItemType().getItemName(), val);
-                        totalIndirectExpenses += val;
+                        indirectExpMap.put(acc.getItemType().getItemName(), (val + acc.getTotalAmount().intValue()));
+                        totalIndirectExpenses += acc.getTotalAmount().intValue();
                     } else {
                         indirectExpMap.put(acc.getItemType().getItemName(), acc.getTotalAmount().intValue());
                         totalIndirectExpenses += acc.getTotalAmount().intValue();
@@ -317,7 +317,6 @@ public class ReportsController {
         model.addObject("totalSales", totalSales);
         model.addObject("directGrossProfit", directGrossProfit);
         model.addObject("totalCrushSales", totalCrushSales);
-        model.addObject("netProfit", netProfit);
         model.addObject("indirectExpenses", indirectExpMap);
         model.addObject("totalAssLaying", totalAssLaying);
         model.addObject("totalAssCarr", totalAssCarr);

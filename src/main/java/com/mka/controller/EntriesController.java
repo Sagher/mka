@@ -253,6 +253,7 @@ public class EntriesController {
                 ? request.getParameter("order[0][column]") : "0");
         String orderBy = request.getParameter("order[0][dir]") != null ? request.getParameter("order[0][dir]") : "";
         String sortby = request.getParameter("columns[" + order0Col + "][data]");
+        buyerSupplier = (!buyerSupplier.isEmpty()) ? buyerSupplier.replace('$', '&') : "";
 
         Object data = null;
         int totalSize = 0;
@@ -545,6 +546,19 @@ public class EntriesController {
             return cons;
         }
         return new ArrayList<>();
+    }
+
+    @RequestMapping(value = "/logMachinery", method = RequestMethod.POST)
+    public @ResponseBody
+    String logMachinery(HttpServletRequest request, HttpSession httpSession) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String entryLogged = entriesService.logMachinery(request);
+        if (entryLogged.equals("00:Sale Logged Successfully")) {
+            logActivity(request, auth.getName(), "Asphalt Sale Logged", entryLogged.toString());
+            return entryLogged;
+        } else {
+            return entryLogged;
+        }
     }
 
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {

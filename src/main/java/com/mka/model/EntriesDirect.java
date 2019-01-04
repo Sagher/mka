@@ -170,6 +170,7 @@ public class EntriesDirect implements Serializable {
         this.isActive = isActive;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm")
     public Date getCreatedDate() {
         return createdDate;
     }

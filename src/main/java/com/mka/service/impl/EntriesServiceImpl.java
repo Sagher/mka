@@ -12,6 +12,7 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MachineryCarriage;
 import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.service.EntriesService;
@@ -223,7 +224,7 @@ public class EntriesServiceImpl implements EntriesService {
 
                     entry.setTotalPrice(BigDecimal.valueOf(Float.parseFloat(totalAmount)));
                     asyncUtil.updateStockTrace(entry);
-                    asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance().intValue());
+                    asyncUtil.updateMasterAccount(ss.getMasterAccount(), payfrom, entry.getAdvance(), item, entryType, entry2);
                     return entry;
                 }
 
@@ -317,7 +318,7 @@ public class EntriesServiceImpl implements EntriesService {
                 if (!entryLogged) {
                     return ("01:Failed To Log Entry. Make sure all field are filled in.");
                 } else {
-                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance().intValue());
+                    asyncUtil.updateMasterAccount(ma, payfrom, entry.getAdvance(), item, Constants.EXPENSE, entry);
                     asyncUtil.updateIndirectAccountPayableReceivable(entry);
                     return entry;
                 }
@@ -495,6 +496,8 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
                                     realAss.getProject(), realAss.getDescription(), ass.getItemQuantity(), ass.getItemRate(),
                                     ass.getItemAmount(), new EntryItems(20), realAss.getType(), realAss.getCreatedDate());
+
+                            asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assLayingAdvance)), "Asphalt Laying");
                         }
 
                     }
@@ -529,6 +532,9 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), realAss.getDescription(),
                                     assCarriage.getItemQuantity(), (assCarriage.getItemRate()),
                                     (assCarriage.getItemAmount()), new EntryItems(21), realAss.getType(), realAss.getCreatedDate());
+
+                            asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assCarAdvance)), "Asphalt Carriage");
+
                         }
                     }
                 } catch (Exception e) {
@@ -577,5 +583,73 @@ public class EntriesServiceImpl implements EntriesService {
             asyncUtil.updateIndirectAccountPayableReceivable(entry);
         }
         return true;
+    }
+
+    @Override
+    public String logMachinery(HttpServletRequest request) {
+
+        try {
+
+            String customer = request.getParameter("macCarCon");
+            String customerNew = request.getParameter("macCarConInput");
+
+            String customer2 = request.getParameter("macCarCon2");
+            String customer2New = request.getParameter("macCarCon2Input");
+
+            if (customer.equalsIgnoreCase("other")) {
+                customer = customerNew;
+                asyncUtil.addToCustomersAndBuyersList(customer);
+            }
+
+            if (customer2.equalsIgnoreCase("other")) {
+                customer2 = customer2New;
+                asyncUtil.addToCustomersAndBuyersList(customer2);
+            }
+
+            String macCarFrom = request.getParameter("macCarFrom");
+            String macCarTo = request.getParameter("macCarTo");
+            String amount = request.getParameter("macCarAmount");
+
+            MachineryCarriage mac = new MachineryCarriage();
+            mac.setContractor(customer);
+            mac.setOnAccountOf(customer2);
+            mac.setSource(macCarFrom);
+            mac.setDestination(macCarTo);
+            mac.setAmount(BigDecimal.valueOf(Float.parseFloat(amount)));
+
+            boolean logged = entriesDao.logMachineryCarriage(mac);
+
+            if (logged) {
+                AccountPayableReceivable payable = new AccountPayableReceivable();
+                payable.setAccountName(mac.getContractor());
+                payable.setAmount(mac.getAmount());
+                payable.setQuantity(BigDecimal.ZERO);
+                payable.setRate(BigDecimal.ZERO);
+                payable.setTotalAmount(mac.getAmount());
+                payable.setEntryId(mac.getId());
+                payable.setIsActive(true);
+                payable.setProject(null);
+                payable.setSubType("Carriage Contractor");
+                payable.setTimestamp(new Date());
+                payable.setItemType(new EntryItems(23));
+                payable.setType(Constants.PAYABLE);
+                asyncUtil.logAmountReceivablePayable(payable);
+
+                AccountPayableReceivable receivable = new AccountPayableReceivable();
+                BeanUtils.copyProperties(payable, receivable);
+                receivable.setType(Constants.RECEIVABLE);
+                receivable.setSubType("On Account Of");
+                receivable.setAccountName(mac.getOnAccountOf());
+
+                asyncUtil.logAmountReceivablePayable(receivable);
+
+                return "00:Sale Logged Successfully";
+
+            }
+        } catch (Exception e) {
+            log.error("Exception while logging Entry:", e);
+        }
+        return ("01:Failed To Log Entry. Make sure all field are filled in.");
+
     }
 }

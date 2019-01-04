@@ -186,12 +186,12 @@ function advanceSearch() {
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
     console.log("dEntryType:" + dEntryType);
-    console.log("buySup:" + buySup);
+    console.log("buySup:" + buySup.replace('&', '$'));
     console.log("proj:" + toDate);
 
 
     table.ajax.url("entries/data?itemTypeId=" + itemTypeId + "&fromDate=" + fromDate + "&toDate=" + toDate
-            + "&subEntryType=" + dEntryType + "&buyerSupplier=" + buySup + "&project=" + proj);
+            + "&subEntryType=" + dEntryType + "&buyerSupplier=" + buySup.replace('&', '$') + "&project=" + proj);
     table.ajax.reload();
 }
 

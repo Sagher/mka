@@ -98,7 +98,7 @@ function advanceSearch() {
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
 
-    table.ajax.url("entries/data?type=indirect&fromDate=" + fromDate + "&toDate=" + toDate + "&buyerSupplier=" + buySup);
+    table.ajax.url("entries/data?type=indirect&fromDate=" + fromDate + "&toDate=" + toDate + "&buyerSupplier=" + buySup.replace('&', '$'));
     table.ajax.reload();
 }
 

@@ -5,6 +5,7 @@
  */
 package com.mka.utils;
 
+import com.mka.service.EmployeesService;
 import com.mka.service.StatsService;
 import java.util.Calendar;
 
@@ -26,6 +27,9 @@ public class ScheduledTasks {
     @Autowired
     StatsService statsService;
 
+    @Autowired
+    EmployeesService employeesService;
+
     @Scheduled(cron = "0 10 22 28-31 * ?")
     public void doStuffOnLastDayOfMonth() {
         final Calendar c = Calendar.getInstance();
@@ -34,6 +38,9 @@ public class ScheduledTasks {
             if (!statsService.insertStockTraceForNewMonth()) {
                 log.warn("FAILED TO INSERT CURRENT MONTH STOCK AS OPENING STOCK FOR NEXT MONTH");
             }
+
+            // set employees current month salary paid flag =0
+            employeesService.setCurrentMonthSalaryFlagToFalse();
         }
     }
 

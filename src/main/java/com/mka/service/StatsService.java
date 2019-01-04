@@ -31,6 +31,8 @@ public interface StatsService {
 
     public MasterAccount getMasterAccount();
 
+    public boolean logCashTranHistory(MasterAccountHistory mah);
+
     public String logCashTransaction(MasterAccountHistory mah, String from);
 
     public boolean updateMasterAccount(MasterAccount ma);

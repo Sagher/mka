@@ -71,6 +71,9 @@
                                             <li class="nav-item">
                                                 <a class="nav-link" id="asphalt-tab" data-toggle="tab" href="#asphaltsaletab" role="tab" aria-controls="asphaltsaletab" aria-selected="false">Asphalt Sale</a>
                                             </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="machinery-tab" data-toggle="tab" href="#machinerycarriagetab" role="tab" aria-controls="machinerycarriagetab" aria-selected="false">Machinery Carriage</a>
+                                            </li>
                                         </ul>
 
                                         <div class="tab-content" id="">
@@ -868,6 +871,94 @@
                                                 </form>
                                             </div> 
 
+
+                                            <!--
+                                            
+                                            MACHINERY CARRIAGE
+                                            
+                                            -->
+
+                                            <div class="tab-pane fade" id="machinerycarriagetab" role="tabpanel" aria-labelledby="machinery-tab">
+                                                <form id="macCarForm" class="form-horizontal" 
+                                                      action="<c:url value="/logMachinery"/>"  autocomplete="on"
+                                                      method="post" enctype="multipart/form-data">
+                                                    <br>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Carriage Contractor</span>
+                                                            <select class="form-control" id="macCarConSelect" name="macCarCon" required="true" >
+                                                                <option selected value="">-- Please select A Customer --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="macCarConInput" type="text" 
+                                                                   name="macCarConInput" placeholder="Custom Contractor">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">From</span>
+                                                            <input required="true" class="form-control" id="macCarFrom" type="text" 
+                                                                   name="macCarFrom" placeholder="From">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">To</span>
+                                                            <input required="true" class="form-control" id="macCarTo" type="text" 
+                                                                   name="macCarTo" placeholder="To">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">Amount</span>
+                                                            <input required="true" class="form-control" id="macCarAmount" type="number" 
+                                                                   name="macCarAmount" placeholder="Amount">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                    
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <span class="help-block">On Account Of</span>
+                                                            <select class="form-control" id="macCarCon2Select" name="macCarCon2" required="true" >
+                                                                <option selected value="">-- Please select A Customer --</option>
+                                                            </select>
+                                                            <br>
+                                                            <input hidden="true" class="form-control" id="macCarCon2Input" type="text" 
+                                                                   name="macCarCon2Input" placeholder="Custom Contractor">
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <br>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="pull-right">
+                                                                <button class="btn btn-lg btn-danger" type="reset">
+                                                                    <i class="fa fa-ban"></i> Reset</button>
+                                                                <button id="macCarBtn" class="btn btn-lg btn-primary"
+                                                                        onclick="logMacCar()" type="submit">
+                                                                    <i class="fa fa-floppy-o"></i> Log Entry</button>
+
+                                                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+                                                </form>
+                                            </div> 
                                         </div>
 
                                     </div>

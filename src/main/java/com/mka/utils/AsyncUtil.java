@@ -276,8 +276,23 @@ public class AsyncUtil {
                 // update users account
 
                 updateAccount(receivable);
-                int hr = accountsDao.getHeadOfficeReceivable();
-                updateMaReceivable(hr);
+                updateMaReceivable();
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void logAmountReceivablePayable(AccountPayableReceivable receivable) {
+        try {
+
+            if (!accountsDao.logAccountPayableReceivable(receivable)) {
+                log.warn("*** Account Receivable/Payable not logged ***");
+            } else {
+                // update users account
+
+                updateAccount(receivable);
+                updateMaReceivable();
             }
         } catch (Exception e) {
 
@@ -318,13 +333,65 @@ public class AsyncUtil {
     }
 
     @Async
-    public void updateMasterAccount(MasterAccount masterAccount, String payfrom, int advance) {
-        if (payfrom.equals("1")) {
-            masterAccount.setCashInHand(masterAccount.getCashInHand().subtract(BigDecimal.valueOf(advance)));
-        } else if (payfrom.equals("0")) {
-            masterAccount.setTotalCash(masterAccount.getTotalCash().subtract(BigDecimal.valueOf(advance)));
+    public void updateMasterAccount(MasterAccount masterAccount, String payfrom, BigDecimal advance,
+            EntryItems entryItem, String entryType, Object entry) {
+
+        if (advance.intValue() > 0) {
+            MasterAccountHistory mah = null;
+            if (payfrom.equals("1")) {
+                if (entryType.equalsIgnoreCase(Constants.SALE)) {
+                    masterAccount.setCashInHand(masterAccount.getCashInHand().add(advance));
+                } else if (entryType.equalsIgnoreCase(Constants.PURCHASE) || entryType.equalsIgnoreCase(Constants.EXPENSE)) {
+                    masterAccount.setCashInHand(masterAccount.getCashInHand().subtract(advance));
+                }
+            } else if (payfrom.equals("0")) {
+                mah = new MasterAccountHistory();
+                mah.setAmount(advance);
+                mah.setTimestamp(new Date());
+                if (entry instanceof EntriesIndirect) {
+                    mah.setPayee(((EntriesIndirect) entry).getName());
+                } else if (entry instanceof EntriesDirect) {
+                    if (entryType.equalsIgnoreCase(Constants.SALE)) {
+                        mah.setPayee(((EntriesDirect) entry).getBuyer());
+                    } else {
+                        mah.setPayee(((EntriesDirect) entry).getSupplier());
+                    }
+                }
+                mah.setDescription(entryItem.getItemName() + " " + entryType);
+
+                if (entryType.equalsIgnoreCase(Constants.SALE)) {
+                    mah.setType(Constants.PERSON_TO_HEADOFFICE);
+                    masterAccount.setTotalCash(masterAccount.getTotalCash().add(advance));
+
+                } else if (entryType.equalsIgnoreCase(Constants.PURCHASE) || entryType.equalsIgnoreCase(Constants.EXPENSE)) {
+                    mah.setType(Constants.FROM_HEADOFFICE_TO_PERSON);
+                    masterAccount.setTotalCash(masterAccount.getTotalCash().subtract(advance));
+                }
+            }
+            if (ss.updateMasterAccount(masterAccount) && mah != null) {
+                ss.logCashTranHistory(mah);
+                updateMaReceivable();
+            }
         }
-        ss.updateMasterAccount(masterAccount);
+    }
+
+    public void updateMasterAccount(BigDecimal advance, String item) {
+
+        if (advance.intValue() > 0) {
+            MasterAccount masterAccount = ss.getMasterAccount();
+            MasterAccountHistory mah = new MasterAccountHistory();
+            mah.setAmount(advance);
+            mah.setTimestamp(new Date());
+            mah.setDescription(item);
+
+            mah.setType(Constants.FROM_HEADOFFICE_TO_PERSON);
+            masterAccount.setTotalCash(masterAccount.getTotalCash().subtract(advance));
+            if (ss.updateMasterAccount(masterAccount)) {
+                ss.logCashTranHistory(mah);
+                updateMaReceivable();
+            }
+        }
+
     }
 
 //    @Async
@@ -392,7 +459,9 @@ public class AsyncUtil {
         ss.updateMasterAccount(ma);
     }
 
-    public void updateMaReceivable(int hr) {
+    public void updateMaReceivable() {
+        int hr = accountsDao.getHeadOfficeReceivable();
+
         MasterAccount ma = ss.getMasterAccount();
         ma.setHeadofficeReceivable(new BigDecimal(hr));
         ss.updateMasterAccount(ma);

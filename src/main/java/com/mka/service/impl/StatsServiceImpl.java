@@ -86,6 +86,11 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
+    public boolean logCashTranHistory(MasterAccountHistory mah) {
+        return statsDao.logCashTransaction(mah);
+    }
+
+    @Override
     public String logCashTransaction(MasterAccountHistory mah, String from) {
         MasterAccount ma = getMasterAccount();
         if (mah.getType().equals("+")) {
@@ -129,7 +134,7 @@ public class StatsServiceImpl implements StatsService {
             mah.setType(Constants.FROM_PERSON_TO_CASH_IN_HAND);
             ma.setCashInHand(ma.getCashInHand().add(mah.getAmount()));
         }
-        
+
         boolean tranLogged = statsDao.logCashTransaction(mah);
         if (tranLogged) {
             updateMasterAccount(ma);

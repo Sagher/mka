@@ -147,13 +147,13 @@ function advanceSearch() {
 
     console.log("from:" + fromDate);
     console.log("to:" + toDate);
-    console.log("buySup:" + buySup);
+    console.log("buySup:" + buySup.replace('&', '$'));
 
     totalAmount = 0;
     totalField.html(0);
 
     table.ajax.url("report/data?type=" + type + "&fromDate=" + fromDate + "&toDate=" + toDate
-            + "&buyerSupplier=" + buySup);
+            + "&buyerSupplier=" + buySup.replace('&', '$'));
     table.ajax.reload();
     renderTotalAmount();
 

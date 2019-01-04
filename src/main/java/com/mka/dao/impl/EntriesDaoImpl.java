@@ -11,6 +11,7 @@ import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
+import com.mka.model.MachineryCarriage;
 import com.mka.utils.Constants;
 import java.util.Date;
 import java.util.List;
@@ -517,6 +518,41 @@ public class EntriesDaoImpl implements EntriesDao {
             log.info("New AsphaltSaleConsumptions Logged: " + asses);
         } catch (Exception e) {
             log.error("Exception in logAsphaltSaleConsumptions() " + asses.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public boolean logMachineryCarriage(MachineryCarriage mac) {
+        Session session = null;
+        Transaction tx = null;
+        boolean response = false;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(mac);
+
+            mac.setIsActive(true);
+            mac.setCreatedDate(new Date());
+            mac.setUpdateDate(new Date());
+
+            session.save(mac);
+
+            tx.commit();
+            session.flush();
+            response = true;
+            log.info("New Machinery Carriage Logged: " + mac);
+        } catch (Exception e) {
+            log.error("Exception in logMachineryCarriage() " + mac.toString(), e);
             if (tx != null) {
                 tx.rollback();
             }
