@@ -230,7 +230,7 @@ public class ReportsController {
     //    }
 
     private int getNetProfit() {
-        int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
+        int totalSales = Constants.STARTING_SALES, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
 
         for (StockTrace e : ss.getStats()) {
             totalSales += e.getSalesAmount().intValue();
@@ -275,6 +275,7 @@ public class ReportsController {
     private ModelAndView getProfitAndLossModel() {
         ModelAndView model = new ModelAndView();
         model.addObject("stockTrace", ss.getStats());
+        model.addObject("openingNetProfit", Constants.STARTING_SALES);
         int totalSales = 0, directGrossProfit = 0, totalCrushSales = 0, totalAssLaying = 0, totalAssCarr = 0, netProfit = 0;
 
         for (StockTrace e : ss.getStats()) {

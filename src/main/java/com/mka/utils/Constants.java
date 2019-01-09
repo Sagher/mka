@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class Constants {
 
+    public static final int STARTING_SALES = 3725573;
+
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("yyyy-MM");
     public static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

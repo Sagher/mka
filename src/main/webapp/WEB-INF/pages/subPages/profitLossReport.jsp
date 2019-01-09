@@ -55,6 +55,17 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
+                                                                Opening Net Profit
+                                                            </td>
+                                                            <td>
+                                                                ${openingNetProfit}
+                                                            </td>
+                                                            <td>
+                                                                ${openingNetProfit}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
                                                                 Sales
                                                             </td>
                                                             <td>
@@ -181,7 +192,7 @@
                                                             </td>
                                                             <td>
                                                                 <c:set var="netProfit" 
-                                                                       value="${totalSales-directGrossProfit-totalIndirectExpenses}" 
+                                                                       value="${openingNetProfit+totalSales-directGrossProfit-totalIndirectExpenses}" 
                                                                        scope="page" />
 
                                                                 ${netProfit}
