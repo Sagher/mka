@@ -29,6 +29,8 @@ $(document).ready(function () {
              <th>Total Amount</th>
              <th>Advance</th>
              <th>${type}</th>
+             <th>Plant Bilty</th>
+             <th>Recipient Bilty</th>
              <th>Description</th>
              */
 //            {"data": "id", "render": function (data, type, full, meta) {
@@ -63,6 +65,8 @@ $(document).ready(function () {
                 }
             },
             {"data": "amount"},
+            {"data": "plantBilty"},
+            {"data": "recipientBilty"},
             {"data": "description"}
         ],
         "processing": true,

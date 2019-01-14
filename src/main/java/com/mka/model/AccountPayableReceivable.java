@@ -38,7 +38,10 @@ public class AccountPayableReceivable implements Serializable {
     @Size(max = 50)
     @Column(name = "sub_type")
     private String subType;
-
+    @Column(name = "plant_bilty")
+    private Integer plantBilty;
+    @Column(name = "recipient_bilty")
+    private Integer recipientBilty;
     @JoinColumn(name = "item_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private EntryItems itemType;
@@ -114,6 +117,22 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getPlantBilty() {
+        return plantBilty;
+    }
+
+    public void setPlantBilty(Integer plantBilty) {
+        this.plantBilty = plantBilty;
+    }
+
+    public Integer getRecipientBilty() {
+        return recipientBilty;
+    }
+
+    public void setRecipientBilty(Integer recipientBilty) {
+        this.recipientBilty = recipientBilty;
     }
 
     public String getAccountName() {

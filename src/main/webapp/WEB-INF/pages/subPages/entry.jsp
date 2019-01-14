@@ -727,6 +727,17 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
+                                                            <span class="help-block">Date of Entry</span>
+                                                            <div class="help-block">
+                                                                <input class="form-control" id="asdoe" type="date" name="asdoe" required="true">
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
                                                             <span class="help-block">Ex-Plant Rate / Ton</span>
                                                             <input class="form-control" id="expRate" type="number" name="expRate">
                                                             <span class="help-block">Ex-Plant Total Cost</span>
@@ -905,7 +916,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    
+
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -915,7 +926,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    
+
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">
@@ -925,7 +936,7 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
-                                                    
+
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>
                                                         <div class="col-md-8">

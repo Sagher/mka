@@ -168,6 +168,8 @@ public class AsyncUtil {
                 receivable.setSubType(Constants.SALE);
                 receivable.setItemType(entry.getItem());
                 receivable.setTimestamp(entry.getCreatedDate());
+                receivable.setPlantBilty(entry.getPlantBilty());
+                receivable.setRecipientBilty(entry.getRecipientBilty());
 
                 if (!accountsDao.logAccountPayableReceivable(receivable)) {
                     log.warn("*** Account Recevaible not logged ***");
@@ -191,6 +193,8 @@ public class AsyncUtil {
                 payable.setSubType(Constants.PURCHASE);
                 payable.setItemType(entry.getItem());
                 payable.setTimestamp(entry.getCreatedDate());
+                payable.setPlantBilty(entry.getPlantBilty());
+                payable.setRecipientBilty(entry.getRecipientBilty());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");

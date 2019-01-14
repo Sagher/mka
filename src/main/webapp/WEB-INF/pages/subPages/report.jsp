@@ -72,12 +72,12 @@
                                                                 <option selected value="">All</option>
                                                             </select>
                                                         </div>
-<!--                                                        <div class="col-sm-3">
-                                                            <label>Project</label>
-                                                            <select class="form-control" id="proj" name="proj">
-                                                                <option selected value="">All</option>
-                                                            </select>
-                                                        </div>-->
+                                                        <!--                                                        <div class="col-sm-3">
+                                                                                                                    <label>Project</label>
+                                                                                                                    <select class="form-control" id="proj" name="proj">
+                                                                                                                        <option selected value="">All</option>
+                                                                                                                    </select>
+                                                                                                                </div>-->
                                                     </div>
                                                     <div class="form-group row">
                                                         <div class="col-sm-12">
@@ -101,22 +101,24 @@
                                                             <th>Total Amount</th>
                                                             <th>Advance</th>
                                                             <th>${type}</th>
+                                                            <th>Plant Bilty</th>
+                                                            <th>Recipient Bilty</th>
                                                             <th>Description</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                     </tbody>
                                                 </table>
-<!--                                                <div>
-                                                    <hr>
-                                                    <h4>Summary</h4>
-                                                    <br>
-                                                    <h5>Total ${type} Amount: 
-                                                        <text id="totalField">
-
-                                                        </text>
-                                                    </h5>
-                                                </div>-->
+                                                <!--                                                <div>
+                                                                                                    <hr>
+                                                                                                    <h4>Summary</h4>
+                                                                                                    <br>
+                                                                                                    <h5>Total ${type} Amount: 
+                                                                                                        <text id="totalField">
+                                                
+                                                                                                        </text>
+                                                                                                    </h5>
+                                                                                                </div>-->
                                             </div>
                                         </div>
                                     </div>

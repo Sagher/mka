@@ -26,6 +26,8 @@ var amount = $("#damount");
 var advance = $("#dadvance");
 var dateOfEntry = $("#doe");
 var cashDateOfEntry = $("#cdoe");
+var asphaltDateOfEntry = $("#asdoe");
+
 
 $(document).ready(function () {
     $.ajax({
@@ -105,16 +107,20 @@ $(document).ready(function () {
     dateOfEntry.val(new Date().toDateInputValue());
     idateOfEntry.val(new Date().toDateInputValue());
     cashDateOfEntry.val(new Date().toDateInputValue());
+    asphaltDateOfEntry.val(new Date().toDateInputValue());
+
 
     dateOfEntry.attr("max", new Date().toDateInputValue());
     idateOfEntry.attr("max", new Date().toDateInputValue());
     cashDateOfEntry.attr("max", new Date().toDateInputValue());
+    asphaltDateOfEntry.val(new Date().toDateInputValue());
 
     var firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
     dateOfEntry.attr("min", firstDay.toDateInputValue());
     idateOfEntry.attr("min", firstDay.toDateInputValue());
     cashDateOfEntry.attr("min", firstDay.toDateInputValue());
+    asphaltDateOfEntry.val(new Date().toDateInputValue());
 
 });
 // attach change event listener to 'itemType' select box
@@ -315,6 +321,18 @@ $("#drate, #dquantity").change(function () {
         amount.val(am);
     } else {
 
+    }
+});
+
+$("#damount, #dquantity").change(function () {
+    var selectItemId = ditemTypeSelection.val();
+    if (selectItemId == 6) {
+        if (amount.val().length > 0 && quantity.val().length > 0) {
+            var am = amount.val() / quantity.val();
+            rate.val(am);
+        } else {
+
+        }
     }
 });
 

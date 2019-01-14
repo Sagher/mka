@@ -391,6 +391,7 @@ public class EntriesServiceImpl implements EntriesService {
             String customerNew = request.getParameter("asCusInput");
             String asProj = request.getParameter("asProj");
             String asProjInput = request.getParameter("asProjInput");
+            String doe = request.getParameter("asdoe");
 
             if (customer.equalsIgnoreCase("other")) {
                 customer = customerNew;
@@ -428,6 +429,14 @@ public class EntriesServiceImpl implements EntriesService {
             realAss.setExPlantRate(BigDecimal.valueOf(Float.parseFloat(expRate)));
             realAss.setExPlantCost(BigDecimal.valueOf(Float.parseFloat(expCost)));
 
+            if (Constants.DATE_FORMAT.parse((Constants.DATE_FORMAT.format(new Date())))
+                    .after(Constants.DATE_FORMAT.parse(doe))) {
+                realAss.setCreatedDate(Constants.TIMESTAMP_FORMAT.parse(doe + " 01:00:00"));
+            } else {
+                realAss.setCreatedDate(new Date());
+
+            }
+
             realAss.setQuantity(BigDecimal.valueOf(Float.parseFloat(totalAss)));
             realAss.setTotalSaleAmount(BigDecimal.valueOf(Float.parseFloat(request.getParameter("assSaleCost"))));
 
@@ -446,6 +455,7 @@ public class EntriesServiceImpl implements EntriesService {
                 receivable.setItemType(new EntryItems(17));
                 receivable.setDescription(realAss.getDescription());
                 receivable.setTimestamp(new Date());
+                receivable.setPlantBilty(realAss.getBiltee());
 
                 asyncUtil.logAmountReceivable(receivable);
 
