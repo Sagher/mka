@@ -203,7 +203,8 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty,
                                     entry.getId(), entry.getProject(), entry.getDescription(),
                                     entry.getQuantity(), BigDecimal.valueOf(Float.parseFloat(unloadingRate)),
-                                    entryDetail.getUnloadingCost(), new EntryItems(19), "", entry.getCreatedDate());
+                                    entryDetail.getUnloadingCost(), new EntryItems(19), "", entry.getCreatedDate(),
+                                    entry.getPlantBilty(), entry.getRecipientBilty());
 
                             asyncUtil.addToCustomersAndBuyersList(unloadingParty);
                         }
@@ -505,7 +506,8 @@ public class EntriesServiceImpl implements EntriesService {
                             String payableTo = assLayer;
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
                                     realAss.getProject(), realAss.getDescription(), ass.getItemQuantity(), ass.getItemRate(),
-                                    ass.getItemAmount(), new EntryItems(20), realAss.getType(), realAss.getCreatedDate());
+                                    ass.getItemAmount(), new EntryItems(20), realAss.getType(), realAss.getCreatedDate(),
+                                    0, realAss.getBiltee());
 
                             asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assLayingAdvance)), "Asphalt Laying");
                         }
@@ -541,7 +543,8 @@ public class EntriesServiceImpl implements EntriesService {
                             String payableTo = assCarProvider;
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), realAss.getDescription(),
                                     assCarriage.getItemQuantity(), (assCarriage.getItemRate()),
-                                    (assCarriage.getItemAmount()), new EntryItems(21), realAss.getType(), realAss.getCreatedDate());
+                                    (assCarriage.getItemAmount()), new EntryItems(21), realAss.getType(), realAss.getCreatedDate(),
+                                    0, realAss.getBiltee());
 
                             asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assCarAdvance)), "Asphalt Carriage");
 

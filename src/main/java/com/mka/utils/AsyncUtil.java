@@ -241,7 +241,8 @@ public class AsyncUtil {
 
     @Async
     public void logAmountPayable(BigDecimal amount, String payableTo, int entryId, String project, String description,
-            BigDecimal quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem, String subType, Date entryDate) {
+            BigDecimal quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem,
+            String subType, Date entryDate, int plantBilty, int recipientBilty) {
         try {
             //payable
             AccountPayableReceivable payable = new AccountPayableReceivable();
@@ -258,6 +259,8 @@ public class AsyncUtil {
             payable.setItemType(eItem);
             payable.setDescription(description);
             payable.setTimestamp(entryDate);
+            payable.setPlantBilty(plantBilty);
+            payable.setRecipientBilty(recipientBilty);
 
             if (!accountsDao.logAccountPayableReceivable(payable)) {
                 log.warn("*** Account Payable not logged ***");
