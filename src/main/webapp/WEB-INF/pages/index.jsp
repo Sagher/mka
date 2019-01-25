@@ -122,12 +122,12 @@
                         <!-- /.row-->
 
 
-                        <div class="card">
+<!--                        <div class="card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-sm-5">
                                         <h4 class="card-title mb-0">Sales & Purchase Information </h4>
-                                        <!--<div class="small text-muted">Last 30 Days</div>-->
+                                        <div class="small text-muted">Last 30 Days</div>
                                     </div>
 
                                     <div class="col-sm-7 d-none d-md-block">
@@ -147,7 +147,7 @@
                                     <canvas class="chart chartjs-render-monitor" id="main-chart" height="300" width="1047" style="display: block;"></canvas>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="row">
                             <c:forEach items="${stockTrace}" var="item">
@@ -222,7 +222,7 @@
                                                 </div>
                                                 <!-- /.row-->
                                                 <hr class="mt-0">
-                                                <div class="progress-group mb-4">
+<!--                                                <div class="progress-group mb-4">
                                                     <div class="progress-group-prepend">
                                                         <span class="progress-group-text">Monday</span>
                                                     </div>
@@ -311,7 +311,7 @@
                                                             <div class="progress-bar bg-danger" role="progressbar" style="width: ${totalSale}%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div>-->
                                             </div>
 
 
