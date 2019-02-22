@@ -298,7 +298,7 @@ function delet() {
                     type: "success", layout: "center", timeout: 2000
                 });
                 setTimeout(function () {
-                    location.reload();
+                    table.ajax.reload();
                 }, 2000);
 
             } else {

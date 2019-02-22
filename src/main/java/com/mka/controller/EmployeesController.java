@@ -43,8 +43,8 @@ public class EmployeesController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    AsyncUtil asyncUtil;
+//    @Autowired
+//    AsyncUtil asyncUtil;
 
     @Autowired
     EmployeesService employeesService;
@@ -255,6 +255,6 @@ public class EmployeesController {
     private void logActivity(HttpServletRequest request, String username, String action, String desc) {
         String remoteAddr = request.getHeader("x-forwarded-for") != null ? request.getHeader("x-forwarded-for") : request.getRemoteAddr();
         String ua = request.getHeader("user-agent");
-        asyncUtil.logActivity(request, username, remoteAddr, ua, action, desc);
+//        asyncUtil.logActivity(request, username, remoteAddr, ua, action, desc);
     }
 }

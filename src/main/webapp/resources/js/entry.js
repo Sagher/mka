@@ -566,17 +566,23 @@ tCustomerBuyerSelect.change(function () {
 //
 //attach change event to project select
 ttype.change(function () {
+    if ($('#ttype option:selected').val() == "--") {
+        $("#salaryDiv").removeAttr("hidden");
+    }
+
     if ($('#ttype option:selected').val() == "+") {
         $("#toHoOptions").removeAttr("hidden");
         $("#fromHoOptions").attr("hidden", "true");
+        $("#salaryDiv").attr("hidden", "true");
     } else if ($('#ttype option:selected').val() == "-") {
         $("#fromHoOptions").removeAttr("hidden");
+        $("#salaryDiv").removeAttr("hidden");
+
         $("#toHoOptions").attr("hidden", "true");
+//        $("#salaryDiv").attr("hidden", "true");
     } else {
         $("#fromHoOptions").attr("hidden", "true");
         $("#toHoOptions").attr("hidden", "true");
-
-
     }
 });
 
@@ -584,10 +590,13 @@ function togglePayeeDiv(value) {
     if (value === 0) {
         $("#cashTranPayeeDiv").removeAttr("hidden");
         $("#tbuysupSelect").attr("required", "true")
+        $("#salaryDiv").removeAttr("hidden");
 
     } else {
         $("#cashTranPayeeDiv").attr("hidden", "true");
-        $("#tbuysupSelect").removeAttr("required")
+        $("#tbuysupSelect").removeAttr("required");
+        $("#salaryDiv").attr("hidden", "true");
+
     }
 }
 

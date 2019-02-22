@@ -7,6 +7,7 @@ package com.mka.dao.impl;
 import com.mka.dao.EmployeesDao;
 import com.mka.model.Employees;
 import com.mka.model.EmployeessPayments;
+import com.mka.utils.Constants;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -176,6 +177,30 @@ public class EmployeesDaoImpl implements EmployeesDao {
     }
 
     @Override
+    public Employees getEmployee(String name) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(Employees.class);
+            criteria.add(Restrictions.eq("name", name));
+            List<Employees> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in UserDaoImpl getEmployee() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
     public boolean payAllEmployees(Map<Employees, EmployeessPayments> paymentRecord) {
         Session session = null;
         try {
@@ -214,5 +239,59 @@ public class EmployeesDaoImpl implements EmployeesDao {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(EmployeessPayments.class);
+
+            if (!from.isEmpty()) {
+                from = from + " 00:00:00";
+                criteria.add(Restrictions.ge("paymentDate", Constants.TIMESTAMP_FORMAT.parse(from)));
+            }
+            if (!to.isEmpty()) {
+                to = to + " 23:59:59";
+                criteria.add(Restrictions.le("paymentDate", Constants.TIMESTAMP_FORMAT.parse(to)));
+            }
+
+//            criteria.addOrder(Order.desc("paymentDate"));
+
+            List<EmployeessPayments> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getEmployeesPaymentRecord() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public void logEmployeePayment(EmployeessPayments empPayment) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+            session.save(empPayment);
+
+            tx.commit();
+        } catch (Exception e) {
+            log.error("Exception in employeesDaoImpl logEmployeePayment() : ", e);
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
     }
 }

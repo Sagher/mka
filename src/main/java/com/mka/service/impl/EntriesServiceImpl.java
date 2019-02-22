@@ -203,7 +203,7 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(entryDetail.getUnloadingCost(), unloadingParty,
                                     entry.getId(), entry.getProject(), entry.getDescription(),
                                     entry.getQuantity(), BigDecimal.valueOf(Float.parseFloat(unloadingRate)),
-                                    entryDetail.getUnloadingCost(), new EntryItems(19), "", entry.getCreatedDate(),
+                                    entryDetail.getUnloadingCost(), new EntryItems(19), subItemType, entry.getCreatedDate(),
                                     entry.getPlantBilty(), entry.getRecipientBilty());
 
                             asyncUtil.addToCustomersAndBuyersList(unloadingParty);
@@ -221,7 +221,7 @@ public class EntriesServiceImpl implements EntriesService {
                     if (entry2.getRate().equals(BigDecimal.ZERO)) {
                         entry2.setRate(entry2.getTotalPrice().divide(entry2.getQuantity()));
                     }
-                    asyncUtil.logDirectAccountPayableReceivable(entry2);
+                    asyncUtil.logDirectAccountPayableReceivable(entry2, subItemType);
 
                     entry.setTotalPrice(BigDecimal.valueOf(Float.parseFloat(totalAmount)));
                     asyncUtil.updateStockTrace(entry);
@@ -457,7 +457,7 @@ public class EntriesServiceImpl implements EntriesService {
                 receivable.setDescription(realAss.getDescription());
                 receivable.setTimestamp(new Date());
                 receivable.setPlantBilty(realAss.getBiltee());
-
+                receivable.setVehicleNo(vehicle);
                 asyncUtil.logAmountReceivable(receivable);
 
                 List<AsphaltSaleConsumption> assConsumptions = new ArrayList<>();

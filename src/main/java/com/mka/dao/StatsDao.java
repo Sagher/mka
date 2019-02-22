@@ -40,4 +40,6 @@ public interface StatsDao {
     public AsphaltSales getAsphaltSale(String buyerSupplier, String project);
 
     public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass);
+
+    public List<AsphaltSales> getAsphaltSales(String from, String to);
 }

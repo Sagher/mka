@@ -151,7 +151,7 @@ public class AsyncUtil {
 //        entriesService.addEntryDetail(entryDetail);
 //    }
     @Async
-    public void logDirectAccountPayableReceivable(EntriesDirect entry) {
+    public void logDirectAccountPayableReceivable(EntriesDirect entry, String subType) {
         try {
             if (entry.getSubEntryType().equalsIgnoreCase(Constants.SALE) && entry.getTotalPrice() != entry.getAdvance()) {
                 // receivable
@@ -165,7 +165,7 @@ public class AsyncUtil {
                 receivable.setIsActive(true);
                 receivable.setProject(entry.getProject());
                 receivable.setType(Constants.RECEIVABLE);
-                receivable.setSubType(Constants.SALE);
+                receivable.setSubType(subType);
                 receivable.setItemType(entry.getItem());
                 receivable.setTimestamp(entry.getCreatedDate());
                 receivable.setPlantBilty(entry.getPlantBilty());
@@ -178,7 +178,8 @@ public class AsyncUtil {
                     updateAccount(receivable);
                 }
 
-            } else if (entry.getSubEntryType().equalsIgnoreCase(Constants.PURCHASE) && entry.getTotalPrice() != entry.getAdvance()) {
+            } else if (entry.getSubEntryType().equalsIgnoreCase(Constants.PURCHASE)
+                    && entry.getTotalPrice() != entry.getAdvance()) {
                 //payable
                 AccountPayableReceivable payable = new AccountPayableReceivable();
                 payable.setAccountName(entry.getSupplier());
@@ -190,7 +191,7 @@ public class AsyncUtil {
                 payable.setIsActive(true);
                 payable.setProject(entry.getProject());
                 payable.setType(Constants.PAYABLE);
-                payable.setSubType(Constants.PURCHASE);
+                payable.setSubType(subType);
                 payable.setItemType(entry.getItem());
                 payable.setTimestamp(entry.getCreatedDate());
                 payable.setPlantBilty(entry.getPlantBilty());

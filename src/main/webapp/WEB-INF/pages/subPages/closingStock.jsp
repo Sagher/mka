@@ -37,8 +37,24 @@
 
                                         <div class="card">
                                             <div class="card-header">
-                                                <i class="fa fa-align-justify"></i>
-                                                <span>Closing Stock</span>
+                                                <center>
+                                                    <span>
+                                                        <h4>
+                                                            MKA ASPHALT PLANT MARGALLA DISTRICT RAWALPINDI
+                                                        </h4>
+                                                        <h6>
+                                                            CLOSING STOCK
+                                                        </h6>
+                                                        As On <text id="date"></text>
+                                                        <script>
+                                                            n = new Date();
+                                                            y = n.getFullYear();
+                                                            m = n.getMonth() + 1;
+                                                            d = n.getDate();
+                                                            document.getElementById("date").innerHTML = d + "-" + m + "-" + y;
+                                                        </script>                          
+                                                    </span>
+                                                </center>                                  
                                             </div>
                                             <div class="card-body">
                                                 <hr> 

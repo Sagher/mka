@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -32,6 +33,13 @@ import javax.validation.constraints.NotNull;
 @NamedQueries({
     @NamedQuery(name = "EmployeessPayments.findAll", query = "SELECT e FROM EmployeessPayments e")})
 public class EmployeessPayments implements Serializable {
+
+    @Size(max = 255)
+    @Column(name = "description")
+    private String description;
+    @Size(max = 20)
+    @Column(name = "type")
+    private String type;
 
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
@@ -122,6 +130,22 @@ public class EmployeessPayments implements Serializable {
 
     public void setAmountPayed(BigDecimal amountPayed) {
         this.amountPayed = amountPayed;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

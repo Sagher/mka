@@ -131,14 +131,31 @@ public class EntriesController {
                         model.addObject("stockTrace", st);
                     }
                     model.setViewName("subPages/directEntries");
-                } else if (type.equalsIgnoreCase("indirect")) {
+
+                } else if (type.equalsIgnoreCase(Constants.INDIRECT)) {
                     model.setViewName("subPages/indirectEntries");
 
                 } else if (type.equalsIgnoreCase(Constants.CASH_TRANSACTIONS)) {
                     model.setViewName("subPages/cashTransactions");
 
-                } else if (type.equalsIgnoreCase(Constants.CUSTOMERS_BUYERS)) {
-                    model.setViewName("subPages/customersBuyers");
+                } else if (type.equalsIgnoreCase(Constants.PAYABLESANDRECEIVABLES)) {
+                    List<CustomersBuyers> payablees = new ArrayList<>();
+                    List<CustomersBuyers> receivablees = new ArrayList<>();
+                    MasterAccount ma = ss.getMasterAccount();
+
+                    for (CustomersBuyers cb : userService.getCustomersAndBuyers()) {
+                        if (cb.getPayable().intValue() > 0) {
+                            payablees.add(cb);
+                        } else {
+                            receivablees.add(cb);
+                        }
+                    }
+                    model.addObject("payablees", payablees);
+                    model.addObject("receivablees", receivablees);
+                    model.addObject("allReceivable", ma.getAllReceivable().add(ma.getHeadofficeReceivable()));
+                    model.addObject("allPayable", ma.getAllPayable());
+
+                    model.setViewName("subPages/payablesAndReceivables");
 
                 } else {
                     model.setViewName("redirect:/");
@@ -277,21 +294,6 @@ public class EntriesController {
             data = ss.getCashTransactions(startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
             totalSize = ss.getCashTransactionsCount(startDate, endDate, buyerSupplier);
 
-        } else if (type.equalsIgnoreCase(Constants.CUSTOMERS_BUYERS)) {
-            // customersBuyers
-            try {
-                data = userService.getCustomersAndBuyers();
-                totalSize = ((List<CustomersBuyers>) data).size();
-            } catch (Exception e) {
-
-            }
-        } else if (type.equalsIgnoreCase("customersBuyersDetail")) {
-            try {
-                data = accountsService.getAllTransactions(orderBy, sortby, startDate, endDate, buyerSupplier);
-                totalSize = ((List<AccountPayableReceivable>) data).size();
-            } catch (Exception e) {
-
-            }
         }
 
         resp.setData(data != null ? data : "");
@@ -478,6 +480,7 @@ public class EntriesController {
             String tamount = request.getParameter("tamount");
             String tdesc = request.getParameter("tdesc");
             String tpayer = request.getParameter("tpayer");
+            String isSalary = request.getParameter("isSalary");
 
             String payfrom;
             if (ttype.equals("+")) {
@@ -499,7 +502,7 @@ public class EntriesController {
             mah.setDescription(tdesc);
             mah.setPayee(tpayer);
 
-            String transactionLogged = ss.logCashTransaction(mah, payfrom);
+            String transactionLogged = ss.logCashTransaction(mah, payfrom, isSalary);
             if (transactionLogged == null) {
                 return ("01:Failed To Log Transaction. Make sure all fields are Properly Filled.");
             } else {

@@ -623,6 +623,18 @@
                                                         </div>
                                                         <label class="col-md-2"></label>
                                                     </div>
+                                                    <div class="form-group row" id="salaryDiv" hidden="true">
+                                                        <label class="col-md-2"></label>
+                                                        <div class="col-md-8">
+                                                            <div class="help-block">
+                                                                <div class="form-check form-check-inline mr-1">
+                                                                    <input class="form-check-input" id="isSalary" type="checkbox" name="isSalary">
+                                                                    <label class="form-check-label" for="inline-radio1">Salary</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <label class="col-md-2"></label>
+                                                    </div>
 
                                                     <div class="form-group row">
                                                         <label class="col-md-2"></label>

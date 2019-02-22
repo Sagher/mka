@@ -6,12 +6,16 @@
 package com.mka.controller;
 
 import com.mka.model.AccountPayableReceivable;
+import com.mka.model.AsphaltSales;
+import com.mka.model.CustomersBuyers;
+import com.mka.model.EmployeessPayments;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
 import com.mka.model.User;
 import com.mka.model.response.DataTableResp;
 import com.mka.service.AccountsService;
+import com.mka.service.EmployeesService;
 import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.service.UserActivityService;
@@ -19,14 +23,13 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,6 +71,8 @@ public class ReportsController {
     @Autowired
     EntriesService entriesService;
 
+    @Autowired
+    EmployeesService employeesService;
 
     /* 
      * 
@@ -105,7 +110,10 @@ public class ReportsController {
     @RequestMapping(value = "/report", method = RequestMethod.GET)
     public ModelAndView reportPage(HttpServletRequest request, HttpSession session,
             @RequestParam(value = "type", required = false, defaultValue = Constants.PAYABLE) String type,
-            @RequestParam(value = "eitem", required = false, defaultValue = "0") int itemId) {
+            @RequestParam(value = "eitem", required = false, defaultValue = "0") int itemId,
+            @RequestParam(value = "from", required = false, defaultValue = "") String from,
+            @RequestParam(value = "to", required = false, defaultValue = "") String to,
+            @RequestParam(value = "accountName", required = false, defaultValue = "") String accountName) {
 
         ModelAndView model = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -117,6 +125,7 @@ public class ReportsController {
 
                 if (type.equalsIgnoreCase(Constants.PAYABLE)) {
                     model.addObject("type", Constants.PAYABLE);
+                    return model;
 
                 } else if (type.equalsIgnoreCase(Constants.PROFITLOSS)) {
                     return getProfitAndLossModel();
@@ -149,24 +158,100 @@ public class ReportsController {
                     model.addObject("totalStockAmount", totalStockAmount);
 
                     return model;
-                } else {
-                    model.addObject("type", Constants.RECEIVABLE);
 
+                } else if (type.equalsIgnoreCase(Constants.TOTALSALES)) {
+                    if (from.isEmpty() && to.isEmpty()) {
+                        LocalDate todaydate = LocalDate.now();
+                        from = todaydate.withDayOfMonth(1).toString();
+                        to = todaydate.toString();
+                    }
+                    List<AsphaltSales> assSales = ss.getAsphaltSales(from, to);
+                    model.addObject("assSales", assSales);
+                    model.addObject("from", from);
+                    model.addObject("to", to);
+
+                    model.setViewName("subPages/totalSales");
+                    return model;
+
+                } else if (type.equalsIgnoreCase(Constants.ACCOUNT_DETAILS)) {
+                    accountName = accountName.replaceAll("-", "&");
+                    if (from.isEmpty() && to.isEmpty()) {
+                        LocalDate todaydate = LocalDate.now();
+                        from = todaydate.withDayOfMonth(1).toString();
+                        to = todaydate.toString();
+                    }
+                    // customersBuyers
+                    if (!accountName.isEmpty() && (userService.getCustomerAndBuyer(accountName) != null)) {
+                        List<AccountPayableReceivable> accountNameTransactions = (List<AccountPayableReceivable>) accountsService.getAllTransactions("", "", from, to, accountName);
+                        model.addObject("accountNameTransactions", accountNameTransactions);
+                        model.addObject("accountName", accountName);
+                    } else {
+                        model.addObject("accountName", "");
+                    }
+
+                    List<CustomersBuyers> customerBuyers = userService.getCustomersAndBuyers();
+                    model.addObject("customerBuyers", customerBuyers);
+                    model.addObject("from", from);
+                    model.addObject("to", to);
+
+                    model.setViewName("subPages/accountDetails");
+                    return model;
+
+                } else if (type.equals("salaryAccount")) {
+                    if (from.isEmpty() && to.isEmpty()) {
+                        LocalDate todaydate = LocalDate.now();
+                        from = todaydate.withDayOfMonth(1).toString();
+                        to = todaydate.toString();
+                    }
+
+                    List<EmployeessPayments> employeesPayments = employeesService.getEmployeesPaymentRecord(from, to);
+                    model.addObject("employeesPayments", employeesPayments);
+                    model.addObject("from", from);
+                    model.addObject("to", to);
+
+                    model.setViewName("subPages/salaryAccount");
+                    return model;
+
+                } else if (type.equals("incomeAndExpenditureAccount")) {
+                    if (from.isEmpty() && to.isEmpty()) {
+                        LocalDate todaydate = LocalDate.now();
+                        from = todaydate.withDayOfMonth(1).toString();
+                        to = todaydate.toString();
+                    }
+
+                    List<AccountPayableReceivable> accPayRec = accountsService.getAccountPayableReceivable(
+                            new EntryItems(22), null, "Cash In Hand To Person", 0,
+                            Integer.MAX_VALUE, "asc", "", from, to, "", "");
+                    model.addObject("employeesPayments", accPayRec);
+                    model.addObject("from", from);
+                    model.addObject("to", to);
+
+                    model.setViewName("subPages/incomeAndExpenditureAccount");
+                    return model;
+
+                } else if (type.equalsIgnoreCase(Constants.RECEIVABLE)) {
+                    model.addObject("type", Constants.RECEIVABLE);
+                    return model;
+
+                } else {
+                    model.setViewName("redirect:/reports");
+                    return model;
                 }
-                model.setViewName("subPages/report");
             } else {
                 model.addObject("errorCode", "401");
                 model.addObject("errorMessage", "Unauthorized Access");
                 model.addObject("errorDescription", "You are not authorized to view this page");
                 model.setViewName("error");
+                return model;
             }
         } else {
             model.addObject("msg", "Invalid username and password!");
             log.info("Invalid username and password!");
             model.setViewName("login");
+            return model;
+
         }
 
-        return model;
     }
 
     @RequestMapping(value = "/report/data", method = RequestMethod.GET)

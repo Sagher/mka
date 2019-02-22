@@ -24,9 +24,8 @@ public class UserServiceImpl implements UserService {
 
     private static final User rootUser = new User(0, "root", "root", "root123#", (short) 1, "ADMIN");
 
-    @Autowired
-    AsyncUtil asyncUtil;
-
+//    @Autowired
+//    AsyncUtil asyncUtil;
     @Autowired
     UserDao userDao;
 

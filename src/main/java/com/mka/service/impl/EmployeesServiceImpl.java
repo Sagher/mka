@@ -4,12 +4,10 @@ package com.mka.service.impl;
  *
  * @author Sagher Mehmood
  */
-import com.mka.dao.AccountsDao;
 import com.mka.dao.EmployeesDao;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.Employees;
 import com.mka.model.EmployeessPayments;
-import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.service.AccountsService;
 import com.mka.service.EmployeesService;
@@ -18,6 +16,8 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -87,7 +87,14 @@ public class EmployeesServiceImpl implements EmployeesService {
                     EmployeessPayments empPayment = new EmployeessPayments();
                     empPayment.setAmountPayed(emp.getSalary());
                     empPayment.setEmployees(emp);
+
+                    YearMonth thisMonth = YearMonth.now();
+                    YearMonth lastMonth = thisMonth.minusMonths(1);
+                    DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+
+                    empPayment.setDescription("SALARY DEPOSITED " + lastMonth.format(monthYearFormatter));
                     empPayment.setPaymentDate(new Date());
+                    empPayment.setType("CREDIT");
                     paymentRecord.put(emp, empPayment);
 
                     AccountPayableReceivable payable = new AccountPayableReceivable();
@@ -152,6 +159,21 @@ public class EmployeesServiceImpl implements EmployeesService {
         }
 
         return true;
+    }
+
+    @Override
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to) {
+        return employeesDao.getEmployeesPaymentRecord(from, to);
+    }
+
+    @Override
+    public Employees getEmployee(String name) {
+        return employeesDao.getEmployee(name);
+    }
+
+    @Override
+    public void logEmployeePayment(EmployeessPayments empPayment) {
+        employeesDao.logEmployeePayment(empPayment);
     }
 
 }

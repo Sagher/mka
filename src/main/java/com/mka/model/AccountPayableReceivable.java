@@ -36,6 +36,10 @@ import javax.validation.constraints.Size;
 public class AccountPayableReceivable implements Serializable {
 
     @Size(max = 50)
+    @Column(name = "vehicle_no")
+    private String vehicleNo;
+
+    @Size(max = 50)
     @Column(name = "sub_type")
     private String subType;
     @Column(name = "plant_bilty")
@@ -263,6 +267,14 @@ public class AccountPayableReceivable implements Serializable {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getVehicleNo() {
+        return vehicleNo;
+    }
+
+    public void setVehicleNo(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
     }
 
 }

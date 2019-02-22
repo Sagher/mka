@@ -6,6 +6,7 @@
 package com.mka.service;
 
 import com.mka.model.Employees;
+import com.mka.model.EmployeessPayments;
 import java.util.List;
 
 /**
@@ -24,7 +25,13 @@ public interface EmployeesService {
 
     public Employees getEmployee(int id);
 
+    public Employees getEmployee(String name);
+
     public boolean payAllEmployees();
 
     public boolean setCurrentMonthSalaryFlagToFalse();
+
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to);
+
+    public void logEmployeePayment(EmployeessPayments empPayment);
 }

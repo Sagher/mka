@@ -33,7 +33,7 @@ public interface StatsService {
 
     public boolean logCashTranHistory(MasterAccountHistory mah);
 
-    public String logCashTransaction(MasterAccountHistory mah, String from);
+    public String logCashTransaction(MasterAccountHistory mah, String from, String isSalary);
 
     public boolean updateMasterAccount(MasterAccount ma);
 
@@ -45,4 +45,5 @@ public interface StatsService {
 
     public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass);
 
+    public List<AsphaltSales> getAsphaltSales(String from, String to);
 }

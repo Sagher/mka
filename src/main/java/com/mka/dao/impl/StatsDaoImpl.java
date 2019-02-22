@@ -369,4 +369,36 @@ public class StatsDaoImpl implements StatsDao {
             }
         }
     }
+
+    public List<AsphaltSales> getAsphaltSales(String from, String to) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AsphaltSales.class);
+
+            if (!from.isEmpty()) {
+                criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(from)));
+            }
+            if (!to.isEmpty()) {
+                criteria.add(Restrictions.le("createdDate", Constants.DATE_FORMAT.parse(to)));
+            }
+
+            criteria.addOrder(Order.desc("createdDate"));
+
+            List<AsphaltSales> emps = criteria.list();
+            if (emps.size() > 0) {
+                return emps;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getAsphaltSale() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
 }

@@ -6,13 +6,14 @@
 package com.mka.service.impl;
 
 import com.mka.dao.StatsDao;
-import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
-import com.mka.model.EntryItems;
+import com.mka.model.Employees;
+import com.mka.model.EmployeessPayments;
 import com.mka.model.MasterAccount;
 import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
+import com.mka.service.EmployeesService;
 import com.mka.service.StatsService;
 import com.mka.utils.Constants;
 import java.math.BigDecimal;
@@ -36,6 +37,9 @@ public class StatsServiceImpl implements StatsService {
 
     @Autowired
     StatsDao statsDao;
+
+    @Autowired
+    EmployeesService employeesService;
 
     private List<StockTrace> statItems = null;
 
@@ -91,8 +95,9 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public String logCashTransaction(MasterAccountHistory mah, String from) {
+    public String logCashTransaction(MasterAccountHistory mah, String from, String isSalary) {
         MasterAccount ma = getMasterAccount();
+        boolean logSalary = false;
         if (mah.getType().equals("+")) {
             if (from.equals("0")) {
                 mah.setType(Constants.PERSON_TO_HEADOFFICE);
@@ -113,6 +118,9 @@ public class StatsServiceImpl implements StatsService {
                 mah.setType(Constants.FROM_HEADOFFICE_TO_PERSON);
                 mah.setPayee(mah.getPayee());
                 ma.setTotalCash(ma.getTotalCash().subtract(mah.getAmount()));
+                if (isSalary != null && !isSalary.isEmpty() && isSalary.equalsIgnoreCase("on")) {
+                    logSalary = true;
+                }
             } else {
                 if ((ma.getTotalCash().intValue() < mah.getAmount().intValue())) {
                     return null;
@@ -129,6 +137,9 @@ public class StatsServiceImpl implements StatsService {
             }
             mah.setType(Constants.FROM_CASH_IN_HAND_TO_PERSON);
             ma.setCashInHand(ma.getCashInHand().subtract(mah.getAmount()));
+            if (isSalary != null && !isSalary.isEmpty() && isSalary.equalsIgnoreCase("on")) {
+                logSalary = true;
+            }
 
         } else if (mah.getType().equals("++")) {
             mah.setType(Constants.FROM_PERSON_TO_CASH_IN_HAND);
@@ -139,6 +150,19 @@ public class StatsServiceImpl implements StatsService {
         if (tranLogged) {
             updateMasterAccount(ma);
             masterAccount = null;
+            if (logSalary) {
+                Employees emp = employeesService.getEmployee(mah.getPayee());
+                if (emp != null) {
+                    EmployeessPayments empPayment = new EmployeessPayments();
+                    empPayment.setAmountPayed(mah.getAmount());
+                    empPayment.setEmployees(emp);
+                    empPayment.setDescription("SALARY PAID");
+                    empPayment.setPaymentDate(new Date());
+                    empPayment.setType("DEBIT");
+
+                    employeesService.logEmployeePayment(empPayment);
+                }
+            }
             return mah.getType();
         }
 
@@ -189,6 +213,11 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass) {
         return statsDao.getAsphaltSaleConsumptions(ass);
+    }
+
+    @Override
+    public List<AsphaltSales> getAsphaltSales(String from, String to) {
+        return statsDao.getAsphaltSales(from, to);
     }
 
 }

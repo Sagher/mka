@@ -90,12 +90,34 @@
                         <hr>
 
                         <div class="row">
+                            <!--                            <div class="col-sm-6 col-lg-3">
+                                                            <div class="brand-card item-summary">
+                                                                <div class="brand-card-header text-white">
+                                                                    <div class="card-body">
+                                                                        <a href="<c:url value="/report?type=receivable" />">
+                                                                            <div class="item-name">Accounts Receivable</div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6 col-lg-3">
+                                                            <div class="brand-card item-summary">
+                                                                <div class="brand-card-header text-white">
+                                                                    <div class="card-body">
+                                                                        <a href="<c:url value="/report?type=payable" />">
+                                                                            <div class="item-name">Accounts Payable</div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>-->
                             <div class="col-sm-6 col-lg-3">
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a href="<c:url value="/report?type=receivable" />">
-                                                <div class="item-name">Accounts Receivable</div>
+                                            <a href="<c:url value="/entries?type=payablesAndReceivables" />">
+                                                <div class="item-name">Accounts Payable & Receivable</div>
                                             </a>
                                         </div>
                                     </div>
@@ -105,8 +127,41 @@
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
-                                            <a href="<c:url value="/report?type=payable" />">
-                                                <div class="item-name">Accounts Payable</div>
+                                            <a href="<c:url value="/report?type=totalSales" />">
+                                                <div class="item-name">Total Sales</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/report?type=accountDetails" />">
+                                                <div class="item-name">Individual's Transactions</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/report?type=salaryAccount" />">
+                                                <div class="item-name">Salary Account</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/report?type=incomeAndExpenditureAccount" />">
+                                                <div class="item-name">Income & Expenditure Account</div>
                                             </a>
                                         </div>
                                     </div>
@@ -129,17 +184,6 @@
                                         <div class="card-body">
                                             <a class="disabled" href="<c:url value="/report?type=closingStock" />">
                                                 <div class="item-name">Closing Stock</div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-lg-3">
-                                <div class="brand-card item-summary">
-                                    <div class="brand-card-header text-white">
-                                        <div class="card-body">
-                                            <a href="<c:url value="/entries?type=customersBuyers" />">
-                                                <div class="item-name">Individual Account Details</div>
                                             </a>
                                         </div>
                                     </div>
