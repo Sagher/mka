@@ -68,7 +68,8 @@ public class AccountsDaoImpl implements AccountsDao {
     }
 
     @Override
-    public List<AccountPayableReceivable> getAccountPayableReceivable(EntryItems entryItem, String type, String subType,
+    public List<AccountPayableReceivable> getAccountPayableReceivable(
+            EntryItems entryItem, String type, String subType,
             int startIndex, int fetchSize, String orderBy, String sortBy, String startDate,
             String endDate, String buyerSupplier, String project) {
         Session session = null;

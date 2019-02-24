@@ -93,11 +93,13 @@
                                                 <table class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
-                                                            <th>NAME</th>
+                                                            <th>DATE</th>
                                                             <th>DESCRIPTION</th>
-                                                            <th>Dr.</th>
-                                                            <th>Cr.</th>
-                                                            <th>Dr. OR Cr.</th>
+                                                            <th>TO</th>
+                                                            <th>TYPE</th>
+                                                            <th>INCOME</th>
+                                                            <th>EXPENDITURE</th>
+                                                            <th>AMOUNT</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -106,19 +108,15 @@
                                                         <c:set var="totalAm" value="0" scope="page" />
 
 
-                                                        <c:forEach items="${employeesPayments}" var="item">
-                                                        <td>${item.employees.name}</td>
+                                                        <c:forEach items="${cashTrans}" var="item">
+                                                        <td>
+                                                            <fmt:formatDate value="${item.timestamp}" pattern="MM-dd-yyyy" />
+                                                        </td>   
                                                         <td>${item.description}</td>
-                                                        <c:if test = "${item.type == 'CREDIT'}">
-                                                            <td></td>
-                                                            <td>${item.amountPayed}</td>
-                                                            <c:set var="totalCr" value="${totalCr+item.amountPayed}" />
-                                                        </c:if>
-                                                        <c:if test = "${item.type == 'DEBIT'}">
-                                                            <td>${item.amountPayed}</td>
-                                                            <td></td>
-                                                            <c:set var="totalDr" value="${totalDr+item.amountPayed}" />
-                                                        </c:if>
+                                                        <td>${item.accountName}</td>
+                                                        <td>${item.subType}</td>
+                                                        <td></td>
+                                                        <td>${item.totalAmount}</td>
 
                                                         <td></td>
 
@@ -129,7 +127,7 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2">TOTAL</td>
+                                                        <td colspan="4">TOTAL</td>
                                                         <td>${totalDr}</td>
                                                         <td>${totalCr}</td>    
                                                         <td>${totalCr-totalDr}</td>
@@ -175,7 +173,7 @@
                                                                 var to = $("#to").val();
                                                                 if (from.length > 0 || to.length > 0) {
                                                                     console.log(from + " -> " + to);
-                                                                    window.location = ctx + "/report?type=salaryAccount&from=" + from + "&to=" + to;
+                                                                    window.location = ctx + "/report?type=incomeAndExpenditureAccount&from=" + from + "&to=" + to;
                                                                 } else {
 
                                                                 }

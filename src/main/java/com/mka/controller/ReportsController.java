@@ -220,9 +220,9 @@ public class ReportsController {
                     }
 
                     List<AccountPayableReceivable> accPayRec = accountsService.getAccountPayableReceivable(
-                            new EntryItems(22), null, "Cash In Hand To Person", 0,
-                            Integer.MAX_VALUE, "asc", "", from, to, "", "");
-                    model.addObject("employeesPayments", accPayRec);
+                            new EntryItems(18), null, "Cash In Hand To Person", 0,
+                            Integer.MAX_VALUE, "", "", from, to, "", "");
+                    model.addObject("cashTrans", accPayRec);
                     model.addObject("from", from);
                     model.addObject("to", to);
 
