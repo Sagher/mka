@@ -9,6 +9,7 @@ import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
 import com.mka.model.EmployeessPayments;
+import com.mka.model.EntriesDirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MasterAccount;
 import com.mka.model.StockTrace;
@@ -225,6 +226,25 @@ public class ReportsController {
                     model.addObject("cashTrans", accPayRec);
                     model.addObject("from", from);
                     model.addObject("to", to);
+
+                    model.setViewName("subPages/incomeAndExpenditureAccount");
+                    return model;
+
+                } else if (type.equals("consumptionAndReceiving")) {
+                    if (from.isEmpty() && to.isEmpty()) {
+                        LocalDate todaydate = LocalDate.now();
+                        from = todaydate.withDayOfMonth(1).toString();
+                        to = todaydate.toString();
+                    }
+
+                    EntryItems entryItem = entriesService.getEntryItemById(itemId);
+
+                    List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "");
+
+                    model.addObject("data", data);
+                    model.addObject("from", from);
+                    model.addObject("to", to);
+                    model.addObject("type", type);
 
                     model.setViewName("subPages/incomeAndExpenditureAccount");
                     return model;

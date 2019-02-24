@@ -171,6 +171,17 @@
                                 <div class="brand-card item-summary">
                                     <div class="brand-card-header text-white">
                                         <div class="card-body">
+                                            <a href="<c:url value="/report?type=consumptionAndReceiving" />">
+                                                <div class="item-name">Consumption & Receiving Report</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
                                             <a class="disabled" href="<c:url value="/report?type=profitLoss" />">
                                                 <div class="item-name">Profit & Loss Report</div>
                                             </a>
