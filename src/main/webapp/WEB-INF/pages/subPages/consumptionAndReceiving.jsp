@@ -45,7 +45,7 @@
                                                             MKA ASPHALT PLANT MARGALLA DISTRICT RAWALPINDI
                                                         </h4>
                                                         <h6>
-                                                            ${type} Consumption & Receiving
+                                                            ${type.itemName} Consumption & Receiving
                                                         </h6>
                                                         FROM ${from} TO ${to}
                                                     </span>
@@ -78,14 +78,18 @@
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">
-                                                                    Account
+                                                                    Material
                                                                 </span>
                                                             </div>
                                                             <select id="accountName" class="form-control">
-                                                                <option selected="true" value="${accountName}">${accountName}</option>
-                                                                <c:forEach items="${customerBuyers}" var="customerBuyer">
-                                                                    <option value="${customerBuyer.name}">${customerBuyer.name}</option>
-                                                                </c:forEach>
+                                                                <option value="0"></option>
+                                                                <option value="1">BITUMEN</option>
+                                                                <option value="2">LDO</option>
+                                                                <option value="3">DIESEL</option>
+                                                                <option value="4">TACK COAT</option>
+                                                                <option value="5">PRIME COAT</option>
+                                                                <option value="6">CRUSH</option>
+
                                                             </select>
                                                         </div>
                                                     </div>
@@ -110,44 +114,36 @@
                                                             <th>VEHICLE NO.</th>
                                                             <th>PLANT BILTY NO.</th>
                                                             <th>RECIPIENT BILTY NO.</th>
-                                                            <th>AVG. CONSUMPTION PER TON</th>
                                                             <th>TOTAL QUANTITY</th>
                                                             <th>RATE</th>
                                                             <th>AMOUNT</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <c:set var="totalDr" value="0" scope="page" />
-                                                        <c:set var="totalCr" value="0" scope="page" />
-                                                        <c:set var="totalAm" value="0" scope="page" />
+                                                        <c:set var="q" value="0" scope="page" />
+                                                        <c:set var="r" value="0" scope="page" />
+                                                        <c:set var="a" value="0" scope="page" />
 
 
                                                         <c:forEach items="${data}" var="item">
                                                             <tr>
                                                                 <td>
-                                                                    <fmt:formatDate value="${item.timestamp}" pattern="MM-dd-yyyy" />
+                                                                    <fmt:formatDate value="${item.createdDate}" pattern="dd-MM-yyyy" />
                                                                 </td>
+                                                                <td>${item.subEntryType}</td>  
+                                                                <td>${item.supplier}</td>
                                                                 <td>${item.project}</td>
-                                                                <td>${item.description}</td>
-                                                                <td>${item.subType}</td>
+                                                                <td>${item.project}</td>
+                                                                <td>${item.asphaltType}</td>
+                                                                <td>${item.asphaltTon}</td>
                                                                 <td>${item.plantBilty}</td>
                                                                 <td>${item.recipientBilty}</td>
-                                                                <td>${item.vehicleNo}</td>
                                                                 <td>${item.quantity}</td>
                                                                 <td>${item.rate}</td>
-                                                                <c:if test = "${item.type == 'RECEIVABLE'}">
-                                                                    <td></td>
-                                                                    <td>${item.amount}</td>
-                                                                    <c:set var="totalCr" value="${totalCr+item.amount}" />
-                                                                </c:if>
-                                                                <c:if test = "${item.type == 'PAYABLE'}">
-                                                                    <td>${item.amount}</td>
-                                                                    <td></td>
-                                                                    <c:set var="totalDr" value="${totalDr+item.amount}" />
-                                                                </c:if>
-
-                                                                <td><!--${item.totalAmount}--></td>
-
+                                                                <td>${item.totalPrice}</td>
+                                                                <c:set var="q" value="${q+item.quantity}" />
+                                                                <c:set var="r" value="${r+item.rate}" />
+                                                                <c:set var="a" value="${a+item.totalPrice}" />
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
@@ -155,10 +151,10 @@
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="9">NET PROFIT</td>
-                                                            <td>${totalDr}</td>
-                                                            <td>${totalCr}</td>    
-                                                            <td>${totalCr-totalDr}</td>
+                                                            <td colspan="9">Closing Stock</td>
+                                                            <td>${q}</td>
+                                                            <td>${r}</td>    
+                                                            <td>${a}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -202,7 +198,7 @@
             var accountName = $("#accountName").val();
             if (from.length > 0 || to.length > 0 && accountName.length > 0) {
                 console.log(from + " -> " + to);
-                window.location = ctx + "/report?type=accountDetails&from=" + from + "&to=" + to + "&accountName=" + accountName.replace("&", "-");
+                window.location = ctx + "/report?type=consumptionAndReceiving&from=" + from + "&to=" + to + "&eitem=" + accountName.replace("&", "-");
             } else {
 
             }

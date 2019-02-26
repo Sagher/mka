@@ -39,6 +39,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "EntriesDirect.findAll", query = "SELECT e FROM EntriesDirect e")})
 public class EntriesDirect implements Serializable {
 
+    @Size(max = 10)
+    @Column(name = "asphalt_type")
+    private String asphaltType;
+    @Size(max = 10)
+    @Column(name = "asphalt_ton")
+    private String asphaltTon;
+    @Size(max = 10)
+    @Column(name = "vehicle_no")
+    private String vehicleNo;
+
     @Column(name = "plant_bilty")
     private Integer plantBilty;
     @Column(name = "recipient_bilty")
@@ -290,6 +300,30 @@ public class EntriesDirect implements Serializable {
 
     public void setRecipientBilty(Integer recipientBilty) {
         this.recipientBilty = recipientBilty;
+    }
+
+    public String getAsphaltType() {
+        return asphaltType;
+    }
+
+    public void setAsphaltType(String asphaltType) {
+        this.asphaltType = asphaltType;
+    }
+
+    public String getAsphaltTon() {
+        return asphaltTon;
+    }
+
+    public void setAsphaltTon(String asphaltTon) {
+        this.asphaltTon = asphaltTon;
+    }
+
+    public String getVehicleNo() {
+        return vehicleNo;
+    }
+
+    public void setVehicleNo(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
     }
 
 }

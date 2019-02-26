@@ -237,16 +237,18 @@ public class ReportsController {
                         to = todaydate.toString();
                     }
 
-                    EntryItems entryItem = entriesService.getEntryItemById(itemId);
+                    if (itemId > 0) {
 
-                    List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "");
+                        EntryItems entryItem = entriesService.getEntryItemById(itemId);
+                        List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "");
+                        model.addObject("type", entryItem);
+                        model.addObject("data", data);
 
-                    model.addObject("data", data);
+                    }
                     model.addObject("from", from);
                     model.addObject("to", to);
-                    model.addObject("type", type);
 
-                    model.setViewName("subPages/incomeAndExpenditureAccount");
+                    model.setViewName("subPages/consumptionAndReceiving");
                     return model;
 
                 } else if (type.equalsIgnoreCase(Constants.RECEIVABLE)) {

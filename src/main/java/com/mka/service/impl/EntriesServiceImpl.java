@@ -19,7 +19,9 @@ import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
+import static com.sun.corba.se.spi.presentation.rmi.StubAdapter.request;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -476,6 +478,16 @@ public class EntriesServiceImpl implements EntriesService {
 
                         assConsumptions.add(ass);
 
+                        if (Float.parseFloat(request.getParameter(s.getId() + "quantity")) > 0.000000000) {
+
+                            logDirectConsumptionEntry(new EntryItems(s.getItemId()),
+                                    customer, asProj, realAss.getDescription(), biltee, "0",
+                                    ass.getItemQuantity(),
+                                    ass.getItemAmount(), ass.getItemRate(), "0",
+                                    realAss.getQuantity().toString(),
+                                    realAss.getType(), realAss.getVehicle());
+                        }
+
                     }
 
                 }
@@ -664,5 +676,36 @@ public class EntriesServiceImpl implements EntriesService {
         }
         return ("01:Failed To Log Entry. Make sure all field are filled in.");
 
+    }
+
+    private void logDirectConsumptionEntry(EntryItems item, String customerBuyerSupplier, String dProj,
+            String description, String pBilty, String cBilty, BigDecimal quantity, BigDecimal amount,
+            BigDecimal rate, String dadvance, String assTon, String assType, String vNum) {
+        try {
+            EntriesDirect entry = new EntriesDirect();
+            entry.setItem(item);
+            entry.setSubEntryType(Constants.CONSUME);
+            entry.setBuyer(customerBuyerSupplier);
+            entry.setProject(dProj);
+            entry.setDescription(description);
+            entry.setPlantBilty(Integer.parseInt(!pBilty.isEmpty() ? pBilty : "0"));
+            entry.setRecipientBilty(Integer.parseInt(!cBilty.isEmpty() ? cBilty : "0"));
+
+            entry.setQuantity(quantity);
+            entry.setTotalPrice(amount);
+            entry.setRate(rate);
+
+            entry.setAdvance(BigDecimal.valueOf(Float.parseFloat(dadvance)));
+
+            entry.setAsphaltTon(assTon);
+            entry.setAsphaltType(assType);
+            entry.setVehicleNo(vNum);
+            entry.setCreatedDate(new Date());
+            entry.setIsActive(true);
+
+            entriesDao.logDirectEntry(entry);
+        } catch (Exception e) {
+            log.error("Exception in logDirectConsumptionEntry(" + item.toString() + ")", e);
+        }
     }
 }

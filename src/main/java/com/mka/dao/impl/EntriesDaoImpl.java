@@ -107,10 +107,10 @@ public class EntriesDaoImpl implements EntriesDao {
                 criteria.add(Restrictions.eq("subEntryType", subEntryType));
             }
             if (!startDate.isEmpty()) {
-                criteria.add(Restrictions.ge("entryDate", Constants.DATE_FORMAT.parse(startDate)));
+                criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
-                criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
+                criteria.add(Restrictions.le("createdDate", Constants.DATE_FORMAT.parse(endDate)));
             }
             if (!buyerSupplier.isEmpty()) {
                 Criterion c1 = Restrictions.eq("supplier", buyerSupplier);
@@ -128,7 +128,7 @@ public class EntriesDaoImpl implements EntriesDao {
             } else if (!sortBy.isEmpty()) {
                 criteria.addOrder(Order.desc(sortBy));
             } else {
-                criteria.addOrder(Order.desc("entryDate"));
+                criteria.addOrder(Order.desc("createdDate"));
             }
             List<EntriesDirect> emps = criteria.list();
             if (emps.size() > 0) {
