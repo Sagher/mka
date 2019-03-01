@@ -42,6 +42,7 @@ public class StatsServiceImpl implements StatsService {
     EmployeesService employeesService;
 
     private List<StockTrace> statItems = null;
+    private List<StockTrace> lastMonthStatItems = null;
 
     private MasterAccount masterAccount = null;
 
@@ -53,6 +54,15 @@ public class StatsServiceImpl implements StatsService {
 
         }
         return statItems;
+    }
+
+    @Override
+    public List<StockTrace> getLastMonthStats() {
+        if (lastMonthStatItems == null) {
+            lastMonthStatItems = statsDao.getLastMonthStats();
+
+        }
+        return lastMonthStatItems;
     }
 
     @Override

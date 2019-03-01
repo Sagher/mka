@@ -42,4 +42,6 @@ public interface StatsDao {
     public List<AsphaltSaleConsumption> getAsphaltSaleConsumptions(AsphaltSales ass);
 
     public List<AsphaltSales> getAsphaltSales(String from, String to);
+
+    public List<StockTrace> getLastMonthStats();
 }

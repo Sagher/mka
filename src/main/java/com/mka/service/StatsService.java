@@ -21,6 +21,8 @@ public interface StatsService {
 
     public List<StockTrace> getStats();
 
+    public List<StockTrace> getLastMonthStats();
+
     public boolean insertStockTraceForNewMonth();
 
     public StockTrace getStockTrace(int typeId, String subType);

@@ -14,6 +14,7 @@ import com.mka.model.MasterAccountHistory;
 import com.mka.model.StockTrace;
 import com.mka.utils.Constants;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -393,6 +394,34 @@ public class StatsDaoImpl implements StatsDao {
             }
         } catch (Exception e) {
             log.error("Exception in getAsphaltSale() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public List<StockTrace> getLastMonthStats() {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(StockTrace.class);
+
+            LocalDate todaydate = LocalDate.now();
+            String from = todaydate.withMonth(todaydate.getMonthValue() - 1).toString();
+
+            criteria.add(Restrictions.eq("month", Constants.MONTH_FORMAT.format(Constants.MONTH_FORMAT.parse(from))));
+            List<StockTrace> users = criteria.list();
+            if (users.size() > 0) {
+                return users;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getStats() : ", e);
             return null;
         } finally {
             if (session != null) {

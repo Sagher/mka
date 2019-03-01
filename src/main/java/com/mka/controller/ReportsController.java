@@ -24,10 +24,15 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -231,20 +236,45 @@ public class ReportsController {
                     return model;
 
                 } else if (type.equals("consumptionAndReceiving")) {
+
                     if (from.isEmpty() && to.isEmpty()) {
                         LocalDate todaydate = LocalDate.now();
                         from = todaydate.withDayOfMonth(1).toString();
                         to = todaydate.toString();
                     }
 
-                    if (itemId > 0) {
+                    EntriesDirect openingStock = new EntriesDirect();
+                    openingStock.setQuantity(BigDecimal.ZERO);
+                    openingStock.setRate(BigDecimal.ZERO);
+                    openingStock.setTotalPrice(BigDecimal.ZERO);
+                    try {
+                        openingStock.setCreatedDate(Constants.DATE_FORMAT.parse(from));
+                    } catch (ParseException ex) {
+                        java.util.logging.Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 
+                    ss.getLastMonthStats()
+                            .stream()
+                            .filter(e -> {
+                                if (e.getType().getId() == itemId) {
+                                    openingStock.setQuantity(openingStock.getQuantity().add(e.getStockUnits()));
+                                    openingStock.setTotalPrice(openingStock.getTotalPrice().add(e.getStockAmount()));
+
+                                }
+                                return true;
+                            })
+                            .collect(Collectors.toList());
+
+                    if (itemId > 0) {
                         EntryItems entryItem = entriesService.getEntryItemById(itemId);
                         List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "");
+
                         model.addObject("type", entryItem);
                         model.addObject("data", data);
 
                     }
+                    model.addObject("openingStock", openingStock);
+                    model.addObject("stockTrace", ss.getStats());
                     model.addObject("from", from);
                     model.addObject("to", to);
 

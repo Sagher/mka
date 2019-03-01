@@ -82,12 +82,11 @@
                                                                 </span>
                                                             </div>
                                                             <select id="accountName" class="form-control">
-                                                                <option value="0"></option>
-                                                                <option value="1">BITUMEN</option>
-                                                                <option value="2">LDO</option>
-                                                                <option value="3">DIESEL</option>
-                                                                <option value="4">TACK COAT</option>
-                                                                <option value="5">PRIME COAT</option>
+                                                                <c:forEach items="${stockTrace}" var="item">
+                                                                    <c:if test = "${item.type.id < 6}">
+                                                                        <option value="${item.type.id}">${item.type.itemName}</option>
+                                                                    </c:if>
+                                                                </c:forEach>
                                                                 <option value="6">CRUSH</option>
 
                                                             </select>
@@ -121,9 +120,30 @@
                                                     </thead>
                                                     <tbody>
                                                         <c:set var="q" value="0" scope="page" />
-                                                        <c:set var="r" value="0" scope="page" />
                                                         <c:set var="a" value="0" scope="page" />
 
+
+                                                        <tr>
+                                                            <td>
+                                                                <fmt:formatDate 
+                                                                    value="${openingStock.createdDate}" pattern="dd-MM-yyyy" />
+                                                            </td>
+                                                            <td>Opening Stock</td>  
+                                                            <td></td>
+
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+
+                                                            <td>${openingStock.quantity}</td>
+                                                            <td>${openingStock.rate}</td>
+                                                            <td>${openingStock.totalPrice}</td>
+                                                            <c:set var="q" value="${q+openingStock.quantity}" />
+                                                            <c:set var="a" value="${a+openingStock.totalPrice}" />
+                                                        </tr>
 
                                                         <c:forEach items="${data}" var="item">
                                                             <tr>
@@ -141,9 +161,15 @@
                                                                 <td>${item.quantity}</td>
                                                                 <td>${item.rate}</td>
                                                                 <td>${item.totalPrice}</td>
-                                                                <c:set var="q" value="${q+item.quantity}" />
-                                                                <c:set var="r" value="${r+item.rate}" />
-                                                                <c:set var="a" value="${a+item.totalPrice}" />
+                                                                <c:if test = "${item.subEntryType == 'CONSUME'}">
+                                                                    <c:set var="q" value="${q-item.quantity}" />
+                                                                    <c:set var="a" value="${a-item.totalPrice}" />
+                                                                </c:if>
+                                                                <c:if test = "${item.subEntryType == 'PURCHASE'}">
+                                                                    <c:set var="q" value="${q+item.quantity}" />
+                                                                    <c:set var="a" value="${a+item.totalPrice}" />
+                                                                </c:if>
+
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
@@ -153,7 +179,7 @@
                                                         <tr>
                                                             <td colspan="9">Closing Stock</td>
                                                             <td>${q}</td>
-                                                            <td>${r}</td>    
+                                                            <td></td>    
                                                             <td>${a}</td>
                                                         </tr>
                                                     </tbody>
