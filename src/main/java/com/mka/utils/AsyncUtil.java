@@ -170,6 +170,7 @@ public class AsyncUtil {
                 receivable.setTimestamp(entry.getCreatedDate());
                 receivable.setPlantBilty(entry.getPlantBilty());
                 receivable.setRecipientBilty(entry.getRecipientBilty());
+                receivable.setVehicleNo(entry.getVehicleNo());
 
                 if (!accountsDao.logAccountPayableReceivable(receivable)) {
                     log.warn("*** Account Recevaible not logged ***");
@@ -196,6 +197,7 @@ public class AsyncUtil {
                 payable.setTimestamp(entry.getCreatedDate());
                 payable.setPlantBilty(entry.getPlantBilty());
                 payable.setRecipientBilty(entry.getRecipientBilty());
+                payable.setVehicleNo(entry.getVehicleNo());
 
                 if (!accountsDao.logAccountPayableReceivable(payable)) {
                     log.warn("*** Account Payable not logged ***");
@@ -243,7 +245,7 @@ public class AsyncUtil {
     @Async
     public void logAmountPayable(BigDecimal amount, String payableTo, int entryId, String project, String description,
             BigDecimal quantity, BigDecimal rate, BigDecimal totalAmount, EntryItems eItem,
-            String subType, Date entryDate, int plantBilty, int recipientBilty) {
+            String subType, Date entryDate, int plantBilty, int recipientBilty, String vehicleNo) {
         try {
             //payable
             AccountPayableReceivable payable = new AccountPayableReceivable();
@@ -262,6 +264,7 @@ public class AsyncUtil {
             payable.setTimestamp(entryDate);
             payable.setPlantBilty(plantBilty);
             payable.setRecipientBilty(recipientBilty);
+            payable.setVehicleNo(vehicleNo);
 
             if (!accountsDao.logAccountPayableReceivable(payable)) {
                 log.warn("*** Account Payable not logged ***");

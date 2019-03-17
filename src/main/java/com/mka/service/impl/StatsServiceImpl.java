@@ -17,9 +17,13 @@ import com.mka.service.EmployeesService;
 import com.mka.service.StatsService;
 import com.mka.utils.Constants;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -227,7 +231,47 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<AsphaltSales> getAsphaltSales(String from, String to) {
-        return statsDao.getAsphaltSales(from, to);
+        List<AsphaltSales> sales = statsDao.getAsphaltSales(from, to);
+
+        Map<String, List<AsphaltSales>> tmap = new HashMap<>();
+
+        if (sales != null && !sales.isEmpty()) {
+            for (AsphaltSales ass : sales) {
+                String key = ass.getBuyer() + ass.getProject() + ass.getType() + ass.getExPlantRate();
+                if (tmap.containsKey(key)) {
+                    List<AsphaltSales> asses = tmap.get(key);
+                    asses.add(ass);
+                } else {
+                    List<AsphaltSales> asses = new ArrayList<>();
+                    asses.add(ass);
+                    tmap.put(key, asses);
+                }
+            }
+
+            Iterator it = tmap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                System.out.println(pair.getKey() + " = " + pair.getValue());
+                List<AsphaltSales> asses = (List<AsphaltSales>) pair.getValue();
+                if (asses.size() > 1) {
+                    AsphaltSales summarizedAss = asses.get(0);
+                    sales.remove(summarizedAss);
+
+                    for (int i = 1; i < asses.size(); i++) {
+                        summarizedAss.setQuantity(summarizedAss.getQuantity().add(asses.get(i).getQuantity()));
+                        summarizedAss.setTotalSaleAmount(summarizedAss.getTotalSaleAmount().add(asses.get(i).getTotalSaleAmount()));
+                        sales.remove(asses.get(i));
+                    }
+
+                    sales.add(summarizedAss);
+
+                }
+
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+        }
+
+        return sales;
     }
 
 }

@@ -299,6 +299,14 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label for="unloadingVehicle">Vehicle No.</label>
+                                                                            <input class="form-control" id="unloadingVehicle" name="unloadingVehicle">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="pull-right">
                                                                 <br>
@@ -729,8 +737,8 @@
                                                         <div class="col-md-8">
                                                             <span class="help-block">Type</span>
                                                             <select name="asstype" class="form-control">
-                                                                <option value="awc" selected="selected">AWC</option>
-                                                                <option value="abc">ABC</option>
+                                                                <option value="AWC" selected="selected">AWC</option>
+                                                                <option value="ABC">ABC</option>
                                                             </select>
                                                         </div>
                                                         <label class="col-md-2"></label>

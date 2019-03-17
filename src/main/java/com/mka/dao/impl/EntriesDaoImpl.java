@@ -93,7 +93,7 @@ public class EntriesDaoImpl implements EntriesDao {
 
     @Override
     public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
-            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project) {
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project, String subType) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -102,6 +102,9 @@ public class EntriesDaoImpl implements EntriesDao {
 
             if (entryItem != null) {
                 criteria.add(Restrictions.eq("item", entryItem));
+            }
+            if (subType != null) {
+                criteria.add(Restrictions.eq("subType", subType));
             }
             if (!subEntryType.isEmpty()) {
                 criteria.add(Restrictions.eq("subEntryType", subEntryType));

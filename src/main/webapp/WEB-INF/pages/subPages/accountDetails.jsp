@@ -101,6 +101,7 @@
                                                 <table class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <td>SR. NO.</td>
                                                             <th>DATE</th>
                                                             <th>SITE NAME</th>
                                                             <th>DESCRIPTION</th>
@@ -119,15 +120,28 @@
                                                         <c:set var="totalDr" value="0" scope="page" />
                                                         <c:set var="totalCr" value="0" scope="page" />
                                                         <c:set var="totalAm" value="0" scope="page" />
+                                                        <c:set var="srNum" value="1" scope="page" />
+
 
 
                                                         <c:forEach items="${accountNameTransactions}" var="item">
                                                             <tr>
+                                                                <td>${srNum}
+                                                                    <c:set var="srNum" value="${srNum+1}" />
+                                                                </td>
                                                                 <td>
                                                                     <fmt:formatDate value="${item.timestamp}" pattern="MM-dd-yyyy" />
                                                                 </td>
                                                                 <td>${item.project}</td>
-                                                                <td>${item.description}</td>
+
+                                                                <c:if test = "${item.type == 'RECEIVABLE'}">
+                                                                    <td>${item.itemType.itemName} SALE</td>
+                                                                </c:if>
+                                                                <c:if test = "${item.type == 'PAYABLE'}">
+                                                                    <td>${item.itemType.itemName} PURCHASE</td>
+                                                                </c:if>
+
+<!--<td>${item.description}</td>-->
                                                                 <td>${item.subType}</td>
                                                                 <td>${item.plantBilty}</td>
                                                                 <td>${item.recipientBilty}</td>
@@ -150,11 +164,11 @@
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="12">
+                                                            <td colspan="13">
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="9">NET PROFIT</td>
+                                                            <td colspan="10">NET PROFIT</td>
                                                             <td>${totalDr}</td>
                                                             <td>${totalCr}</td>    
                                                             <td>${totalCr-totalDr}</td>

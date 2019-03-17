@@ -8,6 +8,7 @@ package com.mka.controller;
 import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSales;
 import com.mka.model.CustomersBuyers;
+import com.mka.model.Employees;
 import com.mka.model.EmployeessPayments;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntryItems;
@@ -209,11 +210,22 @@ public class ReportsController {
                         from = todaydate.withDayOfMonth(1).toString();
                         to = todaydate.toString();
                     }
-
-                    List<EmployeessPayments> employeesPayments = employeesService.getEmployeesPaymentRecord(from, to);
+                    List<EmployeessPayments> employeesPayments = null;
+                    // emp filter
+                    if (!accountName.isEmpty()) {
+                        employeesPayments = employeesService.getEmployeesPaymentRecord(from, to,
+                                Integer.parseInt(accountName));
+                        model.addObject("empId", Integer.parseInt(accountName));
+                    } else {
+                        employeesPayments = employeesService.getEmployeesPaymentRecord(from, to, 0);
+                    }
                     model.addObject("employeesPayments", employeesPayments);
                     model.addObject("from", from);
                     model.addObject("to", to);
+
+                    List<Employees> employees = employeesService.getEmployees(0, employeesService.getEmployeesCount(""), "", "", "");
+
+                    model.addObject("employees", employees);
 
                     model.setViewName("subPages/salaryAccount");
                     return model;
@@ -267,7 +279,11 @@ public class ReportsController {
 
                     if (itemId > 0) {
                         EntryItems entryItem = entriesService.getEntryItemById(itemId);
-                        List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "");
+                        String subType = null;
+                        if (itemId == 6) {
+                            subType = request.getParameter("subType");
+                        }
+                        List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "", subType);
 
                         model.addObject("type", entryItem);
                         model.addObject("data", data);

@@ -84,6 +84,7 @@
                                                 <table class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <th>SR. NO.</th>
                                                             <th>CUSTOMER NAME</th>
                                                             <th>SITE NAME</th>
                                                             <th>TYPE</th>
@@ -96,11 +97,15 @@
                                                     <tbody>
                                                         <c:set var="totalQuantity" value="0" scope="page" />
                                                         <c:set var="totalAmount" value="0" scope="page" />
+                                                        <c:set var="srNum" value="1" scope="page" />
 
                                                         <c:forEach items="${assSales}" var="ass">
                                                             <c:set var="totalQuantity" value="${totalQuantity+ass.quantity}" />
                                                             <c:set var="totalAmount" value="${totalAmount+ass.totalSaleAmount}" />
                                                             <tr>
+                                                                <td>${srNum}
+                                                                    <c:set var="srNum" value="${srNum+1}" />
+                                                                </td>
                                                                 <td>${ass.buyer}</td>
                                                                 <td>${ass.project}</td>
                                                                 <td>${ass.type}</td>
@@ -110,10 +115,10 @@
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="6"></td>
+                                                            <td colspan="7"></td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="3">TOTAL SALES</td>
+                                                            <td colspan="4">TOTAL SALES</td>
                                                             <td>${totalQuantity}</td>
                                                             <td></td>
                                                             <td>${totalAmount}</td>

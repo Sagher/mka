@@ -82,13 +82,17 @@
                                                                 </span>
                                                             </div>
                                                             <select id="accountName" class="form-control">
+                                                                <option value="">SELECT A MATERIAL</option>
                                                                 <c:forEach items="${stockTrace}" var="item">
-                                                                    <c:if test = "${item.type.id < 6}">
+                                                                    <c:if test = "${item.type.id <= 5}">
                                                                         <option value="${item.type.id}">${item.type.itemName}</option>
                                                                     </c:if>
+                                                                    <c:if test = "${item.type.id == 6}">
+                                                                        <option value="${item.type.id}:${item.subType}">
+                                                                            ${item.type.itemName} (${item.subType})
+                                                                        </option>
+                                                                    </c:if>
                                                                 </c:forEach>
-                                                                <option value="6">CRUSH</option>
-
                                                             </select>
                                                         </div>
                                                     </div>
@@ -104,6 +108,7 @@
                                                 <table class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <td>SR. NO.</td>
                                                             <th>DATE</th>
                                                             <th>TRANSACTION TYPE</th>
                                                             <th>CUSTOMER</th>
@@ -121,9 +126,12 @@
                                                     <tbody>
                                                         <c:set var="q" value="0" scope="page" />
                                                         <c:set var="a" value="0" scope="page" />
-
+                                                        <c:set var="srNum" value="1" scope="page" />
 
                                                         <tr>
+                                                            <td>${srNum}
+                                                                <c:set var="srNum" value="${srNum+1}" />
+                                                            </td>
                                                             <td>
                                                                 <fmt:formatDate 
                                                                     value="${openingStock.createdDate}" pattern="dd-MM-yyyy" />
@@ -147,11 +155,23 @@
 
                                                         <c:forEach items="${data}" var="item">
                                                             <tr>
+                                                                <td>${srNum}
+                                                                    <c:set var="srNum" value="${srNum+1}" />
+                                                                </td>
                                                                 <td>
                                                                     <fmt:formatDate value="${item.createdDate}" pattern="dd-MM-yyyy" />
                                                                 </td>
-                                                                <td>${item.subEntryType}</td>  
-                                                                <td>${item.supplier}</td>
+                                                                <td>${item.subEntryType} 
+                                                                    <c:if test = "${item.subType !=null}">
+                                                                        (${item.subType})
+                                                                    </c:if>
+                                                                </td>  
+                                                                <c:if test = "${item.subEntryType == 'CONSUME'}">
+                                                                    <td>${item.buyer}</td>
+                                                                </c:if>
+                                                                <c:if test = "${item.subEntryType == 'PURCHASE'}">
+                                                                    <td>${item.supplier}</td>
+                                                                </c:if>
                                                                 <td>${item.project}</td>
                                                                 <td>${item.project}</td>
                                                                 <td>${item.asphaltType}</td>
@@ -173,11 +193,11 @@
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="12">
+                                                            <td colspan="13">
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="9">Closing Stock</td>
+                                                            <td colspan="10">Closing Stock</td>
                                                             <td>${q}</td>
                                                             <td></td>    
                                                             <td>${a}</td>
@@ -224,9 +244,18 @@
             var accountName = $("#accountName").val();
             if (from.length > 0 || to.length > 0 && accountName.length > 0) {
                 console.log(from + " -> " + to);
-                window.location = ctx + "/report?type=consumptionAndReceiving&from=" + from + "&to=" + to + "&eitem=" + accountName.replace("&", "-");
-            } else {
+                console.log(accountName)
+                if (accountName.includes(":")) {
+                    itemId = accountName.split(":")[0];
+                    console.log(itemId)
+                    itemSubType = accountName.split(":")[1];
+                    console.log(itemSubType)
 
+                    window.location = ctx + "/report?type=consumptionAndReceiving&from=" + from + "&to=" + to + "&eitem=" + itemId + "&subType=" + itemSubType;
+                } else {
+                    window.location = ctx + "/report?type=consumptionAndReceiving&from=" + from + "&to=" + to + "&eitem=" + accountName;
+
+                }
             }
         });
     </script>

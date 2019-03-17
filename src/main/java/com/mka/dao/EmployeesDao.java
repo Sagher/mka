@@ -25,7 +25,7 @@ public interface EmployeesDao {
 
     public boolean payAllEmployees(Map<Employees, EmployeessPayments> paymentRecord);
 
-    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to);
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to, int empId);
 
     public void logEmployeePayment(EmployeessPayments empPayment);
 

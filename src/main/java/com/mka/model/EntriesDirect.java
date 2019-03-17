@@ -53,7 +53,8 @@ public class EntriesDirect implements Serializable {
     private Integer plantBilty;
     @Column(name = "recipient_bilty")
     private Integer recipientBilty;
-
+    @Column(name = "sub_type")
+    private String subType;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
@@ -203,6 +204,14 @@ public class EntriesDirect implements Serializable {
 
     public void setItem(EntryItems item) {
         this.item = item;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 
     @Override

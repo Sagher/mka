@@ -93,12 +93,13 @@
                                                 <table class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
+                                                            <td>SR. NO.</td>
                                                             <th>DATE</th>
                                                             <th>DESCRIPTION</th>
                                                             <th>TO</th>
                                                             <th>TYPE</th>
-                                                            <th>INCOME</th>
-                                                            <th>EXPENDITURE</th>
+                                                            <th>Dr.</th>                                                            
+                                                            <th>Cr.</th>
                                                             <th>AMOUNT</th>
                                                         </tr>
                                                     </thead>
@@ -106,28 +107,31 @@
                                                         <c:set var="totalDr" value="0" scope="page" />
                                                         <c:set var="totalCr" value="0" scope="page" />
                                                         <c:set var="totalAm" value="0" scope="page" />
+                                                        <c:set var="srNum" value="1" scope="page" />
 
 
                                                         <c:forEach items="${cashTrans}" var="item">
+                                                        <td>${srNum}
+                                                            <c:set var="srNum" value="${srNum+1}" />
+                                                        </td>
                                                         <td>
                                                             <fmt:formatDate value="${item.timestamp}" pattern="MM-dd-yyyy" />
                                                         </td>   
                                                         <td>${item.description}</td>
                                                         <td>${item.accountName}</td>
                                                         <td>${item.subType}</td>
-                                                        <td></td>
                                                         <td>${item.totalAmount}</td>
-
+                                                        <td></td>
                                                         <td></td>
 
                                                         </tr>
                                                     </c:forEach>
                                                     <tr>
-                                                        <td colspan="12">
+                                                        <td colspan="13">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="4">TOTAL</td>
+                                                        <td colspan="5">TOTAL</td>
                                                         <td>${totalDr}</td>
                                                         <td>${totalCr}</td>    
                                                         <td>${totalCr-totalDr}</td>

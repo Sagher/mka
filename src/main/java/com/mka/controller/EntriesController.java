@@ -278,10 +278,10 @@ public class EntriesController {
             if (itemTypeId > 0) {
                 EntryItems entryItem = entriesService.getEntryItemById(itemTypeId);
 
-                data = entriesService.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                data = entriesService.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project, null);
                 totalSize = entriesService.getDirectEntriesCount(entryItem, subEntryType, startDate, endDate, buyerSupplier, project);
             } else {
-                data = entriesService.getDirectEntries(null, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project);
+                data = entriesService.getDirectEntries(null, subEntryType, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, project, null);
                 totalSize = entriesService.getDirectEntriesCount(null, subEntryType, startDate, endDate, buyerSupplier, project);
             }
 

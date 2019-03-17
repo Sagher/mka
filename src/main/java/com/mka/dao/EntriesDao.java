@@ -20,7 +20,7 @@ public interface EntriesDao {
     public boolean logDirectEntry(EntriesDirect entry);
 
     public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
-            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project);
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project, String subType);
 
     public int getDirectEntriesCount(EntryItems entryItem, String subEntryType, String startDate, String endDate,
             String buyerSupplier, String project);

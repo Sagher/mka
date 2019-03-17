@@ -8,7 +8,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>${accountName} Transactions</title>
+        <title>Salary Account</title>
 
         <c:import url="../fragments/global-css.jsp" />
 
@@ -61,7 +61,7 @@
                                             <div class="card-body">
                                                 <div class="form-group row">
 
-                                                    <div class="col-sm-5">
+                                                    <div class="col-sm-3">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">
@@ -71,7 +71,7 @@
                                                             <input class="form-control" value="${from}" id="from" type="date">
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-5">
+                                                    <div class="col-sm-3">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">
@@ -81,7 +81,27 @@
                                                             <input class="form-control" value="${to}" id="to" type="date">
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-2">
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    Employee
+                                                                </span>
+                                                            </div>
+                                                            <select id="accountName" class="form-control">
+                                                                <option selected="true" value="">All</option>
+                                                                <c:forEach items="${employees}" var="emp">
+                                                                    <c:if test = "${emp.id == empId}">
+                                                                        <option selected="true" value="${emp.id}">${emp.name}</option>
+                                                                    </c:if> 
+                                                                    <c:if test = "${emp.id != empId}">
+                                                                        <option value="${emp.id}">${emp.name}</option>
+                                                                    </c:if>
+                                                                </c:forEach>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                             </div>
@@ -173,9 +193,11 @@
                                                             $("#applyDateFilter").click(function () {
                                                                 var from = $("#from").val();
                                                                 var to = $("#to").val();
+                                                                var accountName = $("#accountName").val();
+
                                                                 if (from.length > 0 || to.length > 0) {
                                                                     console.log(from + " -> " + to);
-                                                                    window.location = ctx + "/report?type=salaryAccount&from=" + from + "&to=" + to;
+                                                                    window.location = ctx + "/report?type=salaryAccount&from=" + from + "&to=" + to + "&accountName=" + accountName.replace("&", "-");
                                                                 } else {
 
                                                                 }

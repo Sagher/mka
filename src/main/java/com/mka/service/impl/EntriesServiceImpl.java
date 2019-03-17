@@ -117,6 +117,7 @@ public class EntriesServiceImpl implements EntriesService {
                 String totalUnloadedCrush = request.getParameter("unloadedCrush");
                 String unloadingRate = request.getParameter("unloadingCost");
                 String totalUnloadingCost = request.getParameter("totalUnloadingCost");
+                String unloadingVehicle = request.getParameter("unloadingVehicle");
 
                 String unloadingParty = request.getParameter("unloadingParty");
                 if (unloadingParty.equalsIgnoreCase("other")) {
@@ -151,6 +152,8 @@ public class EntriesServiceImpl implements EntriesService {
 
                         entry.setQuantity(BigDecimal.valueOf(newQuantity));
                         entry.setRate(BigDecimal.valueOf(c3));
+                        entry.setVehicleNo(unloadingVehicle);
+                        entry.setSubType(subItemType);
 
                     } else {
                         entryDetail = new EntriesDirectDetails();
@@ -161,6 +164,8 @@ public class EntriesServiceImpl implements EntriesService {
 
                         entry.setQuantity(BigDecimal.valueOf(Float.parseFloat(quantity)));
                         entry.setRate(BigDecimal.valueOf(Float.parseFloat(rate)));
+                        entry.setVehicleNo(unloadingVehicle);
+                        entry.setSubType(subItemType);
                     }
                 } else {
 
@@ -206,7 +211,7 @@ public class EntriesServiceImpl implements EntriesService {
                                     entry.getId(), entry.getProject(), entry.getDescription(),
                                     entry.getQuantity(), BigDecimal.valueOf(Float.parseFloat(unloadingRate)),
                                     entryDetail.getUnloadingCost(), new EntryItems(19), subItemType, entry.getCreatedDate(),
-                                    entry.getPlantBilty(), entry.getRecipientBilty());
+                                    entry.getPlantBilty(), entry.getRecipientBilty(), entry.getVehicleNo());
 
                             asyncUtil.addToCustomersAndBuyersList(unloadingParty);
                         }
@@ -243,8 +248,8 @@ public class EntriesServiceImpl implements EntriesService {
 
     @Override
     public List<EntriesDirect> getDirectEntries(EntryItems entryItem, String subEntryType, int startIndex, int fetchSize,
-            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project) {
-        return entriesDao.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier, project);
+            String orderBy, String sortBy, String startDate, String endDate, String buyerSupplier, String project, String subType) {
+        return entriesDao.getDirectEntries(entryItem, subEntryType, startIndex, fetchSize, orderBy, sortBy, startDate, endDate, buyerSupplier, project, subType);
     }
 
     @Override
@@ -485,7 +490,7 @@ public class EntriesServiceImpl implements EntriesService {
                                     ass.getItemQuantity(),
                                     ass.getItemAmount(), ass.getItemRate(), "0",
                                     realAss.getQuantity().toString(),
-                                    realAss.getType(), realAss.getVehicle());
+                                    realAss.getType(), realAss.getVehicle(), s.getSubType());
                         }
 
                     }
@@ -519,7 +524,7 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(),
                                     realAss.getProject(), realAss.getDescription(), ass.getItemQuantity(), ass.getItemRate(),
                                     ass.getItemAmount(), new EntryItems(20), realAss.getType(), realAss.getCreatedDate(),
-                                    0, realAss.getBiltee());
+                                    0, realAss.getBiltee(), vehicle);
 
                             asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assLayingAdvance)), "Asphalt Laying");
                         }
@@ -556,7 +561,7 @@ public class EntriesServiceImpl implements EntriesService {
                             asyncUtil.logAmountPayable(BigDecimal.valueOf(payableAmount), payableTo, realAss.getId(), realAss.getProject(), realAss.getDescription(),
                                     assCarriage.getItemQuantity(), (assCarriage.getItemRate()),
                                     (assCarriage.getItemAmount()), new EntryItems(21), realAss.getType(), realAss.getCreatedDate(),
-                                    0, realAss.getBiltee());
+                                    0, realAss.getBiltee(), vehicle);
 
                             asyncUtil.updateMasterAccount(BigDecimal.valueOf(Float.parseFloat(assCarAdvance)), "Asphalt Carriage");
 
@@ -680,11 +685,12 @@ public class EntriesServiceImpl implements EntriesService {
 
     private void logDirectConsumptionEntry(EntryItems item, String customerBuyerSupplier, String dProj,
             String description, String pBilty, String cBilty, BigDecimal quantity, BigDecimal amount,
-            BigDecimal rate, String dadvance, String assTon, String assType, String vNum) {
+            BigDecimal rate, String dadvance, String assTon, String assType, String vNum, String subType) {
         try {
             EntriesDirect entry = new EntriesDirect();
             entry.setItem(item);
             entry.setSubEntryType(Constants.CONSUME);
+            entry.setSubType(subType);
             entry.setBuyer(customerBuyerSupplier);
             entry.setProject(dProj);
             entry.setDescription(description);

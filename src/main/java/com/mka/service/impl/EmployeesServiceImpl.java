@@ -162,8 +162,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to) {
-        return employeesDao.getEmployeesPaymentRecord(from, to);
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to, int empId) {
+        return employeesDao.getEmployeesPaymentRecord(from, to, empId);
     }
 
     @Override

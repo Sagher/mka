@@ -242,12 +242,15 @@ public class EmployeesDaoImpl implements EmployeesDao {
     }
 
     @Override
-    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to) {
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to, int empId) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(EmployeessPayments.class);
 
+            if (empId > 0) {
+                criteria.add(Restrictions.eq("employees", new Employees(empId)));
+            }
             if (!from.isEmpty()) {
                 from = from + " 00:00:00";
                 criteria.add(Restrictions.ge("paymentDate", Constants.TIMESTAMP_FORMAT.parse(from)));
@@ -258,7 +261,6 @@ public class EmployeesDaoImpl implements EmployeesDao {
             }
 
 //            criteria.addOrder(Order.desc("paymentDate"));
-
             List<EmployeessPayments> emps = criteria.list();
             if (emps.size() > 0) {
                 return emps;

@@ -31,7 +31,7 @@ public interface EmployeesService {
 
     public boolean setCurrentMonthSalaryFlagToFalse();
 
-    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to);
+    public List<EmployeessPayments> getEmployeesPaymentRecord(String from, String to, int empId);
 
     public void logEmployeePayment(EmployeessPayments empPayment);
 }

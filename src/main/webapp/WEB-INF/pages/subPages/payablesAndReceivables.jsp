@@ -57,11 +57,12 @@
                                                 </center>
                                             </div>
                                             <div class="card-body">
-
+                                                <c:set var="srNum" value="1" scope="page" />
 
                                                 <table class="table-striped table-bordered" style="float: left; width: 50%">
                                                     <thead>
                                                         <tr>
+                                                            <th>SR. NO.</th>
                                                             <th>ACCOUNTS RECEIVABLE</th>
                                                             <th>AMOUNT</th>
                                                         </tr>
@@ -69,6 +70,9 @@
                                                     <tbody>
                                                         <c:forEach items="${receivablees}" var="receivablee">
                                                             <tr>
+                                                                <td>${srNum}
+                                                                    <c:set var="srNum" value="${srNum+1}" />
+                                                                </td>
                                                                 <td>${receivablee.name}</td>
                                                                 <td>${receivablee.receivable}</td>
                                                             </tr>
