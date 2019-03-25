@@ -106,7 +106,7 @@ public class AccountsDaoImpl implements AccountsDao {
             if (!buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
             }
-            if (!project.isEmpty()) {
+            if (project != null && !project.isEmpty()) {
                 criteria.add(Restrictions.eq("project", project));
             }
 
@@ -137,7 +137,8 @@ public class AccountsDaoImpl implements AccountsDao {
     }
 
     @Override
-    public int getAccountPayableReceivableCount(EntryItems entryItem, String type, String startDate, String endDate, String buyerSupplier, String project) {
+    public int getAccountPayableReceivableCount(EntryItems entryItem, String type, 
+            String startDate, String endDate, String buyerSupplier, String project) {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -160,10 +161,10 @@ public class AccountsDaoImpl implements AccountsDao {
             if (!endDate.isEmpty()) {
                 criteria.add(Restrictions.le("timestamp", Constants.DATE_FORMAT.parse(endDate)));
             }
-            if (!buyerSupplier.isEmpty()) {
+            if (buyerSupplier != null && !buyerSupplier.isEmpty()) {
                 criteria.add(Restrictions.eq("accountName", buyerSupplier));
             }
-            if (!project.isEmpty()) {
+            if (project != null && !project.isEmpty()) {
                 criteria.add(Restrictions.eq("project", project));
             }
 

@@ -1,5 +1,6 @@
 package com.mka.service;
 
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.EntriesDirect;
 import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
@@ -48,4 +49,8 @@ public interface EntriesService {
     public boolean logInDirectEntry(EntriesIndirect entry);
 
     public String logMachinery(HttpServletRequest request);
+
+    public AccountPayableReceivable getPayableReceivableEntry(int id);
+
+    public String deletePayableReceivableAndAllRelatedEntries(AccountPayableReceivable entry, String ip, String ua, String user);
 }

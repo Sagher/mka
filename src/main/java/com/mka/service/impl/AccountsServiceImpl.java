@@ -89,7 +89,7 @@ public class AccountsServiceImpl implements AccountsService {
 
     @Override
     public int getAccountPayableReceivableCount(String type, String startDate, String endDate, String buyerSupplier) {
-        if (type.equalsIgnoreCase(Constants.PAYABLE)) {
+        if (type!=null && type.equalsIgnoreCase(Constants.PAYABLE)) {
             List<String> payablees = new ArrayList<>();
             for (CustomersBuyers c : userService.getCustomersAndBuyers()) {
                 if (c.getPayable().intValue() > 0) {
@@ -97,7 +97,7 @@ public class AccountsServiceImpl implements AccountsService {
                 }
             }
             return accountsDao.getAccountPayableReceivableCounts(Constants.PAYABLE, payablees.toArray(new String[payablees.size()]), startDate, endDate, buyerSupplier);
-        } else {
+        } else if(type!=null && type.equalsIgnoreCase(Constants.RECEIVABLE)) {
             List<String> receivablees = new ArrayList<>();
             for (CustomersBuyers c : userService.getCustomersAndBuyers()) {
                 if (c.getReceivable().intValue() > 0) {
@@ -105,6 +105,8 @@ public class AccountsServiceImpl implements AccountsService {
                 }
             }
             return accountsDao.getAccountPayableReceivableCounts(Constants.RECEIVABLE, receivablees.toArray(new String[receivablees.size()]), startDate, endDate, buyerSupplier);
+        }else{
+            return accountsDao.getAccountPayableReceivableCount(null, null, startDate, endDate, buyerSupplier, null);
         }
     }
 

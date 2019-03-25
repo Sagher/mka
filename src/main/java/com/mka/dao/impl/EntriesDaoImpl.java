@@ -5,6 +5,7 @@ package com.mka.dao.impl;
  * @author Sagher Mehmood
  */
 import com.mka.dao.EntriesDao;
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
@@ -566,5 +567,55 @@ public class EntriesDaoImpl implements EntriesDao {
             }
         }
         return response;
+    }
+
+    @Override
+    public AccountPayableReceivable getPayableReceivableEntry(int id) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AccountPayableReceivable.class);
+            criteria.add(Restrictions.eq("id", id));
+            List<AccountPayableReceivable> entryItems = criteria.list();
+            if (entryItems.size() > 0) {
+                return entryItems.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getPayableReceivableEntry() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
+    public void updatePayRecEntry(AccountPayableReceivable entry) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(entry);
+            session.saveOrUpdate(entry);
+
+            tx.commit();
+            session.flush();
+        } catch (Exception e) {
+            log.error("Exception in updatePayRecEntry() " + entry.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
     }
 }

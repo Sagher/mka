@@ -50,7 +50,7 @@
                                             </div>
                                             <div class="card-body">
                                                 <table id="viewDatatable"
-                                                       class="table table-responsive-sm table-bordered table-striped table-sm">
+                                                       class="table table-responsive table-bordered table-striped table-sm">
                                                     <thead>
                                                         <tr>
                                                             <th>ID</th>

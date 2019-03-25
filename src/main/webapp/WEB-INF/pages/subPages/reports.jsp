@@ -248,6 +248,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="brand-card item-summary">
+                                    <div class="brand-card-header text-white">
+                                        <div class="card-body">
+                                            <a href="<c:url value="/entries?type=allEntries" />">
+                                                <div class="item-name">View All/Delete Transactions</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -26,6 +26,7 @@ import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -148,12 +149,14 @@ public class ReportsController {
                     MasterAccount ma = ss.getMasterAccount();
                     model.setViewName("subPages/balanceSheet");
 
-                    int totalStockAmount = 0, totalSale = 0;
+                    BigDecimal totalStockAmount = new BigDecimal(BigInteger.ZERO);
                     List<StockTrace> stock = ss.getStats();
                     if (stock != null && !stock.isEmpty()) {
                         for (StockTrace s : stock) {
-                            totalStockAmount += s.getStockAmount().intValue();
-                            totalSale += s.getSalesAmount().intValue();
+                            if (s.getType().getId() != 17) {
+                                log.info(s.getStockAmount());
+                                totalStockAmount = totalStockAmount.add(s.getStockAmount());
+                            }
 
                         }
                     }
@@ -269,9 +272,14 @@ public class ReportsController {
                             .stream()
                             .filter(e -> {
                                 if (e.getType().getId() == itemId) {
-                                    openingStock.setQuantity(openingStock.getQuantity().add(e.getStockUnits()));
-                                    openingStock.setTotalPrice(openingStock.getTotalPrice().add(e.getStockAmount()));
+                                    if (itemId == 6 && e.getSubType().equalsIgnoreCase(request.getParameter("subType"))) {
+                                        openingStock.setQuantity(openingStock.getQuantity().add(e.getStockUnits()));
+                                        openingStock.setTotalPrice(openingStock.getTotalPrice().add(e.getStockAmount()));
 
+                                    } else if (itemId != 6) {
+                                        openingStock.setQuantity(openingStock.getQuantity().add(e.getStockUnits()));
+                                        openingStock.setTotalPrice(openingStock.getTotalPrice().add(e.getStockAmount()));
+                                    }
                                 }
                                 return true;
                             })
@@ -282,6 +290,8 @@ public class ReportsController {
                         String subType = null;
                         if (itemId == 6) {
                             subType = request.getParameter("subType");
+                            model.addObject("subType", subType);
+
                         }
                         List<EntriesDirect> data = entriesService.getDirectEntries(entryItem, "", 0, Integer.MAX_VALUE, "", "", from, to, "", "", subType);
 

@@ -4,6 +4,7 @@ package com.mka.dao;
  *
  * @author Sagher Mehmood
  */
+import com.mka.model.AccountPayableReceivable;
 import com.mka.model.AsphaltSaleConsumption;
 import com.mka.model.AsphaltSales;
 import com.mka.model.EntriesDirect;
@@ -48,4 +49,8 @@ public interface EntriesDao {
     public boolean logAsphaltSaleConsumptions(List<AsphaltSaleConsumption> ass);
 
     public boolean logMachineryCarriage(MachineryCarriage mac);
+
+    public AccountPayableReceivable getPayableReceivableEntry(int id);
+
+    public void updatePayRecEntry(AccountPayableReceivable entry);
 }

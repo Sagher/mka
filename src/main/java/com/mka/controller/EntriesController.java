@@ -26,7 +26,6 @@ import com.mka.service.UserService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
 import com.mka.utils.ImageUtil;
-import com.sun.javafx.tk.quantum.MasterTimer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,6 +155,11 @@ public class EntriesController {
                     model.addObject("allPayable", ma.getAllPayable());
 
                     model.setViewName("subPages/payablesAndReceivables");
+
+                } else if (type.equalsIgnoreCase("allEntries")) {
+                    List<CustomersBuyers> customerBuyers = userService.getCustomersAndBuyers();
+                    model.addObject("customerBuyers", customerBuyers);
+                    model.setViewName("subPages/allEntries");
 
                 } else {
                     model.setViewName("redirect:/");
@@ -293,6 +297,11 @@ public class EntriesController {
             // cash transactions
             data = ss.getCashTransactions(startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier);
             totalSize = ss.getCashTransactionsCount(startDate, endDate, buyerSupplier);
+
+        } else if (type.equalsIgnoreCase("all")) {
+            // all account_payable_receivable Entries
+            data = accountsService.getAccountPayableReceivable(null, null, null, startIndex, fetchSize, orderBy, sortby, startDate, endDate, buyerSupplier, null);
+            totalSize = accountsService.getAccountPayableReceivableCount(null, startDate, endDate, buyerSupplier);
 
         }
 
@@ -561,6 +570,34 @@ public class EntriesController {
             return entryLogged;
         } else {
             return entryLogged;
+        }
+    }
+
+    /**
+     *
+     * @param request
+     * @param httpSession
+     * @return
+     */
+    @RequestMapping(value = "/deleteAllEntries", method = RequestMethod.POST)
+    public @ResponseBody
+    String deleteEntries(HttpServletRequest request, HttpSession httpSession) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            String eid = request.getParameter("eid");
+            AccountPayableReceivable entry = entriesService.getPayableReceivableEntry(Integer.parseInt(eid));
+            if (entry == null) {
+                return ("01:Invalid Entry ID");
+            } else {
+                String remoteAddr = request.getHeader("x-forwarded-for") != null
+                        ? request.getHeader("x-forwarded-for") : request.getRemoteAddr();
+                String ua = request.getHeader("user-agent");
+
+                return entriesService.deletePayableReceivableAndAllRelatedEntries(entry, remoteAddr, ua, auth.getName());
+            }
+        } catch (Exception e) {
+            log.error("Exception while deleting Entry:", e);
+            return ("01:Invalid Values");
         }
     }
 

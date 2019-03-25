@@ -19,12 +19,13 @@ import com.mka.service.EntriesService;
 import com.mka.service.StatsService;
 import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
-import static com.sun.corba.se.spi.presentation.rmi.StubAdapter.request;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
@@ -454,6 +455,7 @@ public class EntriesServiceImpl implements EntriesService {
                 receivable.setAccountName(customer);
                 receivable.setAmount(realAss.getTotalSaleAmount());
                 receivable.setQuantity(realAss.getQuantity());
+                receivable.setSubType(realAss.getType());
                 receivable.setRate(BigDecimal.valueOf(Float.parseFloat(request.getParameter("assSaleRate"))));
                 receivable.setTotalAmount(realAss.getTotalSaleAmount());
                 receivable.setEntryId(realAss.getId());
@@ -713,5 +715,61 @@ public class EntriesServiceImpl implements EntriesService {
         } catch (Exception e) {
             log.error("Exception in logDirectConsumptionEntry(" + item.toString() + ")", e);
         }
+    }
+
+    @Override
+    public AccountPayableReceivable getPayableReceivableEntry(int id) {
+        return entriesDao.getPayableReceivableEntry(id);
+    }
+
+    @Override
+    public String deletePayableReceivableAndAllRelatedEntries(AccountPayableReceivable entry, String ip, String ua, String user) {
+
+        try {
+            LocalDate todaydate = LocalDate.now();
+            String firstDayOfMonth = todaydate.withDayOfMonth(1).toString();
+
+            if (entry.getItemType().getId() == 24) {
+                return "01:Starting Value Entry Cannot be deleted";
+            } else if (Constants.DATE_FORMAT
+                    .parse(Constants.DATE_FORMAT.format(entry.getTimestamp()))
+                    .before(Constants.DATE_FORMAT.parse(firstDayOfMonth))) {
+                return "01:Only current months entries can be deleted.";
+            }
+        } catch (ParseException ex) {
+            java.util.logging.Logger.getLogger(EntriesServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            return "Something went wrong.";
+        }
+
+        if (entry.getItemType().getId() == 17 && entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+            // asphalt sale, always a receivable
+            // - sales unit, - sales amount,
+            // - unit consumption 
+            // - persons receivable
+            AccountPayableReceivable ac = new AccountPayableReceivable();
+            BeanUtils.copyProperties(entry, ac);
+
+            ac.setType(Constants.PAYABLE);
+            asyncUtil.updateAccount(ac);
+
+            entry.setIsActive(false);
+            entriesDao.updatePayRecEntry(entry);
+            asyncUtil.logActivity(user, ip, ua, "DELETED SALE ENTRY", entry.toString());
+            return "00:Entry Deleted Successfully";
+
+        }
+
+        if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+
+        } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+
+        } else {
+            log.warn("UNKNOWN ENTRY TYPE: " + entry);
+            return "01:Something went wrong.";
+        }
+        asyncUtil.logActivity(user, ip, ua, "DELETED ENTRY", entry.toString());
+
+        return "00:Entry Deleted Successfully";
+
     }
 }

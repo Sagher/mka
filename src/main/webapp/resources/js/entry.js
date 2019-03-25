@@ -409,7 +409,6 @@ function logdEntry() {
                     type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
-                $("#logdEntryBtn").show();
                 setTimeout(function () {
                     location.reload();
                 }, 2000);
@@ -526,7 +525,6 @@ function logiEntry() {
                     type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
-                $("#logiEntryBtn").show();
                 setTimeout(function () {
                     location.reload();
                 }, 5000);
@@ -644,7 +642,6 @@ function logCashTransaction() {
                     type: "success", layout: "top", timeout: 4000
                 });
                 resetdForm();
-                $("#cashTranBtn").show();
                 setTimeout(function () {
                     location.reload();
                 }, 5000);
@@ -861,7 +858,6 @@ function logAssSale() {
                     text: respMessage,
                     type: "success", layout: "top", timeout: 4000
                 });
-                $("#assSaleBtn").show();
                 setTimeout(function () {
                     location.reload();
                 }, 5000);
@@ -936,7 +932,6 @@ function logMacCar() {
                     text: respMessage,
                     type: "success", layout: "top", timeout: 4000
                 });
-                $("#macCarBtn").show();
                 setTimeout(function () {
                     location.reload();
                 }, 5000);

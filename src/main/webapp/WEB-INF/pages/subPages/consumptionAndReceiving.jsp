@@ -9,7 +9,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
         <title>Consumption & Receiving</title>
-
         <c:import url="../fragments/global-css.jsp" />
 
     </head>
@@ -45,7 +44,11 @@
                                                             MKA ASPHALT PLANT MARGALLA DISTRICT RAWALPINDI
                                                         </h4>
                                                         <h6>
-                                                            ${type.itemName} Consumption & Receiving
+                                                            ${type.itemName}
+                                                            <c:if test = "${subType!= null}">
+                                                                (${subType})
+                                                            </c:if>
+                                                            Consumption & Receiving
                                                         </h6>
                                                         FROM ${from} TO ${to}
                                                     </span>
@@ -78,7 +81,7 @@
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">
-                                                                    Material
+                                                                    Account
                                                                 </span>
                                                             </div>
                                                             <select id="accountName" class="form-control">
@@ -104,8 +107,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <table class="table table-striped table-bordered">
+                                                <table class="table table-responsive table-striped table-bordered">
                                                     <thead>
                                                         <tr>
                                                             <td>SR. NO.</td>
@@ -120,12 +122,17 @@
                                                             <th>RECIPIENT BILTY NO.</th>
                                                             <th>TOTAL QUANTITY</th>
                                                             <th>RATE</th>
-                                                            <th>AMOUNT</th>
+                                                            <th>Dr.</th>
+                                                            <th>Cr.</th>
+                                                            <th>Dr.</th>
+
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <c:set var="q" value="0" scope="page" />
                                                         <c:set var="a" value="0" scope="page" />
+                                                        <c:set var="totalDr" value="0" scope="page" />
+                                                        <c:set var="totalCr" value="0" scope="page" />
                                                         <c:set var="srNum" value="1" scope="page" />
 
                                                         <tr>
@@ -149,8 +156,12 @@
                                                             <td>${openingStock.quantity}</td>
                                                             <td>${openingStock.rate}</td>
                                                             <td>${openingStock.totalPrice}</td>
+                                                            <td></td>
+                                                            <td></td>
+
                                                             <c:set var="q" value="${q+openingStock.quantity}" />
                                                             <c:set var="a" value="${a+openingStock.totalPrice}" />
+                                                            <c:set var="totalDr" value="${totalDr+openingStock.totalPrice}" />
                                                         </tr>
 
                                                         <c:forEach items="${data}" var="item">
@@ -180,27 +191,42 @@
                                                                 <td>${item.recipientBilty}</td>
                                                                 <td>${item.quantity}</td>
                                                                 <td>${item.rate}</td>
-                                                                <td>${item.totalPrice}</td>
+                                                                <c:if test = "${item.subEntryType == 'PURCHASE'}">
+                                                                    <td>${item.totalPrice}</td>
+                                                                    <td></td>
+                                                                </c:if>
+                                                                <c:if test = "${item.subEntryType == 'CONSUME'}">
+                                                                    <td></td>
+                                                                    <td>${item.totalPrice}</td>
+                                                                </c:if>
+                                                                <td></td>
+
+
                                                                 <c:if test = "${item.subEntryType == 'CONSUME'}">
                                                                     <c:set var="q" value="${q-item.quantity}" />
                                                                     <c:set var="a" value="${a-item.totalPrice}" />
+                                                                    <c:set var="totalCr" value="${totalCr+item.totalPrice}" />
                                                                 </c:if>
                                                                 <c:if test = "${item.subEntryType == 'PURCHASE'}">
                                                                     <c:set var="q" value="${q+item.quantity}" />
                                                                     <c:set var="a" value="${a+item.totalPrice}" />
+                                                                    <c:set var="totalDr" value="${totalDr+item.totalPrice}" />
                                                                 </c:if>
 
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="13">
+                                                            <td colspan="15">
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td colspan="10">Closing Stock</td>
                                                             <td>${q}</td>
                                                             <td></td>    
-                                                            <td>${a}</td>
+                                                            <td>${totalDr}</td>
+                                                            <td>${totalCr}</td>
+                                                            <td>${totalDr-totalCr}</td>
+
                                                         </tr>
                                                     </tbody>
                                                 </table>

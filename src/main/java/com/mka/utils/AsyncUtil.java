@@ -68,6 +68,21 @@ public class AsyncUtil {
     }
 
     @Async
+    public void logActivity(String userName, String remoteAddr, String ua, String actionType, String actionDescription) {
+        User user = userService.getUser(userName);
+        if (user != null) {
+            UserActivity activity = new UserActivity(actionType, actionDescription, remoteAddr, ua, new Date(), user);
+            boolean activtyLogged = activityService.addUserActivity(activity);
+
+            if (!activtyLogged) {
+                log.warn("FAILED TO LOG USER ACTIVITY: " + activity);
+            }
+        } else {
+            log.warn("Invalid User in logActivty: " + userName);
+        }
+    }
+
+    @Async
     public void updateUser(User u) {
         boolean resp = userService.updateUser(u);
         if (!resp) {

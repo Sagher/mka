@@ -98,7 +98,7 @@
                                                     </div>
                                                 </div>
 
-                                                <table class="table table-striped table-bordered">
+                                                <table class="table table-responsive table-striped table-bordered">
                                                     <thead>
                                                         <tr>
                                                             <td>SR. NO.</td>
@@ -130,7 +130,7 @@
                                                                     <c:set var="srNum" value="${srNum+1}" />
                                                                 </td>
                                                                 <td>
-                                                                    <fmt:formatDate value="${item.timestamp}" pattern="MM-dd-yyyy" />
+                                                                    <fmt:formatDate value="${item.timestamp}" pattern="dd-MM-yyyy" />
                                                                 </td>
                                                                 <td>${item.project}</td>
 
@@ -159,7 +159,9 @@
                                                                     <c:set var="totalDr" value="${totalDr+item.amount}" />
                                                                 </c:if>
 
-                                                                <td><!--${item.totalAmount}--></td>
+                                                                <td>
+                                                                    <!--${item.totalAmount}-->
+                                                                </td>
 
                                                             </tr>
                                                         </c:forEach>
