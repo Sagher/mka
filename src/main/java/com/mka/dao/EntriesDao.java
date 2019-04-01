@@ -50,7 +50,19 @@ public interface EntriesDao {
 
     public boolean logMachineryCarriage(MachineryCarriage mac);
 
+    public AsphaltSales getAsphaltSaleById(int id);
+
     public AccountPayableReceivable getPayableReceivableEntry(int id);
 
-    public void updatePayRecEntry(AccountPayableReceivable entry);
+    public boolean deleteIndirectPayRecEntryAndUpdateAccount(AccountPayableReceivable entry);
+
+    public boolean deleteAsphaltSaleAndAllRelated(AsphaltSales as);
+
+    public boolean deleteCashTransaction(AccountPayableReceivable entry);
+
+    public boolean deleteDirectEntry(AccountPayableReceivable entry);
+
+    public boolean deleteDirectCrushAndRelatedEntries(AccountPayableReceivable entry);
+
+    public boolean deleteIndirectEntry(AccountPayableReceivable entry);
 }

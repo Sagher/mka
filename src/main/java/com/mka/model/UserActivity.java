@@ -91,6 +91,9 @@ public class UserActivity implements Serializable {
     }
 
     public UserActivity(String actionType, String actionDescription, String remoteAddr, String userAgent, Date actionTimestamp, User userId) {
+        if (actionType.length() > 20) {
+            actionType = actionType.substring(0, 19);
+        }
         this.actionType = actionType;
         this.actionDescription = actionDescription;
         this.remoteAddr = remoteAddr;

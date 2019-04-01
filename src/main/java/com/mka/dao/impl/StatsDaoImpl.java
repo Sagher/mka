@@ -376,6 +376,7 @@ public class StatsDaoImpl implements StatsDao {
         try {
             session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(AsphaltSales.class);
+            criteria.add(Restrictions.ge("isActive", true));
 
             if (!from.isEmpty()) {
                 criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(from)));

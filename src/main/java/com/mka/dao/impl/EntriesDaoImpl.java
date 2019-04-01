@@ -13,7 +13,13 @@ import com.mka.model.EntriesDirectDetails;
 import com.mka.model.EntriesIndirect;
 import com.mka.model.EntryItems;
 import com.mka.model.MachineryCarriage;
+import com.mka.model.MasterAccount;
+import com.mka.model.MasterAccountHistory;
+import com.mka.model.StockTrace;
+import com.mka.service.StatsService;
+import com.mka.utils.AsyncUtil;
 import com.mka.utils.Constants;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -36,6 +42,12 @@ public class EntriesDaoImpl implements EntriesDao {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private AsyncUtil asyncUtil;
+
+    @Autowired
+    private StatsService statsService;
 
     @Override
     public List<EntryItems> getAllEntryItems() {
@@ -570,6 +582,30 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
+    public AsphaltSales getAsphaltSaleById(int id) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AsphaltSales.class);
+            criteria.add(Restrictions.eq("id", id));
+            List<AsphaltSales> entryItems = criteria.list();
+            if (entryItems.size() > 0) {
+                return entryItems.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getAsphaltSaleById() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
+    @Override
     public AccountPayableReceivable getPayableReceivableEntry(int id) {
         Session session = null;
         try {
@@ -594,7 +630,7 @@ public class EntriesDaoImpl implements EntriesDao {
     }
 
     @Override
-    public void updatePayRecEntry(AccountPayableReceivable entry) {
+    public boolean deleteIndirectPayRecEntryAndUpdateAccount(AccountPayableReceivable entry) {
         Session session = null;
         Transaction tx = null;
         try {
@@ -602,10 +638,19 @@ public class EntriesDaoImpl implements EntriesDao {
             tx = session.beginTransaction();
             session.setFlushMode(FlushMode.COMMIT);
             session.evict(entry);
+            entry.setIsActive(false);
             session.saveOrUpdate(entry);
+
+            if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                entry.setType(Constants.PAYABLE);
+            } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                entry.setType(Constants.RECEIVABLE);
+            }
+            asyncUtil.updateAccount(entry);
 
             tx.commit();
             session.flush();
+            return true;
         } catch (Exception e) {
             log.error("Exception in updatePayRecEntry() " + entry.toString(), e);
             if (tx != null) {
@@ -617,5 +662,320 @@ public class EntriesDaoImpl implements EntriesDao {
                 session.close();
             }
         }
+        return false;
     }
+
+    @Override
+    public boolean deleteAsphaltSaleAndAllRelated(AsphaltSales as) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+
+            session.evict(as);
+            as.setIsActive(false);
+            session.saveOrUpdate(as);
+
+            List<AccountPayableReceivable> relatedEntries = getPayableReceivableEntriesByEntryId(as.getId());
+            if (relatedEntries != null) {
+                for (AccountPayableReceivable ac : relatedEntries) {
+                    session.evict(ac);
+                    ac.setIsActive(false);
+
+                    if (ac.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                        ac.setType(Constants.PAYABLE);
+                    } else if (ac.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                        ac.setType(Constants.RECEIVABLE);
+                    }
+                    asyncUtil.updateAccount(ac);
+
+                    session.saveOrUpdate(ac);
+                }
+            }
+
+            // add stock of crush & bitumen
+            // minus the asphalt sale
+            List<AsphaltSaleConsumption> asConsumption = statsService.getAsphaltSaleConsumptions(as);
+            if (asConsumption != null && !asConsumption.isEmpty()) {
+                for (StockTrace s : statsService.getStats()) {
+                    switch (s.getItemId()) {
+                        case 1:
+                            s.setStockUnits(s.getStockUnits().add(asConsumption.get(0).getItemQuantity()));
+                            s.setStockAmount(s.getStockAmount().add(asConsumption.get(0).getItemAmount()));
+                            s.setConsumeUnit(s.getConsumeUnit().subtract(asConsumption.get(0).getItemQuantity()));
+                            s.setConsumeAmount(s.getConsumeAmount().subtract(asConsumption.get(0).getItemAmount()));
+                            asyncUtil.updateStockTrace(s);
+                            break;
+                        case 6:
+                            String key = s.getItemName() + s.getSubType();
+                            for (AsphaltSaleConsumption aasCon : asConsumption) {
+                                if (aasCon.getItemName().equalsIgnoreCase(key)) {
+                                    s.setStockUnits(s.getStockUnits().add(aasCon.getItemQuantity()));
+                                    s.setStockAmount(s.getStockAmount().add(aasCon.getItemAmount()));
+
+                                    s.setConsumeUnit(s.getConsumeUnit().subtract(aasCon.getItemQuantity()));
+                                    s.setConsumeAmount(s.getConsumeAmount().subtract(aasCon.getItemAmount()));
+
+                                    asyncUtil.updateStockTrace(s);
+                                }
+                            }
+                            break;
+                        case 17:
+                            s.setSalesUnit(s.getSalesUnit().subtract(as.getQuantity()));
+                            s.setSalesAmount(s.getSalesAmount().subtract(as.getTotalSaleAmount()));
+                            asyncUtil.updateStockTrace(s);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            tx.commit();
+            session.flush();
+            return true;
+        } catch (Exception e) {
+            log.error("Exception in deleteAsphaltSaleAndAllRelated() " + as.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteCashTransaction(AccountPayableReceivable entry) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(entry);
+            entry.setIsActive(false);
+            session.saveOrUpdate(entry);
+
+            if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                entry.setType(Constants.PAYABLE);
+            } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                entry.setType(Constants.RECEIVABLE);
+            }
+            asyncUtil.updateAccount(entry);
+
+            MasterAccount ma = statsService.getMasterAccount();
+            if (entry.getSubType().equalsIgnoreCase(Constants.PERSON_TO_HEADOFFICE)) {
+                ma.setTotalCash(ma.getTotalCash().subtract(entry.getTotalAmount()));
+
+            } else if (entry.getSubType().equalsIgnoreCase(Constants.CASH_IN_HAND_TO_HEADOFFICE)) {
+                ma.setCashInHand(ma.getCashInHand().add(entry.getTotalAmount()));
+                ma.setTotalCash(ma.getTotalCash().subtract(entry.getTotalAmount()));
+
+            } else if (entry.getSubType().equalsIgnoreCase(Constants.FROM_HEADOFFICE_TO_PERSON)) {
+                ma.setTotalCash(ma.getTotalCash().add(entry.getTotalAmount()));
+
+            } else if (entry.getSubType().equalsIgnoreCase(Constants.FROM_HEADOFFICE_TO_CASH_IN_HAND)) {
+                ma.setCashInHand(ma.getCashInHand().subtract(entry.getTotalAmount()));
+                ma.setTotalCash(ma.getTotalCash().add(entry.getTotalAmount()));
+
+            } else if (entry.getSubType().equalsIgnoreCase(Constants.FROM_CASH_IN_HAND_TO_PERSON)) {
+                ma.setCashInHand(ma.getCashInHand().add(entry.getTotalAmount()));
+
+            } else if (entry.getSubType().equalsIgnoreCase(Constants.FROM_PERSON_TO_CASH_IN_HAND)) {
+                ma.setCashInHand(ma.getCashInHand().subtract(entry.getTotalAmount()));
+
+            }
+
+            statsService.updateMasterAccount(ma);
+
+            tx.commit();
+            session.flush();
+            return true;
+        } catch (Exception e) {
+            log.error("Exception in deleteCashTransaction() " + entry.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteDirectEntry(AccountPayableReceivable entry) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(entry);
+            entry.setIsActive(false);
+            session.saveOrUpdate(entry);
+            for (StockTrace s : statsService.getStats()) {
+                if (s.getItemId() == entry.getItemType().getId()) {
+                    if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                        s.setStockUnits(s.getStockUnits().add(entry.getQuantity()));
+                        s.setStockAmount(s.getStockAmount().add(entry.getTotalAmount()));
+                    } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                        s.setStockUnits(s.getStockUnits().subtract(entry.getQuantity()));
+                        s.setStockAmount(s.getStockAmount().subtract(entry.getTotalAmount()));
+                    }
+                    asyncUtil.updateStockTrace(s);
+                }
+            }
+
+            if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                entry.setType(Constants.PAYABLE);
+            } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                entry.setType(Constants.RECEIVABLE);
+            }
+            asyncUtil.updateAccount(entry);
+
+            tx.commit();
+            session.flush();
+            return true;
+        } catch (Exception e) {
+            log.error("Exception in deleteDirectEntry() " + entry.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteDirectCrushAndRelatedEntries(AccountPayableReceivable entry) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+
+            List<AccountPayableReceivable> allEntries = getPayableReceivableEntriesByEntryId(entry.getEntryId());
+            if (allEntries != null && !allEntries.isEmpty()) {
+
+                for (AccountPayableReceivable acc : allEntries) {
+                    session.evict(false);
+                    acc.setIsActive(false);
+                    session.saveOrUpdate(acc);
+
+                    for (StockTrace s : statsService.getStats()) {
+                        if (s.getItemId() == entry.getItemType().getId()
+                                && s.getSubType().equalsIgnoreCase(entry.getSubType())) {
+                            if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                                entry.setType(Constants.PAYABLE);
+                                s.setStockUnits(s.getStockUnits().add(entry.getQuantity()));
+                                s.setStockAmount(s.getStockAmount().add(entry.getTotalAmount()));
+                            } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                                entry.setType(Constants.RECEIVABLE);
+                                s.setStockUnits(s.getStockUnits().subtract(entry.getQuantity()));
+                                s.setStockAmount(s.getStockAmount().subtract(entry.getTotalAmount()));
+                            }
+                            asyncUtil.updateStockTrace(s);
+                        }
+                    }
+                    asyncUtil.updateAccount(acc);
+                }
+
+            }
+
+            tx.commit();
+            session.flush();
+            return true;
+        } catch (Exception e) {
+            log.error("Exception in deleteDirectCrushAndRelatedEntries() " + entry.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteIndirectEntry(AccountPayableReceivable entry) {
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            session.setFlushMode(FlushMode.COMMIT);
+            session.evict(entry);
+            entry.setIsActive(false);
+            session.saveOrUpdate(entry);
+
+            if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+                entry.setType(Constants.PAYABLE);
+            } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+                entry.setType(Constants.RECEIVABLE);
+            }
+            asyncUtil.updateAccount(entry);
+
+            MasterAccount ma = statsService.getMasterAccount();
+            ma.setCashInHand(ma.getCashInHand().add(entry.getTotalAmount()));
+
+            statsService.updateMasterAccount(ma);
+
+            tx.commit();
+            session.flush();
+            return true;
+        } catch (Exception e) {
+            log.error("Exception in deleteDirectCrushAndRelatedEntries() " + entry.toString(), e);
+            if (tx != null) {
+                tx.rollback();
+            }
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+        return false;
+    }
+
+    private List<AccountPayableReceivable> getPayableReceivableEntriesByEntryId(int entryId) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(AccountPayableReceivable.class);
+            criteria.add(Restrictions.eq("isActive", true));
+            criteria.add(Restrictions.eq("entryId", entryId));
+            List<AccountPayableReceivable> entryItems = criteria.list();
+            if (entryItems.size() > 0) {
+                return entryItems;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("Exception in getPayableReceivableEntriesByEntryId() : ", e);
+            return null;
+        } finally {
+            if (session != null) {
+                session.clear();
+                session.close();
+            }
+        }
+    }
+
 }

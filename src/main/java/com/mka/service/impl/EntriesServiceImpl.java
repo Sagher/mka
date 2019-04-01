@@ -741,35 +741,66 @@ public class EntriesServiceImpl implements EntriesService {
             return "Something went wrong.";
         }
 
-        if (entry.getItemType().getId() == 17 && entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
+        if (entry.getItemType().getId() == 18) {
+            // cash transaction
+            boolean deleted = entriesDao.deleteCashTransaction(entry);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED " + entry.getItemType().getItemName(), entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
+        } else if (entry.getItemType().getId() == 17 && entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
             // asphalt sale, always a receivable
             // - sales unit, - sales amount,
             // - unit consumption 
             // - persons receivable
-            AccountPayableReceivable ac = new AccountPayableReceivable();
-            BeanUtils.copyProperties(entry, ac);
+            AsphaltSales as = entriesDao.getAsphaltSaleById(entry.getEntryId());
+            boolean deleted = entriesDao.deleteAsphaltSaleAndAllRelated(as);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED SALE ENTRY", entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
 
-            ac.setType(Constants.PAYABLE);
-            asyncUtil.updateAccount(ac);
+        } else if (entry.getItemType().getId() == 19 || entry.getItemType().getId() == 20
+                || entry.getItemType().getId() == 21) {
+            // carriage or laying
+            // remove receivable, update account
+            boolean deleted = entriesDao.deleteIndirectPayRecEntryAndUpdateAccount(entry);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED " + entry.getItemType().getItemName(), entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
 
-            entry.setIsActive(false);
-            entriesDao.updatePayRecEntry(entry);
-            asyncUtil.logActivity(user, ip, ua, "DELETED SALE ENTRY", entry.toString());
-            return "00:Entry Deleted Successfully";
+        } else if (entry.getItemType().getId() < 6) {
+            // direct entry type, except crush
+            boolean deleted = entriesDao.deleteDirectEntry(entry);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED " + entry.getItemType().getItemName(), entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
 
-        }
+        } else if (entry.getItemType().getId() == 6) {
+            // direct entry crush
+            boolean deleted = entriesDao.deleteDirectCrushAndRelatedEntries(entry);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED " + entry.getItemType().getItemName(), entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
 
-        if (entry.getType().equalsIgnoreCase(Constants.RECEIVABLE)) {
-
-        } else if (entry.getType().equalsIgnoreCase(Constants.PAYABLE)) {
+        } else if (entry.getItemType().getId() > 6
+                && entry.getItemType().getEntryType().equalsIgnoreCase(Constants.INDIRECT)) {
+            // direct entry crush
+            boolean deleted = entriesDao.deleteIndirectEntry(entry);
+            if (deleted) {
+                asyncUtil.logActivity(user, ip, ua, "DELETED " + entry.getItemType().getItemName(), entry.toString());
+                return "00:Entry Deleted Successfully";
+            }
 
         } else {
             log.warn("UNKNOWN ENTRY TYPE: " + entry);
-            return "01:Something went wrong.";
+            return "01:Deletion Not yet supported for this entry type";
         }
-        asyncUtil.logActivity(user, ip, ua, "DELETED ENTRY", entry.toString());
 
-        return "00:Entry Deleted Successfully";
+        return "01:Something went wrong.";
 
     }
 }
