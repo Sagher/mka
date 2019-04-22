@@ -8,9 +8,28 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <title>Consumption & Receiving</title>
+        <title>
+            <c:if test = "${type.itemName != null}">
+                ${type.itemName}
+            </c:if>
+
+            <c:if test = "${subType != null}">
+                (${subType})
+            </c:if>
+            Consumption & Receiving
+        </title>
+
         <c:import url="../fragments/global-css.jsp" />
 
+        <style>
+            /*                        table tr td {
+                                        font-size: 11px
+                                    }*/
+            table th {
+                font-size: 12px
+            }
+
+        </style>
     </head>
     <body class="app header-fixed sidebar-fixed aside-menu-fixed">
         <!-- top navigation bar -->
@@ -107,10 +126,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <table class="table table-responsive table-striped table-bordered">
+                                                <hr>
+                                                <table id="table" class="table table-responsive table-striped table-bordered" style="width: 100%">
                                                     <thead>
                                                         <tr>
-                                                            <td>SR. NO.</td>
+                                                            <th>SR. NO.</th>
                                                             <th>DATE</th>
                                                             <th>TRANSACTION TYPE</th>
                                                             <th>CUSTOMER</th>
@@ -180,6 +200,9 @@
                                                                 <c:if test = "${item.subEntryType == 'CONSUME'}">
                                                                     <td>${item.buyer}</td>
                                                                 </c:if>
+                                                                <c:if test = "${item.subEntryType == 'SALE'}">
+                                                                    <td>${item.buyer}</td>
+                                                                </c:if>
                                                                 <c:if test = "${item.subEntryType == 'PURCHASE'}">
                                                                     <td>${item.supplier}</td>
                                                                 </c:if>
@@ -199,10 +222,19 @@
                                                                     <td></td>
                                                                     <td>${item.totalPrice}</td>
                                                                 </c:if>
+                                                                <c:if test = "${item.subEntryType == 'SALE'}">
+                                                                    <td></td>
+                                                                    <td>${item.totalPrice}</td>
+                                                                </c:if>
                                                                 <td></td>
 
 
                                                                 <c:if test = "${item.subEntryType == 'CONSUME'}">
+                                                                    <c:set var="q" value="${q-item.quantity}" />
+                                                                    <c:set var="a" value="${a-item.totalPrice}" />
+                                                                    <c:set var="totalCr" value="${totalCr+item.totalPrice}" />
+                                                                </c:if>
+                                                                <c:if test = "${item.subEntryType == 'SALE'}">
                                                                     <c:set var="q" value="${q-item.quantity}" />
                                                                     <c:set var="a" value="${a-item.totalPrice}" />
                                                                     <c:set var="totalCr" value="${totalCr+item.totalPrice}" />
@@ -216,11 +248,19 @@
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="15">
+                                                            <td>${srNum}
+                                                                <c:set var="srNum" value="${srNum+1}" />
                                                             </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="10">Closing Stock</td>
+                                                            <td></td>    
+                                                            <td>Closing Stock</td>
+                                                            <td></td>    
+                                                            <td></td>    
+                                                            <td></td>    
+                                                            <td></td>    
+                                                            <td></td>    
+                                                            <td></td>    
+                                                            <td></td>    
+
                                                             <td>${q}</td>
                                                             <td></td>    
                                                             <td>${totalDr}</td>
@@ -263,6 +303,15 @@
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
 
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+
     <script>
         $("#applyDateFilter").click(function () {
             var from = $("#from").val();
@@ -283,6 +332,26 @@
 
                 }
             }
+        });
+
+        $(document).ready(function () {
+            var table = $('#table').DataTable({
+                "dom": 'T<"clear">Blfrtip',
+                buttons: [
+//                    'copy', 'csv', 'excel'
+                    {extend: 'csv', className: 'btn btn-default'},
+                    {extend: 'excel', className: 'btn btn-default'},
+                ],
+                "searching": false,
+                "ordering": false,
+                "info": false,
+                "stateSave": false,
+                "responsive": false,
+                "pageLength": -1,
+                "bPaginate": false,
+                "bLengthChange": false,
+            });
+            $('.dt-buttons').after('<div id="space"><br></div>');
         });
     </script>
 

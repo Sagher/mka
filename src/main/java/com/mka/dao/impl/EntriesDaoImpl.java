@@ -343,10 +343,10 @@ public class EntriesDaoImpl implements EntriesDao {
             Criteria criteria = session.createCriteria(EntriesIndirect.class);
             criteria.add(Restrictions.eq("isActive", true));
             if (!startDate.isEmpty()) {
-                criteria.add(Restrictions.ge("entryDate", Constants.DATE_FORMAT.parse(startDate)));
+                criteria.add(Restrictions.ge("createdDate", Constants.DATE_FORMAT.parse(startDate)));
             }
             if (!endDate.isEmpty()) {
-                criteria.add(Restrictions.le("entryDate", Constants.DATE_FORMAT.parse(endDate)));
+                criteria.add(Restrictions.le("createdDate", Constants.DATE_FORMAT.parse(endDate)));
             }
             if (!buyerSupplier.isEmpty()) {
                 Criterion c1 = Restrictions.eq("name", buyerSupplier);

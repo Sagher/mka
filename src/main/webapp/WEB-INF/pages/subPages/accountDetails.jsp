@@ -97,11 +97,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <table class="table table-responsive table-striped table-bordered">
+                                                <hr>
+                                                <table id="table" class="table table-responsive table-striped table-bordered">
                                                     <thead>
                                                         <tr>
-                                                            <td>SR. NO.</td>
+                                                            <th>SR. NO.</th>
                                                             <th>DATE</th>
                                                             <th>SITE NAME</th>
                                                             <th>DESCRIPTION</th>
@@ -166,11 +166,18 @@
                                                             </tr>
                                                         </c:forEach>
                                                         <tr>
-                                                            <td colspan="13">
+                                                            <td>${srNum}
+                                                                <c:set var="srNum" value="${srNum+1}" />
                                                             </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="10">NET PROFIT</td>
+                                                            <td></td>
+                                                            <td>NET PROFIT</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
                                                             <td>${totalDr}</td>
                                                             <td>${totalCr}</td>    
                                                             <td>${totalCr-totalDr}</td>
@@ -224,5 +231,36 @@
         });
     </script>
 
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            var table = $('#table').DataTable({
+                "dom": 'T<"clear">Blfrtip',
+                buttons: [
+//                    'copy', 'csv', 'excel'
+                    {extend: 'csv', className: 'btn btn-default'},
+                    {extend: 'excel', className: 'btn btn-default'},
+                ],
+                "searching": false,
+                "ordering": false,
+                "info": false,
+                "stateSave": false,
+                "responsive": false,
+                "pageLength": -1,
+                "bPaginate": false,
+                "bLengthChange": false,
+            });
+            $('.dt-buttons').after('<div id="space"><br></div>');
+        });
+    </script>
 </html>
 
