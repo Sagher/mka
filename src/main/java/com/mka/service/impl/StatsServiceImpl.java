@@ -49,6 +49,7 @@ public class StatsServiceImpl implements StatsService {
     private List<StockTrace> lastMonthStatItems = null;
 
     private MasterAccount masterAccount = null;
+//
 
     @Override
     public List<StockTrace> getStats() {
@@ -80,7 +81,7 @@ public class StatsServiceImpl implements StatsService {
             }
             return getStats().parallelStream().filter(e -> e.getType().getId() == typeId).collect(Collectors.toList()).get(0);
         } catch (Exception e) {
-
+            log.error("Exception in getStockTrace(" + typeId + ", " + subType + ") ", e);
         }
         return null;
     }
@@ -204,6 +205,8 @@ public class StatsServiceImpl implements StatsService {
 
                 statsDao.insertStockTraceForNewMonth(ss);
             }
+            statItems = null;
+            lastMonthStatItems = null;
             return true;
         }
         return false;
